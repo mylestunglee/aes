@@ -62,7 +62,7 @@ def draw_framework(framework, m, n, filename):
 		elif framework[k1][k2] and k1 == k2:
 			graph.edge(label(i1, j1), label(i2, j2))
 
-	graph = graphviz.Digraph(format='svg')
+	graph = graphviz.Digraph(format='png')
 
 	# Construct nodes
 	for i in M:
