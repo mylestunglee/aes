@@ -1,13 +1,14 @@
 import math
 import graphviz
+import numpy as np
 
 # Prints ASCII representation of a schedule
-def print_schedule(p, C, x):
-	if C == None or x == None or not all(isinstance(p_j, int) for p_j in p):
-		raise TypeError('schedule must have integer processing times')
+def print_schedule(p, C, S):
+	if C == None or S is None:
+		raise TypeError('no schedule')
 
 	J = range(len(p))
-	M = range(len(x))
+	M = range(np.shape(S)[0])
 
 	width = len(str(C))
 
@@ -22,27 +23,36 @@ def print_schedule(p, C, x):
 		print('{:{fill}}|'.format(i, fill=width), end='')
 
 		for j in J:
-			if x[i][j]:
+			if S[i, j]:
 				print('[{:{fill}}]'.format(j, fill=p[j] * width - 2), end='')
 		print()
 
 # Prints ASCII representation of a framework
-def print_framework(framework, m, n):
+def print_framework(f, m, n):
 	width_m = len(str(m))
 	width_n = len(str(n))
+	M = range(m)
+	N = range(n)
 
 	# print header
 	print('j i ' + '_' * m * n)
 
 	# print rows
-	for j in range(n):
-		for i in range(m):
+	for j1 in N:
+		for i1 in M:
 			print('{:{fill_n}} {:{fill_m}}|'.format(
-				j if i == 0 else '', i, fill_n=width_n, fill_m=width_m) +
-				''.join('x' if cell else ' ' for cell in framework[i+m*j]))
+				j1 if i1 == 0 else '', i1, fill_n=width_n, fill_m=width_m), end='')
+
+			for j2 in N:
+				for i2 in M:
+					if f[i1, j1, i2, j2]:
+						print('x', end='')
+					else:
+						print(' ', end='')
+			print()
 
 # Generates an image of a framework
-def draw_framework(framework, m, n, filename):
+def draw_framework(f, m, n, filename):
 	M = range(m)
 	N = range(n)
 
@@ -53,13 +63,13 @@ def draw_framework(framework, m, n, filename):
 		k1 = i1+m*j1
 		k2 = i2+m*j2
 		# Bi-directional edges
-		if framework[k1][k2] and framework[k2][k1] and k1 < k2:
+		if f[i1, j1, i2, j2] and f[i2, j2, i1, j1] and k1 < k2:
 			graph.edge(label(i1, j1), label(i2, j2), dir='both')
 		# Uni-directional edges
-		elif framework[k1][k2] and not framework[k2][k1]:
+		elif f[i1, j1, i2, j2] and not f[i2, j2, i1, j1]:
 			graph.edge(label(i1, j1), label(i2, j2))
 		# Loops
-		elif framework[k1][k2] and k1 == k2:
+		elif f[i1, j1, i2, j2] and k1 == k2:
 			graph.edge(label(i1, j1), label(i2, j2))
 
 	graph = graphviz.Digraph(format='png')

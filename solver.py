@@ -1,5 +1,6 @@
 import pyomo.environ as en
 import pyomo.opt as opt
+import numpy as np
 
 # Model the problem using the pyomo interface library
 def create_model(p, m, nfd, pfd):
@@ -48,4 +49,9 @@ def calc_optimal_schedule(p, m, nfd, pfd, name):
 
 	# Construct schedule
 	n = len(p)
-	return C, [[model.x[i, j].value != 0 for j in range(n)] for i in range(m)]
+	S = np.zeros((m, n), dtype=bool)
+	for i in range(m):
+		for j in range(n):
+			S[i, j] = model.x[i, j].value != 0
+
+	return C, S
