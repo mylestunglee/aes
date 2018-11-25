@@ -10,15 +10,15 @@ def print_schedule(p, C, S):
 	J = range(len(p))
 	M = range(np.shape(S)[0])
 
-	width = len(str(C))
+	width = len(str(C)) + 2
 
-	# print header
+	# Print header
 	print('{:>{fill}}|'.format('i', fill=width), end='')
 	for k in range(int(C)):
 		print('{:{fill}}'.format(k + 1, fill=width), end='')
 	print()
 
-	# print rows
+	# Print rows
 	for i in M:
 		print('{:{fill}}|'.format(i, fill=width), end='')
 
@@ -34,10 +34,10 @@ def print_framework(f, m, n):
 	M = range(m)
 	N = range(n)
 
-	# print header
+	# Print header
 	print('j i ' + '_' * m * n)
 
-	# print rows
+	# Print rows
 	for j1 in N:
 		for i1 in M:
 			print('{:{fill_n}} {:{fill_m}}|'.format(

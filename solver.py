@@ -9,13 +9,13 @@ def create_model(p, m, nfd, pfd):
 
 	model = en.ConcreteModel()
 	model.x = en.Var(M, J, domain=en.Binary)
-	model.C = en.Var()
+	model.C_max = en.Var()
 
 	# C is the longest completion time
 	model.optimality = en.ConstraintList()
 	for i in M:
 		model.optimality.add(
-			model.C >= sum(model.x[i, j] * p[j] for j in J))
+			model.C_max >= sum(model.x[i, j] * p[j] for j in J))
 
 	# Every job must be assigned
 	model.feasiblity = en.ConstraintList()
@@ -33,7 +33,7 @@ def create_model(p, m, nfd, pfd):
 		model.pfd.add(model.x[i, j] == 1)
 
 	# Minimise completion time
-	model.obj = en.Objective(expr = model.C)
+	model.obj = en.Objective(expr = model.C_max)
 
 	return model
 
@@ -42,9 +42,9 @@ def calc_optimal_schedule(p, m, nfd, pfd, name):
 	solver = opt.SolverFactory(name)
 	model = create_model(p, m, nfd, pfd)
 	result = solver.solve(model)
-	C = model.C.value
+	C_max = model.C_max.value
 	# No solution
-	if C == None:
+	if C_max == None:
 		return None, None
 
 	# Construct schedule
@@ -54,4 +54,4 @@ def calc_optimal_schedule(p, m, nfd, pfd, name):
 		for j in range(n):
 			S[i, j] = model.x[i, j].value != 0
 
-	return C, S
+	return C_max, S
