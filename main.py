@@ -22,9 +22,10 @@ def main():
 #	visualiser.print_framework(ff, m, n)
 #	visualiser.print_framework(of, m, n)
 
-	visualiser.draw_framework(ff, m, n, 'graph1')
-	visualiser.draw_framework(of, m, n, 'graph2')
-	visualiser.draw_framework(fdf, m, n, 'graph3')
+#	visualiser.draw_framework(ff, m, n, 'graph1')
+#	visualiser.draw_framework(of, m, n, 'graph2')
+#	visualiser.draw_framework(fdf, m, n, 'graph3')
+	visualiser.draw_schedule(p, S)
 
 
 if __name__ == '__main__':

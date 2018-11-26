@@ -1,6 +1,7 @@
 import math
 import graphviz
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Prints ASCII representation of a schedule
 def print_schedule(p, C, S):
@@ -88,3 +89,36 @@ def draw_framework(f, m, n, filename):
 
 	#print(graph.source)
 	graph.render(filename)
+
+# Generates a column chart of jobs against machines
+def draw_schedule(p, S):
+#	S = np.random.choice(a=[False, True], size=(m, n), p=[0.5, 0.5])
+#	p = np.random.exponential(0.5, n)
+	(m, n) = S.shape
+
+	N = np.arange(n)
+	M = np.arange(m)
+
+	accum = np.zeros(m)
+
+	for j in N:
+	    widths = S[:, j].astype(float) * p[j]
+	    bars = plt.barh(M, widths, left=accum)
+	    accum += widths
+
+	    for bar in bars:
+	        if bar.get_width() > 0:
+	            plt.text(
+	                bar.get_x() + bar.get_width() / 2,
+	                bar.get_y() + bar.get_height() / 2,
+	                j,
+	                ha='center',
+	                va='center')
+
+	plt.yticks(M, M)
+	plt.xlabel('time')
+	plt.ylabel('machine')
+
+	plt.gca().invert_yaxis()
+
+	plt.show()
