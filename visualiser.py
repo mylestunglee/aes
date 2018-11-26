@@ -101,7 +101,7 @@ def draw_schedule(p, S):
 
 	for j in N:
 	    widths = S[:, j].astype(float) * p[j]
-	    bars = plt.barh(M, widths, left=accum)
+	    bars = plt.barh(M, widths, left=accum, color='grey', linewidth=S[:, j].astype(int), edgecolor='black')
 	    accum += widths
 
 	    for bar in bars:
