@@ -92,8 +92,6 @@ def draw_framework(f, m, n, filename):
 
 # Generates a column chart of jobs against machines
 def draw_schedule(p, S):
-#	S = np.random.choice(a=[False, True], size=(m, n), p=[0.5, 0.5])
-#	p = np.random.exponential(0.5, n)
 	(m, n) = S.shape
 
 	N = np.arange(n)

@@ -4,29 +4,26 @@ import visualiser
 import argumentation
 
 def main():
-	p = np.array([1,1,3])
-	n = np.size(p)
-	m = 3
-	nfd = [(0,0)]
-	pfd = [(0,2)]
-	S = np.array([[True, False, True], [False, True, False], [False, False, False]])
-	C_max = 5
-
+#	p = np.array([1,1,3])
+#	n = 3
+#	m = 3
+#	nfd = [(0,0)]
+#	pfd = [(0,2)]
 #	C_max, S = solver.calc_optimal_schedule(p, m, nfd, pfd, 'glpk')
 
-	visualiser.print_schedule(p, C_max, S)
+#	ff = argumentation.create_feasiblity_framework(m, n)
+#	of = argumentation.create_optimality_framework(p, m, S, ff)
+#	fdf = argumentation.create_fixed_decision_framework(ff, nfd, pfd)
 
-	ff = argumentation.create_feasiblity_framework(m, n)
-	of = argumentation.create_optimality_framework(p, m, S, ff)
-	fdf = argumentation.create_fixed_decision_framework(ff, nfd, pfd)
-#	visualiser.print_framework(ff, m, n)
-#	visualiser.print_framework(of, m, n)
-
-#	visualiser.draw_framework(ff, m, n, 'graph1')
-#	visualiser.draw_framework(of, m, n, 'graph2')
-#	visualiser.draw_framework(fdf, m, n, 'graph3')
+	_, _, p, S = random_scheduled_problem()
 	visualiser.draw_schedule(p, S)
 
+def random_scheduled_problem():
+	m = np.random.poisson(5)
+	n = np.random.poisson(10)
+	p = np.random.exponential(3, n)
+	S = np.random.choice(a=[False, True], size=(m, n), p=[1 - 1 / m, 1 / m])
+	return m, n, p, S
 
 if __name__ == '__main__':
 	main()
