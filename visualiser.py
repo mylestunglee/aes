@@ -2,7 +2,7 @@ import math
 import graphviz
 import numpy as np
 import matplotlib.pyplot as plt
-import argumentation
+import schedule
 
 # Prints ASCII representation of a schedule
 def print_schedule(p, C, S):
@@ -102,7 +102,7 @@ def draw_schedule(p, S):
 def draw_schedule_undetailed(p, S):
 	(m, _) = S.shape
 
-	C = argumentation.calc_completion_times(p, S)
+	C = schedule.calc_completion_times(p, S)
 	plt.barh(np.arange(m), C, color='grey',linewidth=1)
 
 	plt.xlabel('time')

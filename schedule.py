@@ -25,6 +25,10 @@ def random_scheduled_problem():
 	S = np.random.choice(a=[False, True], size=(m, n), p=[1 - 1 / m, 1 / m])
 	return m, n, p, S
 
+# Calculates completion time vector [C_i for i in M]
+def calc_completion_times(p, S):
+	return S.astype(int).dot(p)
+
 if __name__ == '__main__':
 	main()
 

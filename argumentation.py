@@ -1,8 +1,5 @@
 import numpy as np
-
-# Calculates completion time vector [C_i for i in M]
-def calc_completion_times(p, S):
-	return S.astype(int).dot(p)
+import schedule
 
 # Creates an argumentation framework representing feasiblity as an adjacency matrix
 def create_feasiblity_framework(m, n):
@@ -15,7 +12,7 @@ def create_feasiblity_framework(m, n):
 
 # Creates an optimality framework from a feasiblity framework
 def create_optimality_framework(p, m, S, ff):
-	C = calc_completion_times(p, S)
+	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C)
 	M = range(m)
 	J = [np.flatnonzero(S[i,:]) for i in M]
