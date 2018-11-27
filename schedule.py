@@ -22,7 +22,8 @@ def random_scheduled_problem():
 	m = np.random.poisson(5)
 	n = np.random.poisson(20)
 	p = np.random.exponential(3, n) + 0.5
-	S = np.random.choice(a=[False, True], size=(m, n), p=[1 - 1 / m, 1 / m])
+	pr = 1 / m if m > 0 else 0
+	S = np.random.choice(a=[False, True], size=(m, n), p=[1 - pr, pr])
 	return m, n, p, S
 
 # Calculates completion time vector [C_i for i in M]

@@ -8,6 +8,8 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 
+import interface
+
 def main():
 	root = Tk()
 
@@ -17,7 +19,22 @@ def main():
 		root.quit()
 
 	def random_problem():
-		pass
+		# Clear textboxs
+		m_textbox.delete('1.0', END)
+		p_textbox.delete('1.0', END)
+		nfd_textbox.delete('1.0', END)
+		pfd_textbox.delete('1.0', END)
+		S_textbox.delete('1.0', END)
+
+		# Generate problem
+		m_text, p_text, nfd_text, pfd_text, S_text = interface.random_problem()
+
+		# Set textboxs
+		m_textbox.insert(END, m_text)
+		p_textbox.insert(END, p_text)
+		nfd_textbox.insert(END, nfd_text)
+		pfd_textbox.insert(END, pfd_text)
+		S_textbox.insert(END, S_text)
 
 	def load_problem():
 		pass
@@ -50,32 +67,27 @@ def main():
 
 	problem_frame = Frame(left_frame)
 	m_label = Label(problem_frame, text='Number of machines')
-	m_text = Text(problem_frame, height=1, width=40)
+	m_textbox = Text(problem_frame, height=1, width=40)
 	p_label = Label(problem_frame, text='Processing times')
-	p_text = Text(problem_frame, height=3, width=40)
-	p_scrollbar = attach_scrollbar(problem_frame, p_text)
+	p_textbox = Text(problem_frame, height=3, width=40)
+	p_scrollbar = attach_scrollbar(problem_frame, p_textbox)
 	nfd_label = Label(problem_frame, text='Negative fixed decisions')
-	nfd_text = Text(problem_frame, height=3, width=40)
-	nfd_scrollbar = attach_scrollbar(problem_frame, nfd_text)
+	nfd_textbox = Text(problem_frame, height=3, width=40)
+	nfd_scrollbar = attach_scrollbar(problem_frame, nfd_textbox)
 	pfd_label = Label(problem_frame, text='Positive fixed decisions')
-	pfd_text = Text(problem_frame, height=3, width=40)
-	pfd_scrollbar = attach_scrollbar(problem_frame, pfd_text)
+	pfd_textbox = Text(problem_frame, height=3, width=40)
+	pfd_scrollbar = attach_scrollbar(problem_frame, pfd_textbox)
 
-	schedule_frame = Frame(left_frame)
-	schedule_label = Label(schedule_frame, text='Schedule')
-	schedule_text = Text(schedule_frame, height=3, width=40)
-	schedule_scrollbar = attach_scrollbar(schedule_frame, schedule_text)
+	S_frame = Frame(left_frame)
+	S_label = Label(S_frame, text='Schedule')
+	S_textbox = Text(S_frame, height=3, width=40)
+	S_scrollbar = attach_scrollbar(S_frame, S_textbox)
 
 	right_frame = Frame(root)
-	fig = plt.figure(1)
-	plt.ion()
-	t = np.arange(0.0,3.0,0.01)
-	s = np.sin(np.pi*t)
-	plt.plot(t,s)
-
-	schedule_figure = FigureCanvasTkAgg(fig, master=right_frame).get_tk_widget()
-	output_text = Text(right_frame)
-	output_scrollbar = attach_scrollbar(right_frame, output_text)
+	fig = plt.figure(0)
+	S_figure = FigureCanvasTkAgg(fig, master=right_frame).get_tk_widget()
+	output_textbox = Text(right_frame)
+	output_scrollbar = attach_scrollbar(right_frame, output_textbox)
 
 	# Geometry
 	padding = 4
@@ -100,31 +112,33 @@ def main():
 	problem_frame.rowconfigure(2, weight=1)
 	problem_frame.rowconfigure(3, weight=1)
 	m_label.grid(row=0, column=0, pady=padding)
-	m_text.grid(row=0, column=1, columnspan=2, pady=padding, sticky=E+W)
+	m_textbox.grid(row=0, column=1, columnspan=2, pady=padding, sticky=E+W)
 	p_label.grid(row=1, column=0, pady=padding)
-	p_text.grid(row=1, column=1, pady=padding, sticky=N+S)
+	p_textbox.grid(row=1, column=1, pady=padding, sticky=N+S)
 	p_scrollbar.grid(row=1, column=2, pady=padding, sticky=N+S)
 	nfd_label.grid(row=2, column=0, pady=padding)
-	nfd_text.grid(row=2, column=1, pady=padding, sticky=N+S)
+	nfd_textbox.grid(row=2, column=1, pady=padding, sticky=N+S)
 	nfd_scrollbar.grid(row=2, column=2, pady=padding, sticky=N+S)
 	pfd_label.grid(row=3, column=0, pady=padding)
-	pfd_text.grid(row=3, column=1, pady=padding, sticky=N+S)
+	pfd_textbox.grid(row=3, column=1, pady=padding, sticky=N+S)
 	pfd_scrollbar.grid(row=3, column=2, pady=padding, sticky=N+S)
 
-	schedule_frame.grid(row=2, column=0, sticky=N+S+W+E)
-	schedule_frame.rowconfigure(1, weight=1)
-	schedule_frame.columnconfigure(0, weight=1)
-	schedule_label.grid(row=0, column=0, columnspan=2)
-	schedule_text.grid(row=1, column=0, sticky=N+S+W+E)
-	schedule_scrollbar.grid(row=1, column=1, sticky=N+S)
+	S_frame.grid(row=2, column=0, sticky=N+S+W+E)
+	S_frame.rowconfigure(1, weight=1)
+	S_frame.columnconfigure(0, weight=1)
+	S_label.grid(row=0, column=0, columnspan=2)
+	S_textbox.grid(row=1, column=0, sticky=N+S+W+E)
+	S_scrollbar.grid(row=1, column=1, sticky=N+S)
 
 	right_frame.grid(row=0, column=1, sticky=N+S+W+E)
 	right_frame.rowconfigure(0, weight=1)
 	right_frame.rowconfigure(1, weight=1)
 	right_frame.columnconfigure(0, weight=1)
-	schedule_figure.grid(row=0, column=0, columnspan=2, sticky=N+S+W+E)
-	output_text.grid(row=1, column=0, sticky=N+S+W+E)
+	S_figure.grid(row=0, column=0, columnspan=2, sticky=N+S+W+E)
+	output_textbox.grid(row=1, column=0, sticky=N+S+W+E)
 	output_scrollbar.grid(row=1, column=1, sticky=N+S)
+
+	explain()
 
 	root.mainloop()
 
