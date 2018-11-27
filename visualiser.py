@@ -2,6 +2,7 @@ import math
 import graphviz
 import numpy as np
 import matplotlib.pyplot as plt
+import argumentation
 
 # Prints ASCII representation of a schedule
 def print_schedule(p, C, S):
@@ -92,6 +93,27 @@ def draw_framework(f, m, n, filename):
 
 # Generates a column chart of jobs against machines
 def draw_schedule(p, S):
+	max_jobs = np.max(np.sum(S, axis=1))
+	if max_jobs > 10:
+		draw_schedule_undetailed(p, S)
+	else:
+		draw_schedule_detailed(p, S)
+
+def draw_schedule_undetailed(p, S):
+	(m, _) = S.shape
+
+	C = argumentation.calc_completion_times(p, S)
+	plt.barh(np.arange(m), C, color='grey',linewidth=1)
+
+	plt.xlabel('time')
+	plt.ylabel('machine')
+	plt.yticks([])
+
+	plt.gca().invert_yaxis()
+
+	plt.show()
+
+def draw_schedule_detailed(p, S):
 	(m, n) = S.shape
 
 	N = np.arange(n)
@@ -101,7 +123,7 @@ def draw_schedule(p, S):
 
 	for j in N:
 	    widths = S[:, j].astype(float) * p[j]
-	    bars = plt.barh(M, widths, left=accum, color='grey', linewidth=S[:, j].astype(int), edgecolor='black')
+	    bars = plt.barh(M, widths, left=accum, color='lightgrey', edgecolor='grey', linewidth=S[:, j].astype(int))
 	    accum += widths
 
 	    for bar in bars:
@@ -109,13 +131,13 @@ def draw_schedule(p, S):
 	            plt.text(
 	                bar.get_x() + bar.get_width() / 2,
 	                bar.get_y() + bar.get_height() / 2,
-	                j,
+	                j + 1,
 	                ha='center',
 	                va='center')
 
-	plt.yticks(M, M)
 	plt.xlabel('time')
 	plt.ylabel('machine')
+	plt.yticks(M, M + 1)
 
 	plt.gca().invert_yaxis()
 

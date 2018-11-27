@@ -1,5 +1,9 @@
 import numpy as np
 
+# Calculates completion time vector [C_i for i in M]
+def calc_completion_times(p, S):
+	return S.astype(int).dot(p)
+
 # Creates an argumentation framework representing feasiblity as an adjacency matrix
 def create_feasiblity_framework(m, n):
 	N = range(n)
@@ -8,10 +12,6 @@ def create_feasiblity_framework(m, n):
 	for j in N:
 		f[:, j, :, j] = np.logical_not(np.identity(m))
 	return f
-
-# Calculates completion time vector [C_i for i in M]
-def calc_completion_times(p, S):
-	return S.astype(int).dot(p)
 
 # Creates an optimality framework from a feasiblity framework
 def create_optimality_framework(p, m, S, ff):
