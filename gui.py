@@ -46,7 +46,10 @@ def main():
 		pass
 
 	def explain():
-		pass
+		interface.explain(
+			p_textbox.get('1.0', END),
+			S_textbox.get('1.0', END))
+		fig.canvas.draw()
 
 	def optimise():
 		pass
@@ -137,8 +140,6 @@ def main():
 	S_figure.grid(row=0, column=0, columnspan=2, sticky=N+S+W+E)
 	output_textbox.grid(row=1, column=0, sticky=N+S+W+E)
 	output_scrollbar.grid(row=1, column=1, sticky=N+S)
-
-	explain()
 
 	root.mainloop()
 

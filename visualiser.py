@@ -111,8 +111,6 @@ def draw_schedule_undetailed(p, S):
 
 	plt.gca().invert_yaxis()
 
-	plt.show()
-
 def draw_schedule_detailed(p, S):
 	(m, n) = S.shape
 
@@ -140,5 +138,3 @@ def draw_schedule_detailed(p, S):
 	plt.yticks(M, M + 1)
 
 	plt.gca().invert_yaxis()
-
-	plt.show()
