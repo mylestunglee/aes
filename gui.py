@@ -46,9 +46,16 @@ def main():
 		pass
 
 	def explain():
-		interface.explain(
+		output_text = interface.explain(
+			m_textbox.get('1.0', END),
 			p_textbox.get('1.0', END),
-			S_textbox.get('1.0', END))
+			S_textbox.get('1.0', END),
+			nfd_textbox.get('1.0', END),
+			pfd_textbox.get('1.0', END))
+
+		output_textbox.delete('1.0', END)
+		output_textbox.insert(END, output_text)
+
 		fig.canvas.draw()
 
 	def optimise():

@@ -93,7 +93,8 @@ def draw_framework(f, m, n, filename):
 
 # Generates a column chart of jobs against machines
 def draw_schedule(p, S):
-	max_jobs = np.max(np.sum(S, axis=1))
+	(_, n) = S.shape
+	max_jobs = np.max(np.sum(S, axis=1)) if n > 0 else 0
 	if max_jobs > 10:
 		draw_schedule_undetailed(p, S)
 	else:
