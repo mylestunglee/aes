@@ -20,7 +20,7 @@ def main():
 
 	def random_problem():
 		# Clear textboxs
-		m_textbox.delete('1.0', END)
+		m_spinbox.delete(0, END)
 		p_textbox.delete('1.0', END)
 		nfd_textbox.delete('1.0', END)
 		pfd_textbox.delete('1.0', END)
@@ -30,7 +30,7 @@ def main():
 		m_text, p_text, nfd_text, pfd_text, S_text = interface.random_problem()
 
 		# Set textboxs
-		m_textbox.insert(END, m_text)
+		m_spinbox.insert(END, m_text)
 		p_textbox.insert(END, p_text)
 		nfd_textbox.insert(END, nfd_text)
 		pfd_textbox.insert(END, pfd_text)
@@ -47,7 +47,7 @@ def main():
 
 	def explain():
 		output_text = interface.explain(
-			m_textbox.get('1.0', END),
+			m_spinbox.get(),
 			p_textbox.get('1.0', END),
 			S_textbox.get('1.0', END),
 			nfd_textbox.get('1.0', END),
@@ -77,7 +77,7 @@ def main():
 
 	problem_frame = Frame(left_frame)
 	m_label = Label(problem_frame, text='Number of machines')
-	m_textbox = Text(problem_frame, height=1, width=40)
+	m_spinbox = Spinbox(problem_frame, from_=0, to_=sys.maxsize)
 	p_label = Label(problem_frame, text='Processing times')
 	p_textbox = Text(problem_frame, height=3, width=40)
 	p_scrollbar = attach_scrollbar(problem_frame, p_textbox)
@@ -122,7 +122,7 @@ def main():
 	problem_frame.rowconfigure(2, weight=1)
 	problem_frame.rowconfigure(3, weight=1)
 	m_label.grid(row=0, column=0, pady=padding)
-	m_textbox.grid(row=0, column=1, columnspan=2, pady=padding, sticky=E+W)
+	m_spinbox.grid(row=0, column=1, columnspan=2, pady=padding, sticky=E+W)
 	p_label.grid(row=1, column=0, pady=padding)
 	p_textbox.grid(row=1, column=1, pady=padding, sticky=N+S)
 	p_scrollbar.grid(row=1, column=2, pady=padding, sticky=N+S)

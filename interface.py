@@ -77,7 +77,7 @@ def parse_schedule(text):
 	indices = [[int(cell) - 1 for cell in row] for row in vectorise(text)]
 
 	m = len(indices)
-	n = max(max(row) for row in indices) + 1 if any(indices) else 0
+	n = max([i for row in indices for i in row] + [-1]) + 1
 
 	S = np.zeros((m, n), dtype=bool)
 	for i in range(m):
