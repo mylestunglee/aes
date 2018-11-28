@@ -71,7 +71,7 @@ def vectorise(text):
 	return cells
 
 def parse_processing(text):
-	return np.array([float(row[0]) for row in vectorise(text)])
+	return np.array([float(row[0]) if row else 1 for row in vectorise(text)])
 
 def parse_schedule(text):
 	indices = [[int(cell) - 1 for cell in row] for row in vectorise(text)]
