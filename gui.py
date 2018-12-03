@@ -51,6 +51,12 @@ def main():
 	def random_schedule():
 		pass
 
+	def load_schedule():
+		pass
+
+	def save_schedule():
+		pass
+
 	def explain():
 		output_text = interface.explain(
 			m_spinbox.get(),
@@ -89,8 +95,10 @@ def main():
 
 	S_frame = LabelFrame(left_frame, text='Schedule')
 	S_command_frame = Frame(S_frame)
-	S_optimise_button = Button(S_command_frame, text='Generate optimum', command=optimise)
+	S_optimise_button = Button(S_command_frame, text='Optimise', command=optimise)
 	S_random_button = Button(S_command_frame, text='Randomise', command=random_schedule)
+	load_S_button = Button(S_command_frame, text='Load', command=load_schedule)
+	save_S_button = Button(S_command_frame, text='Save', command=save_schedule)
 	S_textbox = Text(S_frame, height=3, width=40)
 	S_scrollbar = attach_scrollbar(S_frame, S_textbox)
 	explain_button = Button(S_frame, text='Explain', command=explain)
@@ -119,9 +127,9 @@ def main():
 	problem_command_frame.columnconfigure(0, weight=1)
 	problem_command_frame.columnconfigure(1, weight=1)
 	problem_command_frame.columnconfigure(2, weight=1)
-	load_problem_button.grid(row=0, column=0, sticky=W+E)
-	save_problem_button.grid(row=0, column=1, padx=padding, sticky=W+E)
-	random_problem_button.grid(row=0, column=2, sticky=W+E)
+	random_problem_button.grid(row=0, column=0, sticky=W+E)
+	load_problem_button.grid(row=0, column=1, padx=padding, sticky=W+E)
+	save_problem_button.grid(row=0, column=2, sticky=W+E)
 	problem_frame.rowconfigure(2, weight=1)
 	problem_frame.rowconfigure(3, weight=1)
 	problem_frame.rowconfigure(4, weight=1)
@@ -144,8 +152,12 @@ def main():
 	S_command_frame.grid(row=0, column=0, columnspan=2, padx=padding, pady=padding, sticky=W+E)
 	S_command_frame.columnconfigure(0, weight=1)
 	S_command_frame.columnconfigure(1, weight=1)
+	S_command_frame.columnconfigure(2, weight=1)
+	S_command_frame.columnconfigure(3, weight=1)
 	S_optimise_button.grid(row=0, column=0, padx=(0, padding), sticky=W+E)
-	S_random_button.grid(row=0, column=1, sticky=W+E)
+	S_random_button.grid(row=0, column=1, padx=(0, padding), sticky=W+E)
+	load_S_button.grid(row=0, column=2, padx=(0, padding), sticky=W+E)
+	save_S_button.grid(row=0, column=3, sticky=W+E)
 	S_textbox.grid(row=1, column=0, padx=(padding, 0), sticky=N+S+W+E)
 	S_scrollbar.grid(row=1, column=1, padx=(0, padding), sticky=N+S)
 	explain_button.grid(row=2, column=0, columnspan=2, padx=padding, pady=padding, sticky=W+E)
