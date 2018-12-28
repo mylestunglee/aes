@@ -18,13 +18,16 @@ def main():
 	_, _, p, S = random_scheduled_problem()
 	visualiser.draw_schedule(p, S)
 
-def random_scheduled_problem():
+def random_problem():
 	m = np.random.poisson(5)
 	n = np.random.poisson(20)
 	p = np.random.exponential(3, n) + 0.5
+	return m, n, p
+
+def random_schedule(m, n, nfd, pfd):
 	pr = 1 / m if m > 0 else 0
 	S = np.random.choice(a=[False, True], size=(m, n), p=[1 - pr, pr])
-	return m, n, p, S
+	return S
 
 # Calculates completion time vector [C_i for i in M]
 def calc_completion_times(p, S):

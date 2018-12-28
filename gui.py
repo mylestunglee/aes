@@ -24,17 +24,15 @@ def main():
 		p_textbox.delete('1.0', END)
 		nfd_textbox.delete('1.0', END)
 		pfd_textbox.delete('1.0', END)
-		S_textbox.delete('1.0', END)
 
 		# Generate problem
-		m_text, p_text, nfd_text, pfd_text, S_text = interface.random_problem()
+		m_text, p_text, nfd_text, pfd_text = interface.random_problem()
 
 		# Set textboxs
 		m_spinbox.insert(END, m_text)
 		p_textbox.insert(END, p_text)
 		nfd_textbox.insert(END, nfd_text)
 		pfd_textbox.insert(END, pfd_text)
-		S_textbox.insert(END, S_text)
 
 	def load_problem():
 		pass
@@ -49,7 +47,18 @@ def main():
 		pass
 
 	def random_schedule():
-		pass
+		# Clear textboxs
+		S_textbox.delete('1.0', END)
+
+		# Generate problem
+		S_text = interface.random_schedule(
+			m_spinbox.get(),
+			p_textbox.get('1.0', END),
+			nfd_textbox.get('1.0', END),
+			pfd_textbox.get('1.0', END))
+
+		# Set textboxs
+		S_textbox.insert(END, S_text)
 
 	def load_schedule():
 		pass
@@ -61,9 +70,9 @@ def main():
 		output_text = interface.explain(
 			m_spinbox.get(),
 			p_textbox.get('1.0', END),
-			S_textbox.get('1.0', END),
 			nfd_textbox.get('1.0', END),
-			pfd_textbox.get('1.0', END))
+			pfd_textbox.get('1.0', END),
+			S_textbox.get('1.0', END))
 
 		output_textbox.delete('1.0', END)
 		output_textbox.insert(END, output_text)
