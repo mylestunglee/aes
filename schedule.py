@@ -9,10 +9,10 @@ def main():
 #	m = 3
 #	nfd = [(0,0)]
 #	pfd = [(0,2)]
-#	C_max, S = solver.calc_optimal_schedule(p, m, nfd, pfd, 'glpk')
+#	C_max, S = solver.calc_optimal_schedule(m, p, nfd, pfd, 'glpk')
 
 #	ff = argumentation.create_feasiblity_framework(m, n)
-#	of = argumentation.create_optimality_framework(p, m, S, ff)
+#	of = argumentation.create_optimality_framework(m, p, S, ff)
 #	fdf = argumentation.create_fixed_decision_framework(ff, nfd, pfd)
 
 	_, _, p, S = random_scheduled_problem()
@@ -20,7 +20,7 @@ def main():
 
 def random_problem():
 	m = np.random.poisson(5)
-	n = np.random.poisson(20)
+	n = np.random.poisson(10)
 	p = np.random.exponential(3, n) + 0.5
 	return m, n, p
 

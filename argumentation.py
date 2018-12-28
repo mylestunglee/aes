@@ -11,7 +11,7 @@ def create_feasiblity_framework(m, n):
 	return f
 
 # Creates an optimality framework from a feasiblity framework
-def create_optimality_framework(p, m, S, ff):
+def create_optimality_framework(m, p, S, ff):
 	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C)
 	M = range(m)

@@ -3,34 +3,38 @@ import pyomo.opt as opt
 import numpy as np
 
 # Model the problem using the pyomo interface library
-def create_model(p, m, nfd, pfd):
-	J = range(len(p))
+def create_model(m, p, nfd, pfd):
+	N = range(len(p))
 	M = range(m)
 
 	model = en.ConcreteModel()
-	model.x = en.Var(M, J, domain=en.Binary)
+	model.x = en.Var(M, N, domain=en.Binary)
 	model.C_max = en.Var()
 
 	# C is the longest completion time
 	model.optimality = en.ConstraintList()
 	for i in M:
 		model.optimality.add(
-			model.C_max >= sum(model.x[i, j] * p[j] for j in J))
+			model.C_max >= sum(model.x[i, j] * p[j] for j in N))
 
 	# Every job must be assigned
 	model.feasiblity = en.ConstraintList()
-	for j in J:
+	for j in N:
 		model.feasiblity.add(sum(model.x[i, j] for i in M) == 1)
 
 	# Enforce negative fixed decisions
 	model.nfd = en.ConstraintList()
-	for i, j in nfd:
-		model.nfd.add(model.x[i, j] == 0)
+	for i in M:
+		for j in N:
+			if nfd[i, j]:
+				model.nfd.add(model.x[i, j] == 0)
 
 	# Enforce positive fixed decisions
 	model.pfd = en.ConstraintList()
-	for i, j in pfd:
-		model.pfd.add(model.x[i, j] == 1)
+	for i in M:
+		for j in N:
+			if pfd[i, j]:
+				model.pfd.add(model.x[i, j] == 1)
 
 	# Minimise completion time
 	model.obj = en.Objective(expr = model.C_max)
@@ -38,9 +42,9 @@ def create_model(p, m, nfd, pfd):
 	return model
 
 # Calculate the optimal schedule given a problem and a solver such as 'cplex' or 'glpk'
-def calc_optimal_schedule(p, m, nfd, pfd, name):
-	solver = opt.SolverFactory(name)
-	model = create_model(p, m, nfd, pfd)
+def optimal_schedule(m, p, nfd, pfd, solver_name):
+	solver = opt.SolverFactory(solver_name)
+	model = create_model(m, p, nfd, pfd)
 	result = solver.solve(model)
 	C_max = model.C_max.value
 	# No solution

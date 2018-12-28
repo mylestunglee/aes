@@ -9,7 +9,7 @@ def print_schedule(p, C, S):
 	if C == None or S is None:
 		raise TypeError('no schedule')
 
-	J = range(len(p))
+	N = range(len(p))
 	M = range(np.shape(S)[0])
 
 	width = len(str(C)) + 2
@@ -24,7 +24,7 @@ def print_schedule(p, C, S):
 	for i in M:
 		print('{:{fill}}|'.format(i, fill=width), end='')
 
-		for j in J:
+		for j in N:
 			if S[i, j]:
 				print('[{:{fill}}]'.format(j, fill=p[j] * width - 2), end='')
 		print()

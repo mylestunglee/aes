@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import schedule
 import visualiser
+import solver
 
 delimiter = ';'
 integer_pattern = re.compile(r'^[0-9]+$')
@@ -53,6 +54,36 @@ def load_problem(filename):
 def save_problem(filename, m_text, p_text, nfd_text, pfd_text):
 	text = delimiter.join([m_text, p_text, nfd_text, pfd_text])
 	return save_text(filename, text)
+
+def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name):
+	if not integer_pattern.match(m_text):
+		return False, 'Number of machines syntax error'
+	if not float_pattern.match(p_text):
+		return False, 'Proccessing times syntax error'
+	if not positions_pattern.match(nfd_text):
+		return False, 'Negative fixed decisions syntax error'
+	if not positions_pattern.match(pfd_text):
+		return False, 'Positive fixed decisions syntax error'
+
+	m = int(m_text)
+	p = parse_processing(p_text)
+	n = p.shape[0]
+	nfd = parse_schedule(nfd_text, m, n)
+	pfd = parse_schedule(pfd_text, m, n)
+
+	if m != nfd.shape[0]:
+		return False, 'Negative fixed decisions refers to undefined machines'
+	if m != pfd.shape[0]:
+		return False, 'Positive fixed decisions refers to undefined machines'
+	if n != nfd.shape[1]:
+		return False, 'Negative fixed decisions refers to undefined processing times'
+	if n != pfd.shape[1]:
+		return False, 'Positive fixed decisions refers to undefined processing times'
+
+	_, S = solver.optimal_schedule(m, p, nfd, pfd, solver_name)
+	S_text = format_schedule(S)
+
+	return True, S_text
 
 def random_schedule(m_text, p_text, nfd_text, pfd_text):
 	if not integer_pattern.match(m_text):

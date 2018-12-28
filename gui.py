@@ -67,11 +67,22 @@ def main():
 		if not success:
 			textbox_replace(output_textbox, error)
 
-	def optimise():
-		pass
+	def optimal_schedule():
+		# Generate schedule
+		success, text = interface.optimal_schedule(
+			m_spinbox.get(),
+			p_textbox.get('1.0', tk.END),
+			nfd_textbox.get('1.0', tk.END),
+			pfd_textbox.get('1.0', tk.END),
+			'glpk')
+
+		if success:
+			textbox_replace(S_textbox, text)
+		else:
+			textbox_replace(output_textbox, text)
 
 	def random_schedule():
-		# Generate problem
+		# Generate schedule
 		success, text = interface.random_schedule(
 			m_spinbox.get(),
 			p_textbox.get('1.0', tk.END),
@@ -158,7 +169,7 @@ def main():
 
 	S_frame = tk.LabelFrame(left_frame, text='Schedule')
 	S_command_frame = tk.Frame(S_frame)
-	S_optimise_button = tk.Button(S_command_frame, text='Optimise', command=optimise)
+	S_optimal_schedule_button = tk.Button(S_command_frame, text='Optimise', command=optimal_schedule)
 	S_random_button = tk.Button(S_command_frame, text='Randomise', command=random_schedule)
 	load_S_button = tk.Button(S_command_frame, text='Load', command=load_schedule)
 	save_S_button = tk.Button(S_command_frame, text='Save', command=save_schedule)
@@ -217,7 +228,7 @@ def main():
 	S_command_frame.columnconfigure(1, weight=1)
 	S_command_frame.columnconfigure(2, weight=1)
 	S_command_frame.columnconfigure(3, weight=1)
-	S_optimise_button.grid(row=0, column=0, padx=(0, padding), sticky=tk.W+tk.E)
+	S_optimal_schedule_button.grid(row=0, column=0, padx=(0, padding), sticky=tk.W+tk.E)
 	S_random_button.grid(row=0, column=1, padx=(0, padding), sticky=tk.W+tk.E)
 	load_S_button.grid(row=0, column=2, padx=(0, padding), sticky=tk.W+tk.E)
 	save_S_button.grid(row=0, column=3, sticky=tk.W+tk.E)
