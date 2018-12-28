@@ -67,9 +67,6 @@ def main():
 		if not success:
 			textbox_replace(output_textbox, error)
 
-	def save_output():
-		pass
-
 	def optimise():
 		pass
 
@@ -87,10 +84,39 @@ def main():
 			textbox_replace(output_textbox, text)
 
 	def load_schedule():
-		pass
+		# Locate file
+		filename = tk.filedialog.askopenfilename()
+
+		# Handle closed dialog
+		if not filename:
+			return
+
+		# Read file
+		success, text = interface.load_text(filename)
+
+		if success:
+			textbox_replace(S_textbox, text)
+		else:
+			textbox_replace(output_textbox, text)
+
+	def save_file(textbox):
+		# Locate file
+		filename = tk.filedialog.asksaveasfilename()
+
+		# Handle closed dialog
+		if not filename:
+			return
+
+		# Write file
+		success, error = interface.save_text(
+			filename,
+			textbox.get('1.0', tk.END))
+
+		if not success:
+			textbox_replace(output_textbox, error)
 
 	def save_schedule():
-		pass
+		save_file(S_textbox)
 
 	def explain():
 		text = interface.explain(
@@ -103,6 +129,9 @@ def main():
 		textbox_replace(output_textbox, text)
 
 		fig.canvas.draw()
+
+	def save_output():
+		save_file(output_textbox)
 
 	root.protocol("WM_DELETE_WINDOW", quit)
 	root.title('Argumentative Explainable Scheduler')

@@ -19,32 +19,40 @@ def random_problem():
 
 	return m_text, p_text, nfd_text, pfd_text
 
-def load_problem(filename):
+def load_text(filename):
 	try:
 		with open(filename, 'r') as file:
-			problem = file.read()
-			texts = problem.split(delimiter)
+			text = file.read()
 
-			if len(texts) != 4:
-				return False, 'Invalid file format'
-		return True, texts
+		return True, text
 	except IOError:
 		return False, 'Cannot read from file at {}'.format(filename)
 
-def save_problem(filename, m_text, p_text, nfd_text, pfd_text):
+def save_text(filename, text):
 	try:
-		problem = delimiter.join([m_text, p_text, nfd_text, pfd_text])
-
-		if problem.count(delimiter) != 3:
-			return False, 'Problem cannot contain substrings of \'{}\''.format(delimiter)
-
 		with open(filename, 'w') as file:
-			file.write(problem)
+			file.write(text)
 
 		return True, None
 	except IOError:
 		return False, 'Cannot write to file at {}'.format(filename)
 
+def load_problem(filename):
+	success, problem = load_text(filename)
+
+	if not success:
+		return False, problem
+
+	texts = problem.split(delimiter)
+
+	if len(texts) != 4:
+		return False, 'Invalid file format'
+
+	return True, texts
+
+def save_problem(filename, m_text, p_text, nfd_text, pfd_text):
+	text = delimiter.join([m_text, p_text, nfd_text, pfd_text])
+	return save_text(filename, text)
 
 def random_schedule(m_text, p_text, nfd_text, pfd_text):
 	if not integer_pattern.match(m_text):
