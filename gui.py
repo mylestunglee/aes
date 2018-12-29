@@ -181,7 +181,7 @@ def start(verbose, solver_name):
 	right_frame = tk.Frame(root)
 	fig = plt.figure(0)
 	S_figure = FigureCanvasTkAgg(fig, master=right_frame).get_tk_widget()
-	output_textbox = tk.Text(right_frame)
+	output_textbox = tk.Text(right_frame, state='disabled')
 	output_scrollbar = attach_scrollbar(right_frame, output_textbox)
 	save_output_button = tk.Button(right_frame, text='Save output', command=save_output)
 
@@ -257,8 +257,13 @@ def attach_scrollbar(root, text):
 	return scrollbar
 
 def textbox_replace(textbox, text):
+	disabled = textbox.cget('state') == 'disabled'
+	if disabled:
+		textbox.config(state='normal')
 	textbox.delete('1.0', tk.END)
 	textbox.insert(tk.END, text)
+	if disabled:
+		textbox.config(state='disabled')
 
 def spinbox_replace(spinbox, text):
 	spinbox.delete(0, tk.END)

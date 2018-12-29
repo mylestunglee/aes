@@ -66,7 +66,10 @@ def explain_feasiblity(unattacked, conflicts):
 	N = range(n)
 
 	if m == 0:
-		return True, None
+		if n == 0:
+			return True, ['There are no machines or jobs']
+		else:
+			return False, ['There are no macihnes to allocate to jobs']
 
 	# Summarise unallocated jobs
 	unallocated = unattacked[0]
