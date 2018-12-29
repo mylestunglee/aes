@@ -24,7 +24,7 @@ def explain(problem_filename, schedule_filename, explanation_filename, verbose):
 
 def main():
 	default_solver = 'glpk'
-	default_timelimit = 60
+	default_timelimit = -1
 
 	# Construct command line interface
 	parser = argparse.ArgumentParser(
@@ -40,7 +40,8 @@ def main():
 		nargs='?',
 		metavar='timelimit',
 		const=default_timelimit,
-		help='time limit for solver with default at {} seconds'.format(default_timelimit))
+		type=int,
+		help='maximum time for optimisation in seconds, use negative timelimit for infinite limit, default is unlimited'.format(default_timelimit))
 	exclusive_parser = parser.add_mutually_exclusive_group(required=True)
 	exclusive_parser.add_argument(
 		'-g',

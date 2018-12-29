@@ -46,10 +46,11 @@ def optimal_schedule(m, p, nfd, pfd, solver_name, time_limit):
 	solver = opt.SolverFactory(solver_name)
 	model = create_model(m, p, nfd, pfd)
 
-	if solver_name == 'cplex':
-		solver.options['timelimit'] = time_limit
-	elif solver_name == 'glpk':
-		solver.options['tmlim'] = time_limit
+	if time_limit >= 0:
+		if solver_name == 'cplex':
+			solver.options['timelimit'] = time_limit
+		elif solver_name == 'glpk':
+			solver.options['tmlim'] = time_limit
 
 	result = solver.solve(model)
 	C_max = model.C_max.value
