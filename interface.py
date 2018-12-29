@@ -4,6 +4,7 @@ import numpy as np
 import schedule
 import visualiser
 import solver
+import argumentation
 
 delimiter = ';'
 integer_pattern = re.compile(r'^[0-9]+$')
@@ -151,7 +152,7 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text):
 	plt.gcf().clear()
 	visualiser.draw_schedule(p, S)
 
-	return 'hello'
+	return argumentation.explain(m, p, nfd, pfd, S)
 
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))
@@ -188,8 +189,7 @@ def parse_schedule(text, m, n):
 	return S
 
 def format_schedule(S):
-	m = S.shape[0]
-	n = S.shape[1]
+	m, n = S.shape
 	return '\n'.join(['{}: {}'.format(i + 1,' '.join(
 		[str(j + 1) for j in range(n) if S[i, j]]
 		)) for i in range(m)])
