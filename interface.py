@@ -82,6 +82,10 @@ def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name):
 		return False, 'Positive fixed decisions refers to undefined processing times'
 
 	_, S = solver.optimal_schedule(m, p, nfd, pfd, solver_name)
+
+	if S is None:
+		return False, 'Solver failed to find feasible schedule'
+
 	S_text = format_schedule(S)
 
 	return True, S_text
