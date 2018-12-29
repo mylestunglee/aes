@@ -9,7 +9,7 @@ import numpy as np
 import interface
 matplotlib.use("TkAgg")
 
-def start(verbose, solver_name):
+def start(verbose, solver_name, time_limit):
 	root = tk.Tk()
 
 	def quit():
@@ -74,7 +74,8 @@ def start(verbose, solver_name):
 			p_textbox.get('1.0', tk.END),
 			nfd_textbox.get('1.0', tk.END),
 			pfd_textbox.get('1.0', tk.END),
-			solver_name)
+			solver_name,
+			time_limit)
 
 		if success:
 			textbox_replace(S_textbox, text)

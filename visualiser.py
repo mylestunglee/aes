@@ -95,7 +95,7 @@ def draw_framework(f, m, n, filename):
 def draw_schedule(p, S):
 	(m, n) = S.shape
 	max_jobs = np.max(np.sum(S, axis=1)) if m > 0 and n > 0 else 0
-	if max_jobs > 10:
+	if max_jobs > 10 or m >= 100:
 		draw_schedule_undetailed(p, S)
 	else:
 		draw_schedule_detailed(p, S)

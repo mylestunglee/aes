@@ -56,7 +56,7 @@ def save_problem(filename, m_text, p_text, nfd_text, pfd_text):
 	text = delimiter.join([m_text, p_text, nfd_text, pfd_text])
 	return save_text(filename, text)
 
-def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name):
+def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit):
 	if not integer_pattern.match(m_text):
 		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
@@ -81,7 +81,7 @@ def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name):
 	if n != pfd.shape[1]:
 		return False, 'Positive fixed decisions refers to undefined processing times'
 
-	_, S = solver.optimal_schedule(m, p, nfd, pfd, solver_name)
+	_, S = solver.optimal_schedule(m, p, nfd, pfd, solver_name, time_limit)
 
 	if S is None:
 		return False, 'Solver failed to find feasible schedule'

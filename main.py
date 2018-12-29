@@ -23,7 +23,8 @@ def explain(problem_filename, schedule_filename, explanation_filename, verbose):
 		print(error, file=sys.stderr)
 
 def main():
-	default_solver='glpk'
+	default_solver = 'glpk'
+	default_timelimit = 60
 
 	# Construct command line interface
 	parser = argparse.ArgumentParser(
@@ -33,6 +34,13 @@ def main():
 		'--verbose',
 		help='explain schedules in more detail',
 		action='store_true')
+	parser.add_argument(
+		'-t',
+		'--timelimit',
+		nargs='?',
+		metavar='timelimit',
+		const=default_timelimit,
+		help='time limit for solver with default at {} seconds'.format(default_timelimit))
 	exclusive_parser = parser.add_mutually_exclusive_group(required=True)
 	exclusive_parser.add_argument(
 		'-g',
@@ -54,7 +62,7 @@ def main():
 	if args.explain:
 		explain(args.explain[0], args.explain[1], args.explain[2], args.verbose)
 	else:
-		gui.start(args.verbose, args.solver_name)
+		gui.start(args.verbose, args.solver_name, args.timelimit)
 
 if __name__ == '__main__':
 	main()
