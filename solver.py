@@ -18,9 +18,10 @@ def create_model(m, p, nfd, pfd):
 			model.C_max >= sum(model.x[i, j] * p[j] for j in N))
 
 	# Every job must be assigned
-	model.feasiblity = en.ConstraintList()
-	for j in N:
-		model.feasiblity.add(sum(model.x[i, j] for i in M) == 1)
+	if m > 0:
+		model.feasiblity = en.ConstraintList()
+		for j in N:
+			model.feasiblity.add(sum(model.x[i, j] for i in M) == 1)
 
 	# Enforce negative fixed decisions
 	model.nfd = en.ConstraintList()
