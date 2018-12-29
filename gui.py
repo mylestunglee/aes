@@ -9,7 +9,7 @@ import numpy as np
 import interface
 matplotlib.use("TkAgg")
 
-def main():
+def start(verbose, solver_name):
 	root = tk.Tk()
 
 	def quit():
@@ -74,7 +74,7 @@ def main():
 			p_textbox.get('1.0', tk.END),
 			nfd_textbox.get('1.0', tk.END),
 			pfd_textbox.get('1.0', tk.END),
-			'glpk')
+			solver_name)
 
 		if success:
 			textbox_replace(S_textbox, text)
@@ -130,12 +130,13 @@ def main():
 		save_file(S_textbox)
 
 	def explain():
-		text = interface.explain(
+		_, text = interface.explain(
 			m_spinbox.get(),
 			p_textbox.get('1.0', tk.END),
 			nfd_textbox.get('1.0', tk.END),
 			pfd_textbox.get('1.0', tk.END),
-			S_textbox.get('1.0', tk.END))
+			S_textbox.get('1.0', tk.END),
+			verbose)
 
 		textbox_replace(output_textbox, text)
 
@@ -262,7 +263,4 @@ def textbox_replace(textbox, text):
 def spinbox_replace(spinbox, text):
 	spinbox.delete(0, tk.END)
 	spinbox.insert(tk.END, text)
-
-if __name__ == '__main__':
-	main()
 

@@ -116,17 +116,17 @@ def random_schedule(m_text, p_text, nfd_text, pfd_text):
 
 	return True, S_text
 
-def explain(m_text, p_text, nfd_text, pfd_text, S_text):
+def explain(m_text, p_text, nfd_text, pfd_text, S_text, verbose):
 	if not integer_pattern.match(m_text):
-		return 'Number of machines syntax error'
+		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
-		return 'Proccessing times syntax error'
+		return False, 'Proccessing times syntax error'
 	if not positions_pattern.match(nfd_text):
-		return 'Negative fixed decisions syntax error'
+		return False, 'Negative fixed decisions syntax error'
 	if not positions_pattern.match(pfd_text):
-		return 'Positive fixed decisions syntax error'
+		return False, 'Positive fixed decisions syntax error'
 	if not positions_pattern.match(S_text):
-		return 'Schedule syntax error'
+		return False, 'Schedule syntax error'
 
 	m = int(m_text)
 	p = parse_processing(p_text)
@@ -136,23 +136,23 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text):
 	S = parse_schedule(S_text, m, n)
 
 	if m != S.shape[0]:
-		return 'Schedule refers to undefined machines'
+		return False, 'Schedule refers to undefined machines'
 	if m != nfd.shape[0]:
-		return 'Negative fixed decisions refers to undefined machines'
+		return False, 'Negative fixed decisions refers to undefined machines'
 	if m != pfd.shape[0]:
-		return 'Positive fixed decisions refers to undefined machines'
+		return False, 'Positive fixed decisions refers to undefined machines'
 	if n != S.shape[1]:
-		return 'Schedule refers to undefined processing times'
+		return False, 'Schedule refers to undefined processing times'
 	if n != nfd.shape[1]:
-		return 'Negative fixed decisions refers to undefined processing times'
+		return False, 'Negative fixed decisions refers to undefined processing times'
 	if n != pfd.shape[1]:
-		return 'Positive fixed decisions refers to undefined processing times'
+		return False, 'Positive fixed decisions refers to undefined processing times'
 
 	# Draw schedule
 	plt.gcf().clear()
 	visualiser.draw_schedule(p, S)
 
-	return argumentation.explain(m, p, nfd, pfd, S)
+	return True, argumentation.explain(m, p, nfd, pfd, S, verbose)
 
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))

@@ -96,9 +96,15 @@ def explain_feasiblity(unattacked, conflicts):
 		reasons = ['All jobs are allocated by exactly one machine']
 		return True, reasons
 
-def explain(m, p, nfd, pfd, S):
+def explain(m, p, nfd, pfd, S, verbose):
+	explaination = ''
 	n = len(p)
 	af = create_feasiblity_framework(m, n)
 	unattacked, conflicts = explain_stablity(S, af)
 	feasible, reasons = explain_feasiblity(unattacked, conflicts)
-	return '\n'.join(reasons)
+
+	if verbose:
+		reasons.append('verbose')
+
+	explaination += '\n'.join(reasons) + '\n'
+	return explaination
