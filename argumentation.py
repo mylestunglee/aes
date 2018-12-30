@@ -143,7 +143,7 @@ def format_argument(template, pair):
 		claim = template.format('not ')
 
 	if reasons:
-		argument = '{} because:\n  - {}\n'.format(claim, '\n  - '.join(reasons))
+		argument = '{} because:\n - {}\n'.format(claim, '\n - '.join(reasons))
 	else:
 		argument = '{}\n'.format(claim)
 
@@ -162,7 +162,7 @@ def explain(m, p, nfd, pfd, S, verbose):
 	df = create_fixed_decision_framework(ff, nfd, pfd)
 	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
 		feasiblity_unattacked, feasiblity_conflicts)
-	explanation += format_argument('Schedule does {}satisifies fixed decisions',
+	explanation += format_argument('Schedule does {}satisify fixed decisions',
 		explain_satisfaction(decisions_unattacked, decisions_conflicts))
 
 	if verbose:
