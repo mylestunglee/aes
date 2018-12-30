@@ -6,7 +6,7 @@ import visualiser
 import solver
 import argumentation
 
-delimiter = ';'
+delimiter = ';\n'
 integer_pattern = re.compile(r'^[0-9]+$')
 float_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[0-9]+(\.[0-9]+)?)*[ \t]*\n)*$')
 positions_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[1-9][0-9]*)*[ \t]*\n)*$')

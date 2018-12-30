@@ -4,11 +4,11 @@ import schedule
 # Creates an argumentation framework representing feasiblity as an adjacency matrix
 def create_feasiblity_framework(m, n):
 	N = range(n)
-	f = np.zeros((m, n, m, n), dtype=bool)
+	ff = np.zeros((m, n, m, n), dtype=bool)
 
 	for j in N:
-		f[:, j, :, j] = np.logical_not(np.identity(m))
-	return f
+		ff[:, j, :, j] = np.logical_not(np.identity(m))
+	return ff
 
 # Creates an optimality framework from a feasiblity framework
 def create_optimality_framework(m, p, S, ff):
@@ -36,15 +36,20 @@ def create_optimality_framework(m, p, S, ff):
 
 # Creates a fixed decision framework from a feasiblity framework
 def create_fixed_decision_framework(ff, nfd, pfd):
-	fdf = np.copy(ff)
-	for i, j in nfd:
-		fdf[i, j, i, j] = True
-	for i, j in pfd:
-		fdf[:, :, i, j] = False
-	return fdf
+	df = np.copy(ff)
+	(m, n) = nfd.shape
+
+	for i in range(m):
+		for j in range(n):
+			if nfd[i, j]:
+				df[i, j, i, j] = True
+			if pfd[i, j]:
+				df[:, :, i, j] = False
+
+	return df
 
 # Attempt to build arguments to explain why S is not a stable extension of f
-def explain_stablity(S, f, ignore_unattacked=None, ignore_conflicts=None):
+def explain_stability(S, f, ignore_unattacked=None, ignore_conflicts=None):
 	m, n = S.shape
 	unattacked = np.logical_not(S)
 	conflicts = np.zeros((m, n, m, n), dtype=bool)
@@ -55,12 +60,14 @@ def explain_stablity(S, f, ignore_unattacked=None, ignore_conflicts=None):
 				unattacked = np.logical_and(unattacked, np.logical_not(f[i, j, :, :]))
 				conflicts[i, j] = np.logical_and(f[i, j], S)
 
-	if ignore_conflicts:
+	if not ignore_unattacked is None:
+		unattacked = np.logical_and(unattacked, np.logical_not(ignore_unattacked))
+	if not ignore_conflicts is None:
 		conflicts = np.logical_and(conflicts, np.logical_not(ignore_conflicts))
 
 	return unattacked, conflicts
 
-# Compute reasons for feasibility using stablity
+# Compute reasons for feasibility using stability
 def explain_feasiblity(unattacked, conflicts):
 	(m, n) = unattacked.shape
 	N = range(n)
@@ -88,7 +95,7 @@ def explain_feasiblity(unattacked, conflicts):
 
 	# Generate natural language explainations
 	if np.any(unallocated) or np.any(overallocated):
-		# Exlain unallocated
+		# Explain unallocated
 		reasons = ['Job {} is not allocated by any machine'.format(j + 1) for j in range(n) if unallocated[j]]
 		# Explain overallocations
 		reasons += ['Job {} is over-allocated by multiple machines {{{}}}'.
@@ -99,15 +106,67 @@ def explain_feasiblity(unattacked, conflicts):
 		reasons = ['All jobs are allocated by exactly one machine']
 		return True, reasons
 
+# Compute reasons for satisfication of fixed decisions usng stabilty
+def explain_satisfaction(unattacked, conflicts):
+	(m, n) = unattacked.shape
+	M = range(m)
+	N = range(n)
+
+	conflicts_pfd = unattacked
+	conflicts_nfd = np.zeros((m, n), dtype=bool)
+
+	for i in M:
+		for j in N:
+			conflicts_nfd = np.logical_or(conflicts_nfd, conflicts[i, j])
+
+	# Generate natural language explainations
+	if np.any(conflicts_nfd) or np.any(conflicts_pfd):
+		reasons = []
+		for i in M:
+			for j in N:
+				if conflicts_nfd[i, j]:
+					reasons.append('Job {} must not be allocated to machine {}'.format(j + 1, i + 1))
+				if conflicts_pfd[i, j]:
+					reasons.append('Job {} must be allocated to machine {}'.format(j + 1, i + 1))
+		return False, reasons
+	else:
+		reasons = ['All jobs satisfy all fixed decisions']
+		return True, reasons
+
+# Use templates to construct natural language argument to explain property of schedule
+def format_argument(template, pair):
+	satisfied, reasons = pair
+
+	if satisfied:
+		claim = template.format('')
+	else:
+		claim = template.format('not ')
+
+	if reasons:
+		argument = '{} because:\n  - {}\n'.format(claim, '\n  - '.join(reasons))
+	else:
+		argument = '{}\n'.format(claim)
+
+	return argument
+
+# Generate explainations
 def explain(m, p, nfd, pfd, S, verbose):
-	explaination = ''
+	explanation = ''
 	n = len(p)
-	af = create_feasiblity_framework(m, n)
-	unattacked, conflicts = explain_stablity(S, af)
-	feasible, reasons = explain_feasiblity(unattacked, conflicts)
+
+	ff = create_feasiblity_framework(m, n)
+	feasiblity_unattacked, feasiblity_conflicts = explain_stability(S, ff)
+	explanation += format_argument('Schedule is {}feasible',
+		explain_feasiblity(feasiblity_unattacked, feasiblity_conflicts))
+
+	df = create_fixed_decision_framework(ff, nfd, pfd)
+	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
+		feasiblity_unattacked, feasiblity_conflicts)
+	explanation += format_argument('Schedule does {}satisifies fixed decisions',
+		explain_satisfaction(decisions_unattacked, decisions_conflicts))
 
 	if verbose:
-		reasons.append('verbose')
+		# debug purposes
+		pass
 
-	explaination += '\n'.join(reasons) + '\n'
-	return explaination
+	return explanation
