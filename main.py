@@ -38,6 +38,7 @@ def main():
 		'-t',
 		'--timelimit',
 		metavar='timelimit',
+		default=default_timelimit,
 		type=int,
 		help='maximum time for optimisation in seconds, use negative timelimit for infinite limit, default is unlimited')
 	exclusive_parser = parser.add_mutually_exclusive_group(required=True)
@@ -56,9 +57,6 @@ def main():
 		nargs=3,
 		metavar=('problem', 'schedule', 'explanation'))
 	args = parser.parse_args()
-
-	if not args.timelimit:
-		args.timelimit = default_timelimit
 
 	# Select interface mode
 	if args.explain:

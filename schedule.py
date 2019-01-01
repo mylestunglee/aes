@@ -1,32 +1,36 @@
 import numpy as np
-import solver
-import visualiser
-import argumentation
 
-def main():
-#	p = np.array([1,1,3])
-#	n = 3
-#	m = 3
-#	nfd = [(0,0)]
-#	pfd = [(0,2)]
-#	C_max, S = solver.calc_optimal_schedule(m, p, nfd, pfd, 'glpk')
+def random_problem(m=None, n=None):
+	m = 100
+	n = 100
 
-#	ff = argumentation.create_feasiblity_framework(m, n)
-#	of = argumentation.create_optimality_framework(m, p, S, ff)
-#	fdf = argumentation.create_fixed_decision_framework(ff, nfd, pfd)
+	if m is None:
+		m = np.random.poisson(4)
+	if n is None:
+		n = np.random.poisson(8)
+	p = np.random.exponential(1, n)
 
-	_, _, p, S = random_scheduled_problem()
-	visualiser.draw_schedule(p, S)
+	pr = 1 / n if n > 0 else 0
+	nfd = np.random.choice(a=[True, False], size=(m, n), p=[pr, 1 - pr])
 
-def random_problem():
-	m = np.random.poisson(5)
-	n = np.random.poisson(10)
-	p = np.random.exponential(3, n) + 0.5
-	return m, n, p
+	pfd = np.random.choice(a=[True, False], size=(m, n), p=[pr, 1 - pr])
+
+	for j in range(n):
+		if np.all(nfd[:, j]):
+			nfd[:, j] = False
+		if np.count_nonzero(pfd[:, j]) > 1:
+			pfd[:, j] = False
+		if np.any(np.logical_and(nfd[:, j], pfd[:, j])):
+			nfd[:, j] = False
+			pfd[:, j] = False
+
+	return m, p, nfd, pfd
 
 def random_schedule(m, n, nfd, pfd):
-	pr = 1 / m if m > 0 else 0
-	S = np.random.choice(a=[False, True], size=(m, n), p=[1 - pr, pr])
+	S = np.zeros((m, n), dtype=bool)
+	for j in range(n):
+		i = np.random.randint(m)
+		S[i, j] = True
 	return S
 
 # Calculates completion time vector [C_i for i in M]

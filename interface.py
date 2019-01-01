@@ -12,12 +12,13 @@ float_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[0-9]+(\.[0-9]+)?)
 positions_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[1-9][0-9]*)*[ \t]*\n)*$')
 
 def random_problem():
-	m, n, p = schedule.random_problem()
+	m, p, nfd, pfd = schedule.random_problem()
+	n = p.shape[0]
 
 	m_text = str(m)
 	p_text = '\n'.join('{}: {}'.format(j + 1, p[j]) for j in range(n))
-	nfd_text = ''
-	pfd_text = ''
+	nfd_text = format_schedule(nfd)
+	pfd_text = format_schedule(pfd)
 
 	return m_text, p_text, nfd_text, pfd_text
 
