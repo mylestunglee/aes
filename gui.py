@@ -150,6 +150,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 
 	root.protocol("WM_DELETE_WINDOW", quit)
 	root.title('Argumentative Explainable Scheduler')
+	input_textbox_width = 30
 
 	# Create widgets
 	left_frame = tk.Frame(root)
@@ -162,13 +163,13 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	m_label = tk.Label(problem_frame, text='Number of machines', anchor=tk.E)
 	m_spinbox = tk.Spinbox(problem_frame, from_=0, to_=tk.sys.maxsize)
 	p_label = tk.Label(problem_frame, text='Processing times', anchor=tk.E)
-	p_textbox = tk.Text(problem_frame, height=3, width=40)
+	p_textbox = tk.Text(problem_frame, height=3, width=input_textbox_width)
 	p_scrollbar = attach_scrollbar(problem_frame, p_textbox)
 	nfd_label = tk.Label(problem_frame, text='Negative fixed decisions', anchor=tk.E)
-	nfd_textbox = tk.Text(problem_frame, height=3, width=40)
+	nfd_textbox = tk.Text(problem_frame, height=3, width=input_textbox_width)
 	nfd_scrollbar = attach_scrollbar(problem_frame, nfd_textbox)
 	pfd_label = tk.Label(problem_frame, text='Positive fixed decisions', anchor=tk.E)
-	pfd_textbox = tk.Text(problem_frame, height=3, width=40)
+	pfd_textbox = tk.Text(problem_frame, height=3, width=input_textbox_width)
 	pfd_scrollbar = attach_scrollbar(problem_frame, pfd_textbox)
 
 	S_frame = tk.LabelFrame(left_frame, text='Schedule')
@@ -177,7 +178,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	S_random_button = tk.Button(S_command_frame, text='Randomise', command=random_schedule)
 	load_S_button = tk.Button(S_command_frame, text='Load', command=load_schedule)
 	save_S_button = tk.Button(S_command_frame, text='Save', command=save_schedule)
-	S_textbox = tk.Text(S_frame, height=3, width=40)
+	S_textbox = tk.Text(S_frame, height=3, width=input_textbox_width)
 	S_scrollbar = attach_scrollbar(S_frame, S_textbox)
 	explain_button = tk.Button(S_frame, text='Explain', command=explain)
 
@@ -191,7 +192,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	# Geometry
 	padding = 8
 
-	root.geometry("1024x768")
+	root.geometry("1280x720")
 	root.rowconfigure(0, weight=1)
 	root.columnconfigure(1, weight=1)
 
