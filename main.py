@@ -41,13 +41,14 @@ def get_arguments():
 		type=int,
 		metavar='M',
 		const=schedule.default_m,
-		help='Creates random problem with jobs and fixed decisions where m is the number of machines',
+		help='creates random problem with jobs and fixed decisions where m is the number of machines',
 		dest='m')
 	S_parser = parser.add_mutually_exclusive_group()
 	S_parser.add_argument(
 		'-O',
 		'--optimise',
-		action='store_true')
+		action='store_true',
+		help='uses SOLVER_NAME to find most efficient schedule')
 	S_parser.add_argument(
 		'-s',
 		'--schedule')
@@ -68,7 +69,7 @@ def get_arguments():
 		'--time_limit',
 		default=solver.default_time_limit,
 		type=int,
-		help='maximum time for optimisation in seconds, use negative time_limit for infinite limit, default is unlimited')
+		help='maximum time for optimisation in seconds, use negative time_limit for infinite limit, default is unlimited time')
 	parser.add_argument(
 		'-S',
 		'--solver',
