@@ -30,7 +30,7 @@ def get_arguments():
 		'--explain',
 		help='generate explanation',
 		action='store_true')
-	P_parser = parser.add_mutually_exclusive_group(required=True)
+	P_parser = parser.add_mutually_exclusive_group()
 	P_parser.add_argument(
 		'-p',
 		'--problem')
