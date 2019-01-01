@@ -31,7 +31,8 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 
 	def load_problem():
 		# Locate file
-		filename = tk.filedialog.askopenfilename()
+		filename = tk.filedialog.askopenfilename(title='Open problem',
+			filetypes=[('Problem files', '*.problem'), ('Any files', '*')])
 
 		# Handle closed dialog
 		if not filename:
@@ -52,7 +53,8 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 
 	def save_problem():
 		# Locate file
-		filename = tk.filedialog.asksaveasfilename()
+		filename = tk.filedialog.asksaveasfilename(title='Save problem as',
+			filetypes=[('Problem files', '*.problem'), ('Any files', '*')])
 
 		# Handle closed dialog
 		if not filename:
@@ -62,9 +64,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		success, error = interface.save_problem(
 			filename,
 			m_spinbox.get(),
-			p_textbox.get('1.0', tk.END),
-			nfd_textbox.get('1.0', tk.END),
-			pfd_textbox.get('1.0', tk.END))
+			textbox_get(p_textbox),
+			textbox_get(nfd_textbox),
+			textbox_get(pfd_textbox))
 
 		if not success:
 			textbox_replace(output_textbox, error)
@@ -73,9 +75,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		# Generate schedule
 		success, text = interface.optimal_schedule(
 			m_spinbox.get(),
-			p_textbox.get('1.0', tk.END),
-			nfd_textbox.get('1.0', tk.END),
-			pfd_textbox.get('1.0', tk.END),
+			textbox_get(p_textbox),
+			textbox_get(nfd_textbox),
+			textbox_get(pfd_textbox),
 			solver_name,
 			time_limit)
 
@@ -88,9 +90,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		# Generate schedule
 		success, text = interface.random_schedule(
 			m_spinbox.get(),
-			p_textbox.get('1.0', tk.END),
-			nfd_textbox.get('1.0', tk.END),
-			pfd_textbox.get('1.0', tk.END))
+			textbox_get(p_textbox),
+			textbox_get(nfd_textbox),
+			textbox_get(pfd_textbox))
 
 		if success:
 			textbox_replace(S_textbox, text)
@@ -99,7 +101,8 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 
 	def load_schedule():
 		# Locate file
-		filename = tk.filedialog.askopenfilename()
+		filename = tk.filedialog.askopenfilename(title='Open schedule',
+			filetypes=[('Schedule files', '*.schedule'), ('Any files', '*')])
 
 		# Handle closed dialog
 		if not filename:
@@ -113,9 +116,10 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		else:
 			textbox_replace(output_textbox, text)
 
-	def save_file(textbox):
+	def save_file(textbox, title, filetypes):
 		# Locate file
-		filename = tk.filedialog.asksaveasfilename()
+		filename = tk.filedialog.asksaveasfilename(title=title,
+			filetypes=filetypes)
 
 		# Handle closed dialog
 		if not filename:
@@ -124,21 +128,22 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		# Write file
 		success, error = interface.save_text(
 			filename,
-			textbox.get('1.0', tk.END))
+			textbox_get(textbox))
 
 		if not success:
 			textbox_replace(output_textbox, error)
 
 	def save_schedule():
-		save_file(S_textbox)
+		save_file(S_textbox, 'Save schedule as',
+			[('Schedule files', '*.schedule'), ('Any files', '*')])
 
 	def explain():
 		_, text = interface.explain(
 			m_spinbox.get(),
-			p_textbox.get('1.0', tk.END),
-			nfd_textbox.get('1.0', tk.END),
-			pfd_textbox.get('1.0', tk.END),
-			S_textbox.get('1.0', tk.END),
+			textbox_get(p_textbox),
+			textbox_get(nfd_textbox),
+			textbox_get(pfd_textbox),
+			textbox_get(S_textbox),
 			verbose)
 
 		textbox_replace(output_textbox, text)
@@ -146,7 +151,8 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		fig.canvas.draw()
 
 	def save_output():
-		save_file(output_textbox)
+		save_file(output_textbox, 'Save output as',
+			[('Text files', '*.txt'), ('Any files', '*')])
 
 	root.protocol("WM_DELETE_WINDOW", quit)
 	root.title('Argumentative Explainable Scheduler')
@@ -279,7 +285,9 @@ def textbox_replace(textbox, text):
 	if disabled:
 		textbox.config(state='disabled')
 
+def textbox_get(textbox):
+	return textbox.get('1.0', tk.END + '-1c')
+
 def spinbox_replace(spinbox, text):
 	spinbox.delete(0, tk.END)
 	spinbox.insert(tk.END, text)
-
