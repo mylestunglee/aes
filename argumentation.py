@@ -129,19 +129,19 @@ def explain_efficiency(p, S, unattacked, conflicts):
 		S_reduced = np.copy(S)
 		i1 = np.argmax(C)
 		for j1 in N:
-			if unattacked[i1, j1]:
-				allocated = S_reduced[:, j1].copy()
-				S_reduced[:, j1] = False
-				S_reduced[i1, j1] = True
-				C_max_reduced = np.max(schedule.calc_completion_times(p, S_reduced))
-				reduction = C_max - C_max_reduced
-				pairs.append((
-					(reduction, j1, i1),
-					'Job {} can be allocated to machine {} to reduce by {}'.format(
-					j1 + 1, i1 + 1, round(reduction))))
-				S_reduced[:, j1] = allocated
-
 			for i2 in M:
+				if unattacked[i2, j1]:
+					allocated = S_reduced[:, j1].copy()
+					S_reduced[:, j1] = False
+					S_reduced[i2, j1] = True
+					C_max_reduced = np.max(schedule.calc_completion_times(p, S_reduced))
+					reduction = C_max - C_max_reduced
+					pairs.append((
+						(reduction, j1, i2),
+						'Job {} can be allocated to machine {} to reduce by {}'.format(
+						j1 + 1, i2 + 1, round(reduction))))
+					S_reduced[:, j1] = allocated
+
 				for j2 in N:
 					if conflicts[i1, j1, i2, j2]:
 						S_reduced[i1, j1] = False
