@@ -3,32 +3,71 @@ import gui
 import interface
 import sys
 
-def explain(problem_filename, schedule_filename, explanation_filename, verbose):
+def eprint(str):
+	print(str, file=sys.stderr)
+
+def optimise(problem_filename, output_filename, solver_name, time_limit):
+	# Load problem
 	success, problem = interface.load_problem(problem_filename)
 	if not success:
-		print(problem, file=sys.stderr)
+		eprint(problem)
 		return
 	[m_text, p_text, nfd_text, pfd_text] = problem
-	success, S_text = interface.load_text(schedule_filename)
+
+	# Get schedule
+	success, S_text = interface.optimal_schedule(m_text, p_text, nfd_text,
+		pfd_text, solver_name, time_limit)
 	if not success:
-		print(S_text, file=sys.stderr)
+		eprint(S_text)
 		return
+
+	# Output schedule
+	if output_filename:
+		success, error = interface.save_text(output_filename, S_text)
+		if not success:
+			eprint(error)
+	else:
+		print(S_text, end='')
+
+def explain(problem_filename, schedule_filename, explanation_filename, verbose,
+		solver_name, time_limit):
+	# Load problem
+	success, problem = interface.load_problem(problem_filename)
+	if not success:
+		eprint(problem)
+		return
+	[m_text, p_text, nfd_text, pfd_text] = problem
+
+	# Get schedule
+	if schedule_filename:
+		success, S_text = interface.load_text(schedule_filename)
+	else:
+		success, S_text = interface.optimal_schedule(m_text, p_text, nfd_text,
+			pfd_text, solver_name, time_limit)
+	if not success:
+		eprint(S_text)
+		return
+
+	# Output explanation
 	success, explanation = interface.explain(m_text, p_text, nfd_text, pfd_text,
 		S_text, verbose)
 	if not success:
-		print(explanation, file=sys.stderr)
+		eprint(explanation)
 		return
-	success, error = interface.save_text(explanation_filename, explanation)
-	if not success:
-		print(error, file=sys.stderr)
+	if explanation_filename:
+		success, error = interface.save_text(explanation_filename, explanation)
+		if not success:
+			eprint(error)
+	else:
+		print(explanation, end='')
 
 def main():
 	default_solver = 'glpk'
-	default_timelimit = -1
+	default_time_limit = -1
 
 	# Construct command line interface
 	parser = argparse.ArgumentParser(
-		description='Explains schedules using abstract argumentation frameworks')
+		description='Explains make-shift schedules using abstract argumentation frameworks')
 	parser.add_argument(
 		'-v',
 		'--verbose',
@@ -36,33 +75,59 @@ def main():
 		action='store_true')
 	parser.add_argument(
 		'-t',
-		'--timelimit',
-		metavar='timelimit',
-		default=default_timelimit,
+		'--time_limit',
+		default=default_time_limit,
 		type=int,
-		help='maximum time for optimisation in seconds, use negative timelimit for infinite limit, default is unlimited')
-	exclusive_parser = parser.add_mutually_exclusive_group(required=True)
-	exclusive_parser.add_argument(
+		help='maximum time for optimisation in seconds, use negative time_limit for infinite limit, default is unlimited')
+	parser.add_argument(
 		'-g',
-		'--gui',
-		nargs='?',
-		metavar='solver',
-		const=default_solver,
-		help='displays graphical user interface where the default solver is \'{}\''.format(default_solver),
+		'--graphical',
+		help='displays graphical user interface',
+		action='store_true')
+	parser.add_argument(
+		'-S',
+		'--solver',
+		default=default_solver,
+		help='optimisation solver for schedule, default is \'{}\''.format(default_solver),
 		dest='solver_name')
-	exclusive_parser.add_argument(
+	parser.add_argument(
 		'-e',
 		'--explain',
-		help='command line interface for explanation',
-		nargs=3,
-		metavar=('problem', 'schedule', 'explanation'))
+		help='generate explanation',
+		action='store_true')
+	parser.add_argument(
+		'-p',
+		'--problem')
+	parser.add_argument(
+		'-s',
+		'--schedule')
+	parser.add_argument(
+		'-o',
+		'--output')
+	parser.add_argument(
+		'-O',
+		'--optimise',
+		action='store_true')
 	args = parser.parse_args()
 
-	# Select interface mode
-	if args.explain:
-		explain(args.explain[0], args.explain[1], args.explain[2], args.verbose)
-	else:
-		gui.start(args.verbose, args.solver_name, args.timelimit)
+	if args.optimise and args.schedule:
+		eprint('Optimise and schedule cannot selected together')
+
+	if args.graphical:
+		gui.start(args.verbose, args.solver_name, args.time_limit)
+	elif args.explain:
+		if not args.problem:
+			eprint('Problem required')
+			return
+		if not args.optimise and not args.schedule:
+			eprint('Optimise or schedule required')
+			return
+		explain(args.problem, args.schedule, args.output, args.verbose,
+			args.solver_name, args.time_limit)
+	elif args.optimise:
+		if not args.problem:
+			eprint('Problem required')
+		optimise(args.problem, args.output, args.solver_name, args.time_limit)
 
 if __name__ == '__main__':
 	main()

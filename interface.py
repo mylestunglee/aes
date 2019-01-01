@@ -195,6 +195,6 @@ def parse_schedule(text, m, n):
 
 def format_schedule(S):
 	m, n = S.shape
-	return '\n'.join(['{}: {}'.format(i + 1,' '.join(
+	return ''.join(['{}: {}\n'.format(i + 1,' '.join(
 		[str(j + 1) for j in range(n) if S[i, j]]
 		)) for i in range(m)])
