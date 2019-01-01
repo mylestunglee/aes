@@ -3,6 +3,7 @@ __pycache__
 graph*
 *.lp
 *.glp
-problem
-schedule
-output
+problem*
+schedule*
+output*
+profile*

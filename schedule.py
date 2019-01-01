@@ -1,9 +1,6 @@
 import numpy as np
 
 def random_problem(m=None, n=None):
-	m = 100
-	n = 100
-
 	if m is None:
 		m = np.random.poisson(4)
 	if n is None:
