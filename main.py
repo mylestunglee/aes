@@ -30,7 +30,7 @@ def get_arguments():
 		'--explain',
 		help='generate explanation',
 		action='store_true')
-	P_parser = parser.add_mutually_exclusive_group()
+	P_parser = parser.add_mutually_exclusive_group(required=True)
 	P_parser.add_argument(
 		'-p',
 		'--problem')
@@ -106,7 +106,7 @@ def run_arguments(args):
 		not args.random_schedule and not args.graphical and
 		not args.explain):
 		try_output(args.output,
-			interface.format_problem(m_text, p_text, nfd_text))
+			interface.format_problem(m_text, p_text, nfd_text, pfd_text))
 		return
 
 	# Get schedule
