@@ -2,6 +2,9 @@ import pyomo.environ as en
 import pyomo.opt as opt
 import numpy as np
 
+default_solver = 'glpk'
+default_time_limit = -1
+
 # Model the problem using the pyomo interface library
 def create_model(m, p, nfd, pfd):
 	N = range(len(p))

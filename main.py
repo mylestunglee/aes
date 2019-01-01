@@ -3,16 +3,21 @@ import gui
 import interface
 import sys
 import schedule
+import solver
 
 def eprint(str):
 	print(str, file=sys.stderr)
 
-def main():
-	default_solver = 'glpk'
-	default_time_limit = -1
-	default_size = 4
+def try_output(filename, text):
+	if filename:
+		success, error = interface.save_text(filename, text)
+		if not success:
+			eprint(error)
+	else:
+		print(text, end='')
 
-	# Construct command line interface
+# Construct command line interface
+def get_arguments():
 	parser = argparse.ArgumentParser(
 		description='Explains make-shift schedules using abstract argumentation frameworks')
 	parser.add_argument(
@@ -35,7 +40,7 @@ def main():
 		nargs='?',
 		type=int,
 		metavar='M',
-		const=default_size,
+		const=schedule.default_m,
 		help='Creates random problem with jobs and fixed decisions where m is the number of machines',
 		dest='m')
 	S_parser = parser.add_mutually_exclusive_group()
@@ -61,17 +66,19 @@ def main():
 	parser.add_argument(
 		'-t',
 		'--time_limit',
-		default=default_time_limit,
+		default=solver.default_time_limit,
 		type=int,
 		help='maximum time for optimisation in seconds, use negative time_limit for infinite limit, default is unlimited')
 	parser.add_argument(
 		'-S',
 		'--solver',
-		default=default_solver,
-		help='optimisation solver for schedule, default is \'{}\''.format(default_solver),
+		default=solver.default_solver,
+		help='optimisation solver for schedule, default is \'{}\''.
+			format(solver.default_solver),
 		dest='solver_name')
-	args = parser.parse_args()
+	return parser.parse_args()
 
+def run_arguments(args):
 	# Get problem
 	if args.problem:
 		success, problem = interface.load_problem(args.problem)
@@ -98,14 +105,8 @@ def main():
 	if (not args.optimise and not args.schedule and
 		not args.random_schedule and not args.graphical and
 		not args.explain):
-		if args.output:
-			success, error = interface.save_problem(args.output, m_text,
-				p_text, nfd_text, pfd_text)
-			if not success:
-				eprint(error)
-		else:
-			print(interface.format_problem(m_text, p_text, nfd_text,
-				pfd_text), end='')
+		try_output(args.output,
+			interface.format_problem(m_text, p_text, nfd_text))
 		return
 
 	# Get schedule
@@ -132,26 +133,19 @@ def main():
 			if not success:
 				eprint(output_text)
 				return
-			if args.output:
-				success, error = interface.save_text(args.output,
-					output_text)
-				if not success:
-					eprint(error)
-			else:
-				print(output_text, end='')
+			try_output(args.output, output_text)
 		else:
-			if args.output:
-				success, error = interface.save_text(args.output, S_text)
-				if not success:
-					eprint(error)
-			else:
-				print(S_text, end='')
+			try_output(args.output, S_text)
 		return
 
 	# Start graphical
 	if args.graphical:
 		gui.start(m_text, p_text, nfd_text, pfd_text, S_text,
 			args.explain, args.verbose, args.solver_name, args.time_limit)
+
+def main():
+	args = get_arguments()
+	run_arguments(args)
 
 if __name__ == '__main__':
 	main()

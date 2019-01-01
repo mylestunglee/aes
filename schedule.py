@@ -1,6 +1,8 @@
 import numpy as np
 
-def random_problem(m, n=None):
+default_m = 4
+
+def random_problem(m=default_m, n=None):
 	if n is None:
 		n = np.random.poisson(m * 2)
 	p = np.random.exponential(1, n)
@@ -31,7 +33,3 @@ def random_schedule(m, n, nfd, pfd):
 # Calculates completion time vector [C_i for i in M]
 def calc_completion_times(p, S):
 	return S.astype(int).dot(p)
-
-if __name__ == '__main__':
-	main()
-
