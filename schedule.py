@@ -1,10 +1,8 @@
 import numpy as np
 
-def random_problem(m=None, n=None):
-	if m is None:
-		m = np.random.poisson(4)
+def random_problem(m, n=None):
 	if n is None:
-		n = np.random.poisson(8)
+		n = np.random.poisson(m * 2)
 	p = np.random.exponential(1, n)
 
 	pr = 1 / n if n > 0 else 0

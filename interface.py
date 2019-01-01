@@ -9,14 +9,14 @@ import argumentation
 delimiter = ';\n'
 integer_pattern = re.compile(r'^[0-9]+$')
 float_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[0-9]+(\.[0-9]+)?)*[ \t]*\n)*$')
-positions_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[1-9][0-9]*)*[ \t]*\n)*$')
+schedule_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[1-9][0-9]*)*[ \t]*\n)*$')
 
 def random_problem():
 	m, p, nfd, pfd = schedule.random_problem()
 	n = p.shape[0]
 
 	m_text = str(m)
-	p_text = '\n'.join('{}: {}'.format(j + 1, p[j]) for j in range(n))
+	p_text = format_processing_times(p)
 	nfd_text = format_schedule(nfd)
 	pfd_text = format_schedule(pfd)
 
@@ -54,7 +54,7 @@ def load_problem(filename):
 	return True, texts
 
 def save_problem(filename, m_text, p_text, nfd_text, pfd_text):
-	text = delimiter.join([m_text, p_text, nfd_text, pfd_text])
+	text = format_problem(m_text, p_text, nfd_text, pfd_text)
 	return save_text(filename, text)
 
 def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit):
@@ -62,9 +62,9 @@ def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit
 		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
 		return False, 'Proccessing times syntax error'
-	if not positions_pattern.match(nfd_text):
+	if not schedule_pattern.match(nfd_text):
 		return False, 'Negative fixed decisions syntax error'
-	if not positions_pattern.match(pfd_text):
+	if not schedule_pattern.match(pfd_text):
 		return False, 'Positive fixed decisions syntax error'
 
 	m = int(m_text)
@@ -96,9 +96,9 @@ def random_schedule(m_text, p_text, nfd_text, pfd_text):
 		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
 		return False, 'Proccessing times syntax error'
-	if not positions_pattern.match(nfd_text):
+	if not schedule_pattern.match(nfd_text):
 		return False, 'Negative fixed decisions syntax error'
-	if not positions_pattern.match(pfd_text):
+	if not schedule_pattern.match(pfd_text):
 		return False, 'Positive fixed decisions syntax error'
 
 	m = int(m_text)
@@ -126,11 +126,11 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, verbose):
 		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
 		return False, 'Proccessing times syntax error'
-	if not positions_pattern.match(nfd_text):
+	if not schedule_pattern.match(nfd_text):
 		return False, 'Negative fixed decisions syntax error'
-	if not positions_pattern.match(pfd_text):
+	if not schedule_pattern.match(pfd_text):
 		return False, 'Positive fixed decisions syntax error'
-	if not positions_pattern.match(S_text):
+	if not schedule_pattern.match(S_text):
 		return False, 'Schedule syntax error'
 
 	m = int(m_text)
@@ -192,6 +192,13 @@ def parse_schedule(text, m, n):
 			S[i, j] = True
 
 	return S
+
+def format_problem(m_text, p_text, nfd_text, pfd_text):
+	return delimiter.join([m_text, p_text, nfd_text, pfd_text])
+
+def format_processing_times(p):
+	n = p.shape[0]
+	return ''.join('{}: {}\n'.format(j + 1, p[j]) for j in range(n))
 
 def format_schedule(S):
 	m, n = S.shape

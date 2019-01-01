@@ -9,7 +9,9 @@ import numpy as np
 import interface
 matplotlib.use("TkAgg")
 
-def start(verbose, solver_name, time_limit):
+def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
+	S_text_initial, explain_initial, verbose, solver_name,
+	time_limit):
 	root = tk.Tk()
 
 	def quit():
@@ -246,6 +248,16 @@ def start(verbose, solver_name, time_limit):
 	output_textbox.grid(row=1, column=0, sticky=tk.N+tk.S+tk.W+tk.E)
 	output_scrollbar.grid(row=1, column=1, sticky=tk.N+tk.S)
 	save_output_button.grid(row=2, column=0, columnspan=2, pady=padding, sticky=tk.W+tk.E)
+
+	# Initial state from command line
+	spinbox_replace(m_spinbox, m_text_initial)
+	textbox_replace(p_textbox, p_text_initial)
+	textbox_replace(nfd_textbox, nfd_text_initial)
+	textbox_replace(pfd_textbox, pfd_text_initial)
+	textbox_replace(S_textbox, S_text_initial)
+
+	if explain_initial:
+		explain()
 
 	root.mainloop()
 

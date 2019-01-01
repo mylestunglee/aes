@@ -12,11 +12,14 @@ def create_feasiblity_framework(m, n):
 
 # Creates an efficiency framework from a feasiblity framework
 def create_efficiency_framework(m, p, S, ff):
+	ef = np.copy(ff)
+
+	if m == 0:
+		return ef
+
 	C = schedule.calc_completion_times(p, S)
-	C_max = np.max(C)
 	M = range(m)
 	J = [np.flatnonzero(S[i,:]) for i in M]
-	ef = np.copy(ff)
 
 	i1 = np.argmax(C)
 	# If feasible assigment (i1, j1)
@@ -110,53 +113,56 @@ def explain_feasiblity(unattacked, conflicts):
 # Compute reasons for efficiency using stablity
 def explain_efficiency(p, S, unattacked, conflicts):
 	(m, n) = unattacked.shape
-	M = range(m)
-	N = range(n)
-
-	C = schedule.calc_completion_times(p, S)
-	C_max = np.max(C)
-
-	def round(x):
-		return np.round(x, -int(np.floor(np.log10(x))) + 2)
-
 	pairs = []
 
-	S_reduced = np.copy(S)
-	i1 = np.argmax(C)
-	for j1 in N:
-		if unattacked[i1, j1]:
-			allocated = S_reduced[:, j1].copy()
-			S_reduced[:, j1] = False
-			S_reduced[i1, j1] = True
-			C_max_reduced = np.max(schedule.calc_completion_times(p, S_reduced))
-			reduction = C_max - C_max_reduced
-			pairs.append((
-				(reduction, j1, i1),
-				'Job {} can be allocated to machine {} to reduce by {}'.format(
-				j1 + 1, i1 + 1, round(reduction))))
-			S_reduced[:, j1] = allocated
+	if m > 0:
+		M = range(m)
+		N = range(n)
 
-		for i2 in M:
-			for j2 in N:
-				if conflicts[i1, j1, i2, j2]:
-					S_reduced[i1, j1] = False
-					S_reduced[i2, j2] = False
-					S_reduced[i1, j2] = True
-					S_reduced[i2, j1] = True
-					C_max_reduced = np.max(schedule.calc_completion_times(p, S_reduced))
-					reduction = C_max - C_max_reduced
-					reduction = 1
-					pairs.append((
-						(reduction, j1, j2, i1, i2),
-						'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}'.format(
-						j1 + 1, j2 + 1, i1 + 1, i2 + 1, round(reduction))))
-					S_reduced[i1, j1] = True
-					S_reduced[i2, j2] = True
-					S_reduced[i1, j2] = False
-					S_reduced[i2, j1] = False
+		C = schedule.calc_completion_times(p, S)
+		C_max = np.max(C)
 
-	# Order by most reducible first
-	pairs.sort(reverse=True)
+		def round(x):
+			return np.round(x, -int(np.floor(np.log10(x))) + 2)
+
+
+		S_reduced = np.copy(S)
+		i1 = np.argmax(C)
+		for j1 in N:
+			if unattacked[i1, j1]:
+				allocated = S_reduced[:, j1].copy()
+				S_reduced[:, j1] = False
+				S_reduced[i1, j1] = True
+				C_max_reduced = np.max(schedule.calc_completion_times(p, S_reduced))
+				reduction = C_max - C_max_reduced
+				pairs.append((
+					(reduction, j1, i1),
+					'Job {} can be allocated to machine {} to reduce by {}'.format(
+					j1 + 1, i1 + 1, round(reduction))))
+				S_reduced[:, j1] = allocated
+
+			for i2 in M:
+				for j2 in N:
+					if conflicts[i1, j1, i2, j2]:
+						S_reduced[i1, j1] = False
+						S_reduced[i2, j2] = False
+						S_reduced[i1, j2] = True
+						S_reduced[i2, j1] = True
+						C_max_reduced = np.max(schedule.calc_completion_times(
+							p, S_reduced))
+						reduction = C_max - C_max_reduced
+						reduction = 1
+						pairs.append((
+							(reduction, j1, j2, i1, i2),
+							'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}'.format(
+							j1 + 1, j2 + 1, i1 + 1, i2 + 1, round(reduction))))
+						S_reduced[i1, j1] = True
+						S_reduced[i2, j2] = True
+						S_reduced[i1, j2] = False
+						S_reduced[i2, j1] = False
+
+		# Order by most reducible first
+		pairs.sort(reverse=True)
 
 	if pairs:
 		_, reasons = zip(*pairs)
