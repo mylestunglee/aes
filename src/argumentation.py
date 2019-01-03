@@ -38,8 +38,11 @@ def create_efficiency_framework(m, p, S, ff):
 	return ef
 
 # Creates a fixed decision framework from a feasiblity framework
-def create_fixed_decision_framework(nfd, pfd, ff):
-	df = np.copy(ff)
+def create_fixed_decision_framework(nfd, pfd, ff, copy=True):
+	if copy:
+		df = np.copy(ff)
+	else:
+		df = ff
 	(m, n) = nfd.shape
 
 	for i in range(m):
@@ -252,7 +255,7 @@ def explain(m, p, nfd, pfd, S, verbose):
 		explain_efficiency(p, S, efficiency_unattacked, efficiency_conflicts))
 	explanation += '\n'
 
-	df = create_fixed_decision_framework(nfd, pfd, ff)
+	df = create_fixed_decision_framework(nfd, pfd, ff, False)
 	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
 		feasiblity_unattacked, feasiblity_conflicts)
 	explanation += format_argument('Schedule does {}satisify fixed decisions',
