@@ -1,0 +1,33 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\author{Myles Lee}
+\title{Report}
+\begin{document}
+	\maketitle
+	
+	\section*{Abstract}
+	
+	Scheduling appears in many places of organisation. Scheduling problems are modelled as mathematical optimisation problems. These are often too big to be solved manually, so complex black-box optimisation solvers are used to find an approximate or exact optimal solution within a time period. Due to the black-box nature and the large size of the solution, solutions are unintuitive to explain properties such as feasibility, efficiency and satisfaction of user fixed decisions. By modelling mentioned properties into abstract argumentation frameworks, we present a software tool to explain properties of any schedule.
+	
+	\section*{Introduction}
+	
+	Scheduling appears in countless decision processes and its abstract nature results in a wide range of practical applications. With many mature and developed computational optimisation solvers, scheduling problems are modelled as  mathematical optimisation problems. Solvers can give solutions much faster than manually techniques. However, scheduling solutions
+	
+	\subsection*{Contributions}
+	\begin{enumerate}
+		\item Conflicting negative and positive fixed decisions and explanation for their resolution
+		\item Command line interface and improved graphical user interface with random, schedule display
+		\item efficiency respects user fixed decisions
+		\item explanations are sorted by reducible longest completion time. as m and n grows, the explanations grow. feasibility: $O(mn)$, efficiency: $O(mn^2)$, fixed decisions $O(mn)$
+	\end{enumerate}
+
+	\subsection*{Additions}
+	\begin{enumerate}
+		\item Malle [112] explanations: find meanings, manage social interaction; learning
+		\item why are explainations counterarguments: causes
+	\end{enumerate}
+\end{document}

@@ -171,7 +171,7 @@ def explain_efficiency(p, S, unattacked, conflicts):
 		reasons = ['All jobs satisfy single and pairwise exchange properties']
 	return True, reasons
 
-# Compute reasons for satisfication of fixed decisions usng stabilty
+# Compute reasons for satisfaction of fixed decisions usng stabilty
 def explain_satisfaction(nfd, pfd, unattacked, conflicts):
 	(m, n) = unattacked.shape
 	M = range(m)

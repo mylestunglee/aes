@@ -3,7 +3,11 @@ __pycache__
 graph*
 *.lp
 *.glp
-problem*
-schedule*
-output*
+src/*.problem
+src/*.schedule
+src/*.txt
 profile*
+report/*.aux
+report/*.log
+report/*.pdf
+report/*.synctex.gz
