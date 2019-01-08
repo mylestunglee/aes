@@ -1,0 +1,33 @@
+\chapter{Introduction}
+	
+\section{Motivation}
+
+Scheduling arises in countless decision processes and its abstract nature results in a wide range of practical applications, such as in healthcare. [paper] Scheduling problems are accurately modelled in mathematics, hence scheduling is often interpreted as a class of mathematical optimisation problems. With many mature and developed optimisation solvers, solvers can find solutions to large scheduling problems quickly, which would have been impractical using manual optimisation techniques. However, solver scalability and efficiency often leads to complexity. Such complexity combined with mathematical formulations of scheduling, result in users interpreting solvers and solutions as black-boxes. [paper] Therefore, decision making of schedules are often not transparent.
+\linespace
+Transparency of decision making is important. Users require a means to understand why a schedule, whether a solution of a solver or not, is reasonable given a context. For example, hospital managers may seek understanding about the efficiency of their staff and resources. Schedules may need to be robust to unpredictable changes in staff and resources, such as a nurse being unavailable to attend patients due to a personal reasons. In other settings, schedules may need to minimise the number of staff to maximise profits while fulfilling all staff and patients requirements.
+\linespace
+Explanations are vital in communication for understanding. With infinitely many schedules, and many variations of scheduling problems, it is impractical to manually-craft explanations for every schedule of every variation. This motivates a tool to generate clear explanations.
+
+\section{Objectives}
+
+The primary objective is to devise and implement a tool that explains an solver's scheduling solutions by human-understandable means, and allows the user to interact with the solver in a human-friendly manner. By using the explanation methodology outlined using argumentation [paper], the user can easier understand scheduling in a practical environments such as nurse rostering and dialysis scheduling. Hence, analysis of such methodology important to understand the applicability of argumentation in practical settings.
+\linespace
+Secondary objectives include finding extensions to argumentation with explanation if feasible. Extensions may include interval scheduling [paper], ...[paper].
+
+\section{Challenges}
+
+A tool satisfying such objectives are subjected solving the challenges:
+\begin{enumerate}
+	\item\textbf{Accessibility:} Explanations generated from this tool are required to be accessible to people without domain-specific knowledge of optimisation or argumentation. The tool should be accessible to computer novices.
+	\item\textbf{Applicability:} Explanations should relate to schedules. The tool should generate clear explanations promptly.
+	\item\textbf{Knowledge transfer:} Explanations are constructed using knowledge structures, commonly represented using natural languages or diagrams. A challenge would be to effectively explore the usefulness of using natural languages compared to diagrams.
+
+\end{enumerate}
+
+\section{Contributions}
+
+The main contributions of this report are listed below:
+\begin{enumerate}
+	\item A new tool \emph{Argumentative Explainable Scheduler} that implements the concepts behind using argumentation for optimisation for makeshift scheduling.
+	\item Extensions to makeshift scheduling.
+\end{enumerate}

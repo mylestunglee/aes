@@ -1,0 +1,45 @@
+\chapter{Implementation}
+
+\section{Design Decisions}
+
+To select a programming language suitable for developing the tool, languages were compared with respect to possible challenges. The language should be compatible with popular optimisation solvers. To make efficient use of time, using an existing interface library between popular solvers is recommended. Interfaces are written for popular languages such as C++, Java and Python. Python was selected for its development speed and support for a wide range of libraries.
+\linespace
+There is a balance between program speed and development time. A tool written in C may be fast but time-consuming. The purpose is to demonstrate the concept of argumentation with schedules while allowing analysis of potential future directions and short-comings. Hence, the tool should be sufficiently fast to be responsive, but not necessarily fast as possible.
+\linespace
+There are many powerful and efficient solvers such as CPLEX [paper] and GLPK [paper]. To solver large problems, users use commercial over open-source solvers for their superior speed [paper]. However, users may not have access to a commercial solver. To accommodate users, Pyomo is used to interface to many popular solvers.
+\linespace
+The tool features a GUI to aid its accessibility. Users such as hospital managers can often use a suitably-designed GUI without training of the tool. In practice, a GUI is easier to demonstrate than a CLI.
+
+\section{Structure}
+
+\tikzstyle{file} = [draw, inner sep=10pt]
+\tikzstyle{library} = [file, fill=black!15]
+
+\begin{tikzpicture}
+	\node[library](cplex) at (6, 0){CPLEX};
+	\node[library](glpk) at (10, 0){GLPK};
+	\node[library](graphviz) at (0, 2){Graphviz};
+	\node[library](tkinter) at (4, 2){Tkinter};		
+	\node[library](pyomo) at (8, 2){Pyomo};
+	\node[file]   (visualise) at (0, 4){\verb|visualise.py|};
+	\node[file]   (graphical) at (4, 4){\verb|graphical.py|};
+	\node[file]   (solver) at (8, 4){\verb|solver.py|};
+	\node[file]   (schedule) at (0, 6){\verb|schedule.py|};
+	\node[file]   (argumentation) at (0, 8){\verb|argumentation.py|};
+	\node[file]   (interface) at (4, 8){\verb|interface.py|};
+	\node[file]   (main) at (4, 10){\verb|main.py|};
+	\draw[-{Stealth[scale=2]}, dashed](cplex) -- (pyomo);
+	\draw[-{Stealth[scale=2]}, dashed](glpk) -- (pyomo);
+	\draw[-{Stealth[scale=2]}](graphviz) -- (visualise);
+	\draw[-{Stealth[scale=2]}](pyomo) -- (solver);
+	\draw[-{Stealth[scale=2]}](tkinter) -- (graphical);
+	\draw[-{Stealth[scale=2]}](visualise) -- (graphical);
+	\draw[-{Stealth[scale=2]}](graphical) -- (interface);
+	\draw[-{Stealth[scale=2]}](solver) -- (interface);
+	\draw[-{Stealth[scale=2]}](argumentation) -- (interface);
+	\draw[-{Stealth[scale=2]}](schedule) -- (interface);
+	\draw[-{Stealth[scale=2]}](schedule) -- (argumentation);
+	\draw[-{Stealth[scale=2]}](interface) -- (main);
+\end{tikzpicture}
+
+\section{Algorithms}

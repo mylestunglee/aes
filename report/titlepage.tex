@@ -1,0 +1,46 @@
+\begin{titlepage}
+	\newdateformat{monthyeardate}{\monthname[\THEMONTH] \THEYEAR}
+	
+	\noindent\includegraphics[width=7cm]{./figures/imperial}
+	
+	\Large\centering
+	
+	\vspace*{3\baselineskip}	
+	\textsc{\LARGE \reporttype}
+	
+	\vspace*{\baselineskip}	
+	\textsc{Imperial College of Science, Technology and Medicine}
+
+	\vspace*{\baselineskip}	
+	\textsc{Department of Computing}
+
+
+	\setlength{\parindent}{0pt}
+	
+	\setlength{\parskip}{0pt}
+
+	\rule{\linewidth}{0.4pt}\vspace*{\baselineskip}
+
+	{\huge\bfseries\reporttitle}
+	\rule{\linewidth}{0.4pt}
+
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\emph{Author:}
+			
+			\reportauthor
+		\end{flushleft}
+		\begin{flushright}
+			\emph{Supervisors:}
+			
+			\supervisor
+		\end{flushright}			
+	\end{multicols}
+	
+	\vspace*{\stretch{1}}
+	
+	\monthyeardate\today
+	
+	\vspace*{\stretch{1}}
+	
+\end{titlepage}

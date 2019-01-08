@@ -1,6 +1,5 @@
 *.swp
 __pycache__
-graph*
 *.lp
 *.glp
 src/*.problem
@@ -11,3 +10,7 @@ report/*.aux
 report/*.log
 report/*.pdf
 report/*.synctex.gz
+report/*.out
+report/*.bbl
+report/*.toc
+report/*.blg

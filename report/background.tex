@@ -1,0 +1,97 @@
+\chapter{Background}
+
+\section{Makeshift Schedules}
+
+The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $i\in\mathcal{J}$, has an associated processing time $p_i\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
+\begin{align*}
+	\min_{C_{max},\mathbf{C},\mathbf{x}}&C_{max}&\text{ subject to:}\\
+	\forall i\in\mathcal{M}.\ &C_{max}\geq C_i\\
+	\forall i\in\mathcal{M}.\ &C_i=\sum_{j\in\mathcal{J}}x_{i,j}\cdot p_j\\
+	\forall j\in\mathcal{J}.\ &\sum_{j\in\mathcal{J}}x_{i,j}=1\\
+	\forall i\in\mathcal{M},\ \forall j\in\mathcal{J}.\ &x_{i,j}\in\{0,1\}
+\end{align*}
+
+\begin{definition}
+	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$ such that $S=\mathbf{x}$.
+\end{definition}
+
+\begin{definition}
+	A schedule $S$ is optimal iff $S$ achieves the minimal total completion time.
+\end{definition}
+
+
+\begin{definition}
+	A machine $i\in\mathcal{M}$ is critical iff $C_i=C_{max}$.
+\end{definition}
+
+\begin{definition}
+	A job $j\in\mathcal{J}$ is critical iff $j$ is allocated to a critical machine $i\in\mathcal{M}$ such that $x_{i,j}=1$.
+\end{definition}
+
+\begin{definition}
+	A schedule satisfies the single exchange property (SEP) iff for any critical machine and any machine $i,i'\in\mathcal{M}$ and for all critical jobs $j\in\mathcal{J}$, $C_i-C_{i'}\leq p_j$
+\end{definition}
+
+\begin{definition}
+	A schedule satisfies the pairwise exchange property (PEP) iff for any critical job and any job $j,j'\in\mathcal{J}$, if $p_j>p_{j'}$, then $C_i+p_{j'}\leq C_{i'}+p_j$.
+\end{definition}
+
+\begin{definition}
+	A schedule $S$ is efficient iff $S$ satisfies SEP and PEP.
+\end{definition}
+
+\begin{theorem}
+	Schedule efficiency is a necessary condition for optimality.
+\end{theorem}
+
+\section{User Fixed Decisions}
+
+To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
+
+\begin{definition}
+	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall (i,j)\in D^+.\ x_{i,j}=1$.
+\end{definition}
+
+\begin{definition}
+	A fixed decision $D$ is unsatisfiable iff there does not exist a schedule $S$ such that $S$ satisfies $D$. 
+\end{definition}
+
+\begin{theorem}
+	A fixed decision $D$ is unsatisfiable iff if the following necessary and sufficient conditions hold:
+	\begin{itemize}
+		\item$D^-$ and $D^-$ are disjoint.
+		\item$\forall(i,j),(i',j')\in D^+.\ i=i'\lor j\neq j'$
+		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ (i,j)\not\in D^-$
+	\end{itemize}
+\end{theorem}
+
+\section{Abstract Argumentation}
+
+An abstract argumentation framework (AF) models the relation of attacks between arguments. Formally, an AF is a directed graph $(Args,\rightsquigarrow)$ where $Args$ is the set of arguments and $\rightsquigarrow$ is a binary relation over $Args$. For $a,b\in Args$, $a$ attacks $b$ iff $a\rightsquigarrow b$. Attacks are extended over sets of arguments, where $A\subseteq Args\rightsquigarrow b\in Args$ iff $\exists a\in A.\ a\rightsquigarrow b$. An extension $E$ is a subset of $Args$.
+
+\begin{definition}
+	An extension $E$ is conflict-free iff $\forall a,b\in E.\ a\not\rightsquigarrow\ b$.
+\end{definition}
+
+\begin{definition}
+	An extension $E$ is stable iff $E$ is conflict-free and $\forall a\in Args\backslash E.\ E\rightsquigarrow a$
+\end{definition}
+
+\section{Existing Tools}
+
+Due to the applicability of scheduling, there are many software specialise in staff rotas.
+
+\section{Explanations}
+
+\subsection{Notes}
+\begin{enumerate}
+	\item Conflicting negative and positive fixed decisions and explanation for their resolution
+	\item Command line interface and improved graphical user interface with random, schedule display
+	\item efficiency respects user fixed decisions
+	\item explanations are sorted by reducible longest completion time. as m and n grows, the explanations grow. feasibility: $O(mn)$, efficiency: $O(mn^2)$, fixed decisions $O(mn)$
+	\item Malle [112] explanations: find meanings, manage social interaction; learning
+	\item why are explainations counterarguments: causes
+	\item A tool explaining the concept of scheduling is superfluous while a tool explaining solutions concisely using mathematically-oriented may be discarded by inaccessible language. A challenge will be to strike a balance of possible explanations by targetting potential users.
+\end{enumerate}
+
+%https://ac.els-cdn.com/S0307904X12001837/1-s2.0-S0307904X12001837-main.pdf?_tid=8917b7ba-3293-40d2-a4d9-7d67b40ae499&acdnat=1546712183_67c96afaaedc7cd95cbff3dd83844cb6

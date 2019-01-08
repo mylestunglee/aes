@@ -1,0 +1,54 @@
+\documentclass[10pt, a4paper]{report}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage[toc]{appendix}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{datetime}
+\usepackage{amsthm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\newcommand{\reporttitle}{Explaining Optimisation Solvers}
+\newcommand{\reportauthor}{Myles Lee}
+\newcommand{\supervisor}{Dr. Kristijonas Cyras\\Prof. Francesca Toni}
+\newcommand{\reporttype}{MEng. Individual Project}
+\newcommand{\linespace}{\vspace*{\baselineskip}\\}
+
+\begin{document}
+	
+	\input{titlepage}
+	
+	\begin{abstract}
+		\input{abstract}
+	\end{abstract}
+	
+	\pagenumbering{roman}
+	\tableofcontents 
+	
+	\cleardoublepage
+	\pagenumbering{arabic}
+
+	\input{introduction}
+	
+	\input{background}
+	
+	\input{projectplan}
+	
+	\input{implementation}
+	
+	\begin{appendices}
+		\input{userguide}
+	\end{appendices}
+
+	\cleardoublepage
+	\bibliography{bibliography}
+	\addcontentsline{toc}{chapter}{Bibliography}
+	\bibliographystyle{ieeetr}
+\end{document}
