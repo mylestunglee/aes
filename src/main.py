@@ -1,5 +1,5 @@
 import argparse
-import gui
+import graphical
 import interface
 import sys
 import schedule
@@ -141,7 +141,7 @@ def run_arguments(args):
 
 	# Start graphical
 	if args.graphical:
-		gui.start(m_text, p_text, nfd_text, pfd_text, S_text,
+		graphical.start(m_text, p_text, nfd_text, pfd_text, S_text,
 			args.explain, args.verbose, args.solver_name, args.time_limit)
 
 def main():
