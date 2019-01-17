@@ -243,31 +243,29 @@ def format_argument(template, pair):
 
 # Generate explanations
 def explain(m, p, nfd, pfd, S, verbose):
-	explanation = ''
+	explanations = []
 	n = len(p)
 
 	ff = create_feasiblity_framework(m, n)
 	feasiblity_unattacked, feasiblity_conflicts = explain_stability(S, ff)
-	explanation += format_argument('Schedule is {}feasible',
-		explain_feasiblity(feasiblity_unattacked, feasiblity_conflicts))
-	explanation += '\n'
+	explanations.append(format_argument('Schedule is {}feasible',
+		explain_feasiblity(feasiblity_unattacked, feasiblity_conflicts)))
 
 	ef = create_efficiency_framework(m, p, S, ff)
 
 	efficiency_unattacked, efficiency_conflicts = explain_stability(S, ef,
 		feasiblity_unattacked, feasiblity_conflicts)
-	explanation += format_argument('Schedule is {}efficient',
-		explain_efficiency(p, S, efficiency_unattacked, efficiency_conflicts))
-	explanation += '\n'
+	explanations.append(format_argument('Schedule is {}efficient',
+		explain_efficiency(p, S, efficiency_unattacked, efficiency_conflicts)))
 
 	df = create_fixed_decision_framework(nfd, pfd, ff, False)
 	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
 		feasiblity_unattacked, feasiblity_conflicts)
-	explanation += format_argument('Schedule does {}satisify fixed decisions',
-		explain_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts))
+	explanations.append(format_argument('Schedule does {}satisify fixed decisions',
+		explain_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts)))
 
 	if verbose:
 		# debug purposes
 		pass
 
-	return explanation
+	return '\n'.join(explanations)
