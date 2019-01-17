@@ -21,20 +21,22 @@ def create_efficiency_framework(m, p, S, ff):
 	M = range(m)
 	J = [np.flatnonzero(S[i,:]) for i in M]
 
-	i1 = np.argmax(C)
+	C_max = np.argmax(C)
 	# If feasible assigment (i1, j1)
-	for j1 in J[i1]:
-		for i2 in M:
-			# Single exchange propertry
-			if C[i1] > C[i2] + p[j1]:
-				ef[i1, j1, i2, j1] = False
-			# If feasible assigment (i2, j2)
-			for j2 in J[i2]:
-				#  Pairwise exchange property
-				if (i1 != i2 and j1 != j2 and
-					p[j1] > p[j2] and
-					C[i1] + p[j2] > C[i2] + p[j1]):
-					ef[i1, j1, i2, j2] = True
+	for i1 in M:
+		if C[i1] != C_max:
+			for j1 in J[i1]:
+				for i2 in M:
+					# Single exchange propertry
+					if C[i1] > C[i2] + p[j1]:
+						ef[i1, j1, i2, j1] = False
+					# If feasible assigment (i2, j2)
+					for j2 in J[i2]:
+						#  Pairwise exchange property
+						if (i1 != i2 and j1 != j2 and
+							p[j1] > p[j2] and
+							C[i1] + p[j2] > C[i2] + p[j1]):
+							ef[i1, j1, i2, j2] = True
 	return ef
 
 # Creates a fixed decision framework from a feasiblity framework
@@ -116,6 +118,7 @@ def explain_feasiblity(unattacked, conflicts):
 # Compute reasons for efficiency using stablity
 def explain_efficiency(p, S, unattacked, conflicts):
 	(m, n) = unattacked.shape
+
 	pairs = []
 
 	if m > 0:
@@ -126,6 +129,8 @@ def explain_efficiency(p, S, unattacked, conflicts):
 		C_max = np.max(C)
 
 		def round(x):
+			if x == 0:
+				return 0
 			return np.round(x, -int(np.floor(np.log10(x))) + 2)
 
 
@@ -140,7 +145,7 @@ def explain_efficiency(p, S, unattacked, conflicts):
 					C_max_reduced = np.max(schedule.calc_completion_times(p, S_reduced))
 					reduction = C_max - C_max_reduced
 					pairs.append((
-						(reduction, j1, i2),
+						(-reduction, j1, i2),
 						'Job {} can be allocated to machine {} to reduce by {}'.format(
 						j1 + 1, i2 + 1, round(reduction))))
 					S_reduced[:, j1] = allocated
@@ -156,7 +161,7 @@ def explain_efficiency(p, S, unattacked, conflicts):
 						reduction = C_max - C_max_reduced
 						reduction = 1
 						pairs.append((
-							(reduction, j1, j2, i1, i2),
+							(-reduction, j1, j2, i1, i2),
 							'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}'.format(
 							j1 + 1, j2 + 1, i1 + 1, i2 + 1, round(reduction))))
 						S_reduced[i1, j1] = True
@@ -165,8 +170,7 @@ def explain_efficiency(p, S, unattacked, conflicts):
 						S_reduced[i2, j1] = False
 
 		# Order by most reducible first
-		pairs.sort(reverse=True)
-
+		pairs.sort()
 	if pairs:
 		_, reasons = zip(*pairs)
 		return False, reasons
@@ -249,6 +253,7 @@ def explain(m, p, nfd, pfd, S, verbose):
 	explanation += '\n'
 
 	ef = create_efficiency_framework(m, p, S, ff)
+
 	efficiency_unattacked, efficiency_conflicts = explain_stability(S, ef,
 		feasiblity_unattacked, feasiblity_conflicts)
 	explanation += format_argument('Schedule is {}efficient',
