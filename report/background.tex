@@ -1,5 +1,32 @@
 \chapter{Background}
 
+\section{Optimisation}
+
+Optimisation is the process to finding the optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to either find the optimal decision, either as a minima or maxima using systemmatic methods. Applications of optimisation occur in many pratical sitations such as in engineering, manfuactoring, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimial decisions. The wide range of applications of optimisation result in  many fields of optimisation, where in this project we look at MILP.
+\begin{center}
+	\begin{tikzpicture}
+		\node[file](problem) at (0, 2){Problem};
+		\node[file](model) at (0, 0){Model};
+		\node[file](solution) at (4, 2){Solution};
+		\node[file](optimum) at (4, 0){Optimum};
+		\draw[arrow](problem) -- node [above] {solve} (solution);
+		\draw[arrow](problem) -- node [left, inner sep=10pt] {abstact} (model);
+		\draw[arrow](model) -- node [below] {optimise} (optimum);
+		\draw[arrow](optimum) -- node [right, inner sep=10pt] {intepret} (solution);
+	\end{tikzpicture}
+\end{center}
+Real-life problems need to be modelled to be optimised. Problems are formulated using constraints and a cost function. Consider the following linear programming example. A person want to sell some drinks. Each unit of hot chocolate requiers 1 litre of milk and 3 bars of chocolate. Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate. The person only has 5 units of milk and 12 bars of chocolate. The person sells a unit of hot chocolate for £6 and a unit of milkshake for £5. What is the best strategy for maximising profit given that all units prodced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced.
+\begin{align*}
+	\max_{x,y}\ &6x+5y&\text{subject to:}\\
+	&x+y\leq 5&\text{milk resource constraint}\\
+	&3x+2y\leq 12&\text{chocolate resource constraint}\\
+	&x,y\geq 0&\text{non-negative constraints}\\
+	&x,y\in\mathbb{N}&\text{whole units only}\\
+\end{align*}
+The problem is sufficently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best stategy is producting 2 units of hot chocolate and 3 units of milkshake.
+
+In non-linear optimisation problems, finding global optimums in not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomaial complexity. In context of the project, it would not be feasible to compute an explanation in NP time.
+
 \section{Makeshift Schedules}
 
 The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $i\in\mathcal{J}$, has an associated processing time $p_i\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:

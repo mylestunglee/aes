@@ -12,34 +12,36 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 
 \section{Structure}
 
-\tikzstyle{file} = [draw, inner sep=10pt]
-\tikzstyle{library} = [file, fill=black!15]
-
 \begin{tikzpicture}
-	\node[library](cplex) at (6, 0){CPLEX};
-	\node[library](glpk) at (10, 0){GLPK};
-	\node[library](graphviz) at (0, 2){Graphviz};
-	\node[library](tkinter) at (4, 2){Tkinter};		
-	\node[library](pyomo) at (8, 2){Pyomo};
-	\node[file]   (visualise) at (0, 4){\verb|visualise.py|};
-	\node[file]   (graphical) at (4, 4){\verb|graphical.py|};
-	\node[file]   (solver) at (8, 4){\verb|solver.py|};
-	\node[file]   (schedule) at (0, 6){\verb|schedule.py|};
-	\node[file]   (argumentation) at (0, 8){\verb|argumentation.py|};
-	\node[file]   (interface) at (4, 8){\verb|interface.py|};
-	\node[file]   (main) at (4, 10){\verb|main.py|};
-	\draw[-{Stealth[scale=2]}, dashed](cplex) -- (pyomo);
-	\draw[-{Stealth[scale=2]}, dashed](glpk) -- (pyomo);
-	\draw[-{Stealth[scale=2]}](graphviz) -- (visualise);
-	\draw[-{Stealth[scale=2]}](pyomo) -- (solver);
-	\draw[-{Stealth[scale=2]}](tkinter) -- (graphical);
-	\draw[-{Stealth[scale=2]}](visualise) -- (graphical);
-	\draw[-{Stealth[scale=2]}](graphical) -- (interface);
-	\draw[-{Stealth[scale=2]}](solver) -- (interface);
-	\draw[-{Stealth[scale=2]}](argumentation) -- (interface);
-	\draw[-{Stealth[scale=2]}](schedule) -- (interface);
-	\draw[-{Stealth[scale=2]}](schedule) -- (argumentation);
-	\draw[-{Stealth[scale=2]}](interface) -- (main);
+	\fill[fill=black!10](-2, -1) rectangle (12, 3);
+	\node at (0, 0){External libraries};
+
+	\node[file](cplex) at (6, 0){CPLEX};
+	\node[file](glpk) at (10, 0){GLPK};
+	\node[file](graphviz) at (0, 2){Graphviz};
+	\node[file](tkinter) at (4, 2){Tkinter};		
+	\node[file](pyomo) at (8, 2){Pyomo};
+	\node[file](visualise) at (0, 4){\verb|visualise.py|};
+	\node[file](graphical) at (4, 4){\verb|graphical.py|};
+	\node[file](solver) at (8, 4){\verb|solver.py|};
+	\node[file](schedule) at (0, 6){\verb|schedule.py|};
+	\node[file](argumentation) at (0, 8){\verb|argumentation.py|};
+	\node[file](interface) at (4, 8){\verb|interface.py|};
+	\node[file](main) at (4, 10){\verb|main.py|};
+	\draw[arrow, dashed](cplex) -- (pyomo);
+	\draw[arrow, dashed](glpk) -- (pyomo);
+	\draw[arrow](graphviz) -- (visualise);
+	\draw[arrow](pyomo) -- (solver);
+	\draw[arrow](tkinter) -- (graphical);
+	\draw[arrow](visualise) -- (graphical);
+	\draw[arrow](graphical) -- (interface);
+	\draw[arrow](solver) -- (interface);
+	\draw[arrow](argumentation) -- (interface);
+	\draw[arrow](schedule) -- (interface);
+	\draw[arrow](schedule) -- (argumentation);
+	\draw[arrow](interface) -- (main);
 \end{tikzpicture}
+
+A solver is required for full functionality of the tool. This could be CPLEX or GLPK.
 
 \section{Algorithms}
