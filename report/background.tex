@@ -2,7 +2,7 @@
 
 \section{Optimisation}
 
-Optimisation is the process to finding the optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to either find the optimal decision, either as a minima or maxima using systemmatic methods. Applications of optimisation occur in many pratical sitations such as in engineering, manfuactoring, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimial decisions. The wide range of applications of optimisation result in  many fields of optimisation, where in this project we look at MILP.
+Optimisation is the process to finding the optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to either find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimal decisions. The wide range of applications of optimisation result in  many fields of optimisation, where in this project we look at MILP.
 \begin{center}
 	\begin{tikzpicture}
 		\node[file](problem) at (0, 2){Problem};
@@ -23,13 +23,13 @@ Real-life problems need to be modelled to be optimised. Problems are formulated 
 	&x,y\geq 0&\text{non-negative constraints}\\
 	&x,y\in\mathbb{N}&\text{whole units only}\\
 \end{align*}
-The problem is sufficently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best stategy is producting 2 units of hot chocolate and 3 units of milkshake.
+The problem is sufficiently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best strategy is producing 2 units of hot chocolate and 3 units of milkshake.
 
-In non-linear optimisation problems, finding global optimums in not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomaial complexity. In context of the project, it would not be feasible to compute an explanation in NP time.
+In non-linear optimisation problems, finding global optimums in not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomaial complexity. In context of the project, it would not be feasible to compute an explanation in polynomial time.
 
-\section{Makeshift Schedules}
+\subsection{Makeshift Scheduling}
 
-The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $i\in\mathcal{J}$, has an associated processing time $p_i\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
+The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs.\cite{sa} Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $i\in\mathcal{J}$, has an associated processing time $p_i\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
 \begin{align*}
 	\min_{C_{max},\mathbf{C},\mathbf{x}}&C_{max}&\text{ subject to:}\\
 	\forall i\in\mathcal{M}.\ &C_{max}\geq C_i\\
@@ -71,7 +71,9 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 	Schedule efficiency is a necessary condition for optimality.
 \end{theorem}
 
-\section{User Fixed Decisions}
+\subsection{Interval Scheduling}
+
+\subsection{User Fixed Decisions}
 
 To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
 
@@ -92,9 +94,13 @@ To accommodate practical applications of makeshift schedules, user positive and 
 	\end{itemize}
 \end{theorem}
 
-\section{Abstract Argumentation}
+\section{Argumentation}
 
-An abstract argumentation framework (AF) models the relation of attacks between arguments. Formally, an AF is a directed graph $(Args,\rightsquigarrow)$ where $Args$ is the set of arguments and $\rightsquigarrow$ is a binary relation over $Args$. For $a,b\in Args$, $a$ attacks $b$ iff $a\rightsquigarrow b$. Attacks are extended over sets of arguments, where $A\subseteq Args\rightsquigarrow b\in Args$ iff $\exists a\in A.\ a\rightsquigarrow b$. An extension $E$ is a subset of $Args$.
+Argumentation is a method to understand and evaluate reasons for and against potential conclusions. Argumentation is useful in resolving conflicts, clarifying incomplete information and most importantly, with respect to this project, explanations. We will review the abstract argumentation frameworks in light of scheduling.
+
+\subsection{Abstract Argumentation Frameworks}
+
+An abstract argumentation framework (AAF) models the relation of attacks between arguments.\cite{aa} Formally, an AAF is a directed graph $(Args,\rightsquigarrow)$ where $Args$ is the set of arguments and $\rightsquigarrow$ is a binary relation over $Args$. For $a,b\in Args$, $a$ attacks $b$ iff $a\rightsquigarrow b$. Attacks are extended over sets of arguments, where $A\subseteq Args\rightsquigarrow b\in Args$ iff $\exists a\in A.\ a\rightsquigarrow b$. An extension $E$ is a subset of $Args$.
 
 \begin{definition}
 	An extension $E$ is conflict-free iff $\forall a,b\in E.\ a\not\rightsquigarrow\ b$.

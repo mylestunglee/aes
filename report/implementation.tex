@@ -13,7 +13,7 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 \section{Structure}
 
 \begin{tikzpicture}
-	\fill[fill=black!10](-2, -1) rectangle (12, 3);
+	\fill[fill=black!10](-1.7, -0.8) rectangle (11.2, 3);
 	\node at (0, 0){External libraries};
 
 	\node[file](cplex) at (6, 0){CPLEX};
@@ -42,6 +42,139 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 	\draw[arrow](interface) -- (main);
 \end{tikzpicture}
 
-A solver is required for full functionality of the tool. This could be CPLEX or GLPK.
+The above graph illustrates the functional dependency between modules. A solver is required for full functionality of the tool. This could be CPLEX or GLPK.
 
 \section{Algorithms}
+
+\subsection{Notation}
+
+\begin{definition}
+	Let $\mathbf{0}^{d_1, ..., d_n}$ be the zero-valued binary tensor. The dimensions may be omitted if clear. Matrix subscripts are extended to $n$ dimensions.
+		
+	For example:
+	\begin{align*}
+	\mathbf{0}^{2\times 2}&=
+	\begin{bmatrix}
+	0&0\\
+	0&0\\
+	\end{bmatrix}
+	\end{align*}
+\end{definition}
+
+\begin{definition}
+	Let $\incircbin{\neg}$ be the element-wise logical negation operator over a tensor.
+	
+	For example:
+	\begin{align*}
+		\incircbin{\neg}
+		\begin{bmatrix}
+		1&0\\
+		0&1\\
+		\end{bmatrix}&=
+		\begin{bmatrix}
+			0&1\\
+			1&0\\
+		\end{bmatrix}
+	\end{align*}
+\end{definition}
+
+\begin{definition}
+	Let $\incircbin{\land}$ be the element-wise logical and operator over a tensor.
+	
+	For example:
+	\begin{align*}
+	\begin{bmatrix}
+	0&0\\
+	1&1\\
+	\end{bmatrix}
+	\incircbin{\land}
+	\begin{bmatrix}
+	0&1\\
+	0&1\\
+	\end{bmatrix}
+	&=
+	\begin{bmatrix}
+	0&0\\
+	0&1\\
+	\end{bmatrix}
+	\end{align*}
+\end{definition}
+
+\begin{definition}
+	Let $\incircbin{\lor}$ be the element-wise logical or operator over a tensor.
+	
+	For example:
+	\begin{align*}
+	\begin{bmatrix}
+	0&0\\
+	1&1\\
+	\end{bmatrix}
+	\incircbin{\lor}
+	\begin{bmatrix}
+	0&1\\
+	0&1\\
+	\end{bmatrix}
+	&=
+	\begin{bmatrix}
+	0&1\\
+	1&1\\
+	\end{bmatrix}
+	\end{align*}
+\end{definition}
+
+\subsection{Stability}
+
+Stability can be computed by checking whether $E$ exists within a all possible stable extensions of some $\langle Args, \rightsquigarrow\rangle$. However, a schedule cannot be reasoned on without understanding whether $E$ may be stable on $\langle Args, \rightsquigarrow\rangle$. Existing solutions require a complication pipeline using answer set solvers. To make the implementation of the tool easier, we adapt the stability computation to schedules into a concise algorithm.
+
+\begin{algorithm}
+	\begin{algorithmic}[1]
+		\Function{Explain-Stability}{$\mathbf{x}$, $\rightsquigarrow$,
+			 ignoreUnattacked, ignoreConflicts}
+			\State unattacked $\gets\incircbin{\neg}$ $\mathbf{x}$
+			\State conflicts $\gets\mathbf{0}^{(m\times n)^2}$
+			\For{$i\in\mathcal{M}$}
+				\For{$j\in\mathcal{J}$}
+					\If{$E_{i,j}=1$}
+						\State unattacked $\gets$ unattacked $\incircbin{\land}$ $\incircbin{\neg}\rightsquigarrow_{i,j}$
+						\State conflicts$_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
+					\EndIf
+				\EndFor
+			\EndFor
+			\State unattacked $\gets$ unattacked $\incircbin{\land}$ $\incircbin{\neg}$ ignoreUnattacked
+			\State conflicts $\gets$ conflicts $\incircbin{\land}$ $\incircbin{\neg}$ ignoreConflicts
+			\State \Return unattacked, conflicts
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+The function returns two tensors, \emph{unattacked} encode the unattacked nodes and \emph{conflicts} encode the edges are not conflict-free. \emph{ignoreUnattack} and \emph{ignoreConflicts} represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, ignoreUnattacked $=\mathbf{0}$ and ignoreConflicts $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
+
+\begin{theorem}
+	\textsc{Explain-Stability} is correct where $\mathbf{x}\approx E$ under $S$:
+	\begin{align*}
+		\textsc{Explain-Stability}(\mathbf{x},\rightsquigarrow,\mathbf{0},\mathbf{0})=\langle \mathbf{0},\mathbf{0}\rangle\Leftrightarrow E\text{ is stable on }\langle Args, \rightsquigarrow\rangle
+	\end{align*}
+\end{theorem}
+	
+\subsection{Explanation}
+
+\begin{algorithm}
+	\begin{algorithmic}[1]
+		\Function{Explain-Schedule}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
+				\State $\rightsquigarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)
+				\State $\langle$ unattacked\textsubscript{F}, conflicts\textsubscript{F} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
+				\State explanation\textsubscript{F} $\gets$ \textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{F})
+
+				\State $\rightsquigarrow_S$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$)
+				\State $\langle$ unattacked\textsubscript{S}, conflicts\textsubscript{S} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
+				\State explanation\textsubscript{S} $\gets$ \textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{S})
+
+				\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $\mathbf{x}$, $\rightsquigarrow_F$)
+				\State $\langle$ unattacked\textsubscript{D}, conflicts\textsubscript{D} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_D$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
+				\State explanation\textsubscript{D} $\gets$ \textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{D})
+				
+				\State explanation $\gets$ \textsc{Aggregate}(explanation\textsubscript{F}, explanation\textsubscript{S}, explanation\textsubscript{D})
+				\State \Return explanation
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}

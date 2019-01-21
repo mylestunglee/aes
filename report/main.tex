@@ -9,6 +9,8 @@
 \usepackage{amsthm}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
@@ -22,6 +24,10 @@
 \newcommand{\linespace}{\vspace*{\baselineskip}\\}
 \tikzstyle{file} = [draw, inner sep=10pt]
 \tikzstyle{arrow} = [-{Stealth[scale=2]}]
+
+\makeatletter
+\newcommand{\incircbin}{\mathpalette\@incircbin}
+\newcommand\@incircbin[2]{\mathbin{\ooalign{\hidewidth$#1#2$\hidewidth\crcr$#1\bigcirc$}}}
 
 \begin{document}
 	
