@@ -122,6 +122,115 @@ The above graph illustrates the functional dependency between modules. A solver 
 	\end{align*}
 \end{definition}
 
+\subsection{Framework Construction}
+
+The AAFs are constructed using the definitions in paper.\cite{aes} The definitions are reprinted below. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
+
+\begin{definition}
+	The feasiblity framework $\rightsquigarrow_F$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_F\langle i_2,j_2\rangle$ iff $i_1\neq i_2\land j_1=j_2$.
+\end{definition}
+
+\begin{definition}
+	The efficiency framework $\rightsquigarrow_S$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{SEP}(i_1,i_2,j_1,j_2)\lor\text{PEP}(i_1,i_2,j_1,j_2)$ where:
+	\begin{itemize}
+		\item Single exchange property: $\text{SEP}(i_1,i_2,j_1,j_2)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}$
+		\item Pair-wise exchange property: $\text{PEP}(i_1,i_2,j_1,j_2)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}$.
+	\end{itemize}
+\end{definition}
+
+\begin{definition}
+	The fixed user decision framework $\rightsquigarrow_D$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{DP}^+(i_1,i_2,j_1,j_2)\lor\text{DP}^-(i_1,i_2,j_1,j_2)$ where:
+	\begin{itemize}
+		\item Positive decision property: $\text{DP}^+(i_1,i_2,j_1,j_2)$ iff $\langle i_2, j_2\rangle\in D^+$
+		\item Negative decision property: $\text{DP}^-(i_1,i_2,j_1,j_2)$ iff $\langle i_1, j_1\rangle\in D^-\land i_1=i_2\land j_1=j_2$.
+	\end{itemize}
+\end{definition}
+
+\begin{algorithm}
+	\begin{algorithmic}[1]
+		\Function{Construct-Feasibilty}{$m$, $n$}
+			\State $\rightsquigarrow_F$ $\gets$ $\mathbf{0}^{(m\times n)^2}$
+			\For{$j\in\mathcal{J}$}
+				\For{$i_1\in\mathcal{M}$}
+					\For{$i_2\in\mathcal{M}$}
+						\If{$i_1\neq i_2$}
+							\State ${\rightsquigarrow_F}_{i_1,j,i_2,j}$ $\gets$ 1
+						\EndIf
+					\EndFor
+				\EndFor
+			\EndFor
+			\State \Return $\rightsquigarrow_F$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+$\rightsquigarrow_F$ can be constructed trivally in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity. because of the complexity of zero-initialising $\rightsquigarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data strucutre.
+
+\begin{algorithm}
+	\begin{algorithmic}[1]
+		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$}
+			\State $\mathbf{C}$ $\gets$ $\mathbf{x}\cdot\mathbf{p}$
+			\State $C_{\max}$ $\gets$ $\max(\mathbf{C})$
+			\State $\rightsquigarrow_S$ $\gets$ $\rightsquigarrow_F$
+			\For{$i_1\in\mathcal{M}$}
+				\If{$i_1\neq C_{\max}$}
+					\For{$j_1\in\mathcal{J}$}
+						\If{$x_{i_1,j_1}=1$}
+							\For{$i_2\in\mathcal{M}$}
+								\If{$\text{SEP}(i_1,j_1,i_2,j_1)$}
+									\State ${\rightsquigarrow_S}_{i_1,j_1,i_2,j_1}$ $\gets$ 0
+								\EndIf
+								\For{$j_2\in\mathcal{J}$}
+									\If{$\text{PEP}(i_1,j_1,i_2,j_2)$}
+										\State ${\rightsquigarrow_S}_{i_1,j_2,i_2,j_2}$ $\gets$ 1
+									\EndIf
+								\EndFor
+							\EndFor
+						\EndIf
+					\EndFor
+				\EndIf
+			\EndFor
+			\State \Return $\rightsquigarrow_S$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\begin{algorithmic}[1]
+		\Function{Construct-Efficiency}{$m$, $n$, $D$, $\rightsquigarrow_F$}
+			\State $\rightsquigarrow_D$ $\gets$ $\rightsquigarrow_F$
+			\For{$\langle i,j\rangle\in D^-$}
+				\State ${\rightsquigarrow_S}_{i,j,i,j}$ $\gets$ 1
+			\EndFor
+			\For{$\langle i_1,j_1\rangle\in D^+$}
+				\For{$i_2\in\mathcal{M}$}
+					\For{$j_2\in\mathcal{J}$}
+						\State ${\rightsquigarrow_D}_{i_2,j_2,i_1,j_1}$ $\gets$ 0				
+					\EndFor
+				\EndFor
+			\EndFor
+			\State \Return $\rightsquigarrow_D$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+
+%def create_fixed_decision_framework(nfd, pfd, ff, copy=True):
+%	if copy:
+%		df = np.copy(ff)
+%	else:
+%		df = ff
+%	(m, n) = nfd.shape
+%
+%	for i in range(m):
+%		for j in range(n):
+%			if nfd[i, j]:
+%				df[i, j, i, j] = True
+%			if pfd[i, j]:
+%				df[:, :, i, j] = False
+%
+%	return df
+	
 \subsection{Stability}
 
 Stability can be computed by checking whether $E$ exists within a all possible stable extensions of some $\langle Args, \rightsquigarrow\rangle$. However, a schedule cannot be reasoned on without understanding whether $E$ may be stable on $\langle Args, \rightsquigarrow\rangle$. Existing solutions require a complication pipeline using answer set solvers. To make the implementation of the tool easier, we adapt the stability computation to schedules into a concise algorithm.
@@ -167,11 +276,11 @@ The function returns two tensors, \emph{unattacked} encode the unattacked nodes 
 
 				\State $\rightsquigarrow_S$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$)
 				\State $\langle$ unattacked\textsubscript{S}, conflicts\textsubscript{S} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
-				\State explanation\textsubscript{S} $\gets$ \textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{S})
+				\State explanation\textsubscript{F} $\gets$ \textsc{Explain-Efficiency}(unattacked\textsubscript{S}, conflicts\textsubscript{S})
 
 				\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $\mathbf{x}$, $\rightsquigarrow_F$)
 				\State $\langle$ unattacked\textsubscript{D}, conflicts\textsubscript{D} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_D$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
-				\State explanation\textsubscript{D} $\gets$ \textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{D})
+				\State explanation\textsubscript{F} $\gets$ \textsc{Explain-Satisfaction}(unattacked\textsubscript{D}, conflicts\textsubscript{D})
 				
 				\State explanation $\gets$ \textsc{Aggregate}(explanation\textsubscript{F}, explanation\textsubscript{S}, explanation\textsubscript{D})
 				\State \Return explanation

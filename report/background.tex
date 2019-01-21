@@ -29,10 +29,10 @@ In non-linear optimisation problems, finding global optimums in not trivial. For
 
 \subsection{Makeshift Scheduling}
 
-The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs.\cite{sa} Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $i\in\mathcal{J}$, has an associated processing time $p_i\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
+The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs.\cite{sa} Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $i\in\mathcal{J}$, has an associated processing time $p_i\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
 \begin{align*}
-	\min_{C_{max},\mathbf{C},\mathbf{x}}&C_{max}&\text{ subject to:}\\
-	\forall i\in\mathcal{M}.\ &C_{max}\geq C_i\\
+	\min_{C_{\max},\mathbf{C},\mathbf{x}}&C_{\max}&\text{ subject to:}\\
+	\forall i\in\mathcal{M}.\ &C_{\max}\geq C_i\\
 	\forall i\in\mathcal{M}.\ &C_i=\sum_{j\in\mathcal{J}}x_{i,j}\cdot p_j\\
 	\forall j\in\mathcal{J}.\ &\sum_{j\in\mathcal{J}}x_{i,j}=1\\
 	\forall i\in\mathcal{M},\ \forall j\in\mathcal{J}.\ &x_{i,j}\in\{0,1\}
