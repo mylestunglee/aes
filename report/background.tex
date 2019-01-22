@@ -15,7 +15,7 @@ Optimisation is the process to finding the optimal decision with respect to cons
 		\draw[arrow](optimum) -- node [right, inner sep=10pt] {intepret} (solution);
 	\end{tikzpicture}
 \end{center}
-Real-life problems need to be modelled to be optimised. Problems are formulated using constraints and a cost function. Consider the following linear programming example. A person want to sell some drinks. Each unit of hot chocolate requiers 1 litre of milk and 3 bars of chocolate. Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate. The person only has 5 units of milk and 12 bars of chocolate. The person sells a unit of hot chocolate for £6 and a unit of milkshake for £5. What is the best strategy for maximising profit given that all units prodced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced.
+Real-life problems need to be modelled to be optimised. Problems are formulated using constraints and a cost function. Consider the following linear programming example. A person want to sell some drinks. Each unit of hot chocolate requires 1 litre of milk and 3 bars of chocolate. Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate. The person only has 5 units of milk and 12 bars of chocolate. The person sells a unit of hot chocolate for £6 and a unit of milkshake for £5. What is the best strategy for maximising profit given that all units produced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced.
 \begin{align*}
 	\max_{x,y}\ &6x+5y&\text{subject to:}\\
 	&x+y\leq 5&\text{milk resource constraint}\\
@@ -24,8 +24,8 @@ Real-life problems need to be modelled to be optimised. Problems are formulated 
 	&x,y\in\mathbb{N}&\text{whole units only}\\
 \end{align*}
 The problem is sufficiently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best strategy is producing 2 units of hot chocolate and 3 units of milkshake.
-
-In non-linear optimisation problems, finding global optimums in not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomaial complexity. In context of the project, it would not be feasible to compute an explanation in polynomial time.
+\linespace
+In non-linear optimisation problems, finding global optimums in not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity. In context of the project, it would not be feasible to compute an explanation in polynomial time.
 
 \subsection{Makeshift Scheduling}
 
@@ -71,8 +71,6 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 	Schedule efficiency is a necessary condition for optimality.
 \end{theorem}
 
-\subsection{Interval Scheduling}
-
 \subsection{User Fixed Decisions}
 
 To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
@@ -88,15 +86,42 @@ To accommodate practical applications of makeshift schedules, user positive and 
 \begin{theorem}
 	A fixed decision $D$ is unsatisfiable iff if the following necessary and sufficient conditions hold:
 	\begin{itemize}
-		\item$D^-$ and $D^-$ are disjoint.
+		\item$D^+$ and $D^-$ are disjoint.
 		\item$\forall(i,j),(i',j')\in D^+.\ i=i'\lor j\neq j'$
 		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ (i,j)\not\in D^-$
 	\end{itemize}
 \end{theorem}
 
+Makeshift schedules are often represented using cascade charts.
+
+\begin{center}
+	\includegraphics[width=.6\linewidth]{figures/makeshift1.pdf}
+\end{center}
+
+\begin{center}
+	\includegraphics[width=.6\linewidth]{figures/makeshift2.pdf}	
+\end{center}
+
+\subsection{Interval Scheduling}
+
+...
+
 \section{Argumentation}
 
-Argumentation is a method to understand and evaluate reasons for and against potential conclusions. Argumentation is useful in resolving conflicts, clarifying incomplete information and most importantly, with respect to this project, explanations. We will review the abstract argumentation frameworks in light of scheduling.
+Argumentation is a method to understand and evaluate reasons for and against potential conclusions. Argumentation is useful in resolving conflicts, clarifying incomplete information and most importantly, with respect to this project, explanations. The precise definition of an argument varies on the literature, however it is commonly agreed that arguments can attack or support other arguments. For an argument $\alpha$ to attack an argument $\beta$, $\alpha$ may critically challenge $\beta$ such that acceptability of $\beta$ is doubted.\cite{at} This may be to question one of $\beta$'s premises, by proposing a counter-example. For example, consider an scenario whether to sleep. Let $\alpha$ be ``I want to sleep", $\beta$ be ``I have work to do" and $\gamma$ be ``I can work tomorrow". Using human intuition, we can derive that $\gamma$ attacks $\beta$ and $\beta$ attacks $\alpha$. This is represented graphically below.
+
+\begin{center}
+	\begin{tikzpicture}
+		\node[node](gamma) at (0, 0){$\gamma$};
+		\node[node](beta) at (2, 0){$\beta$};
+		\node[node](alpha) at (4, 0){$\alpha$};
+		\draw[arrow](gamma) -- (beta);
+		\draw[arrow](beta) -- (alpha);
+	\end{tikzpicture}
+\end{center}
+
+If we conclude $\alpha$ to be acceptable, then we must not accept $\beta$. Accepting two arguments with conflicts can be interpreted as a contradiction or hypocritical. Hence, argumentation theory have measures of acceptable extensions, to decide whether some set of arguments are acceptable in some notion, with respect to different intuitions. This motivates to use abstract argumentation frameworks.\linespace
+Note that this example uses implicit background knowledge, also known as enthymemes. In this scenario, one cannot sleep and work at the same time. To our advantage, argumentation is applied to well-defined scheduling problems, so enthymemes are inapplicable in this project.
 
 \subsection{Abstract Argumentation Frameworks}
 
@@ -107,8 +132,42 @@ An abstract argumentation framework (AAF) models the relation of attacks between
 \end{definition}
 
 \begin{definition}
-	An extension $E$ is stable iff $E$ is conflict-free and $\forall a\in Args\backslash E.\ E\rightsquigarrow a$
+	An extension $E$ is stable iff $E$ is conflict-free and
+	
+	$\forall a\in Args\backslash E.\ E\rightsquigarrow a$
 \end{definition}
+
+\begin{center}
+	\begin{tikzpicture}
+	\node[node](gamma) at (0, 0){$\gamma$};
+	\node[node](beta) at (2, 0){$\beta$};
+	\node[node](alpha) at (4, 0){$\alpha$};
+	\node[node](delta) at (2, 2){$\delta$};
+	\node[node](epsilon) at (0, 2){$\varepsilon$};
+	\draw[arrow](beta) -- (alpha);
+	\draw[arrow](beta) -- (gamma);
+	\draw[arrow](beta) -- (delta);
+	\draw[arrow](delta) -- (beta);
+	\draw[arrow](delta) to [loop](delta);
+	\draw[arrow](epsilon) -- (delta);
+	\end{tikzpicture}
+\end{center}
+
+Consider the following example where $Args=\{\alpha,\beta,\gamma,\delta,\varepsilon\}$ and $	\rightsquigarrow=\{
+\pair{\beta}{\alpha},\\
+\pair{\beta}{\gamma},
+\pair{\beta}{\delta},
+\pair{\delta}{\beta},
+\pair{\delta}{\delta},
+\pair{\varepsilon}{\delta}
+\}$ as illustrated above. Then the following statements hold:
+\begin{itemize}
+	\item $\varepsilon\rightsquigarrow\delta$.
+	\item $\{\delta,\varepsilon\}\rightsquigarrow\beta$.
+	\item $\{\alpha,\gamma\}$ is conflict-free but not stable.
+	\item $\{\delta\}$ is not conflict-free and not stable.
+	\item $\{\beta,\varepsilon\}$ is conflict-free and stable.
+\end{itemize}
 
 \section{Explanations}
 

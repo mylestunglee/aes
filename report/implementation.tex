@@ -259,18 +259,15 @@ The function returns two tensors, \emph{unattacked} encode the unattacked nodes 
 		\Function{Explain-Schedule}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
 				\State $\rightsquigarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)
 				\State $\langle$ unattacked\textsubscript{F}, conflicts\textsubscript{F} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
-				\State explanation\textsubscript{F} $\gets$ \textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{F})
+				\State\textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{F})
 
 				\State $\rightsquigarrow_S$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$)
 				\State $\langle$ unattacked\textsubscript{S}, conflicts\textsubscript{S} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
-				\State explanation\textsubscript{F} $\gets$ \textsc{Explain-Efficiency}(unattacked\textsubscript{S}, conflicts\textsubscript{S})
+				\State\textsc{Explain-Efficiency}(unattacked\textsubscript{S}, conflicts\textsubscript{S})
 
 				\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $\mathbf{x}$, $\rightsquigarrow_F$)
 				\State $\langle$ unattacked\textsubscript{D}, conflicts\textsubscript{D} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_D$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
-				\State explanation\textsubscript{F} $\gets$ \textsc{Explain-Satisfaction}(unattacked\textsubscript{D}, conflicts\textsubscript{D})
-				
-				\State explanation $\gets$ \textsc{Aggregate}(explanation\textsubscript{F}, explanation\textsubscript{S}, explanation\textsubscript{D})
-				\State \Return explanation
+				\State\textsc{Explain-Satisfaction}(unattacked\textsubscript{D}, conflicts\textsubscript{D})
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
