@@ -164,7 +164,7 @@ The AAFs are constructed using the definitions in paper.\cite{aes} The definitio
 	\end{algorithmic}
 \end{algorithm}
 
-$\rightsquigarrow_F$ can be constructed trivally in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity. because of the complexity of zero-initialising $\rightsquigarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data strucutre, but results in greatly more complicated code.
+$\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity. because of the complexity of zero-initialising $\rightsquigarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data structure, but results in greatly more complicated code.
 
 \begin{algorithm}[h!]
 	\begin{algorithmic}[1]
@@ -195,7 +195,7 @@ $\rightsquigarrow_F$ can be constructed trivally in a dense data structure in $\
 	\end{algorithmic}
 \end{algorithm}
 
-The construction of $\rightsquigarrow_S$ is expensive because of the explict for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisify PEP and to copy $\rightsquigarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$.
+The construction of $\rightsquigarrow_S$ is expensive because of the explicit for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisfy PEP and to copy $\rightsquigarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$.
 
 \begin{algorithm}[h!]
 	\begin{algorithmic}[1]
@@ -216,7 +216,7 @@ The construction of $\rightsquigarrow_S$ is expensive because of the explict for
 	\end{algorithmic}
 \end{algorithm}
 
-The construction of $\rightsquigarrow_D$ has $\mathcal{O}(m^2n^2)$ computational complexity. If $D$ is assumed to be satisfible, then $D^+$ has at most $n$ decisions while $D^-$ has at most $m-1)n$ decisions. However, if $D$ is not neccessarly satifible to account for poorly-formulated user problems, so in general $D^+$ and $D^-$ has at most $mn$ decisions.
+The construction of $\rightsquigarrow_D$ has $\mathcal{O}(m^2n^2)$ computational complexity. If $D$ is assumed to be satisfiable, then $D^+$ has at most $n$ decisions while $D^-$ has at most $m-1)n$ decisions. However, if $D$ is not necessarily satisfiable to account for poorly-formulated user problems, so in general $D^+$ and $D^-$ has at most $mn$ decisions.
 
 \subsection{Stability}
 

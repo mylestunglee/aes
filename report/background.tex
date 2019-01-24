@@ -71,6 +71,16 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 	Schedule efficiency is a necessary condition for optimality.
 \end{theorem}
 
+Makeshift schedules are often represented using cascade charts. The first and second chart shows an inefficient schedule and efficient schedule respectively where $m=4$ and $n=12$.
+
+\begin{center}
+	\includegraphics[width=.6\linewidth]{figures/makeshift1.pdf}
+\end{center}
+
+\begin{center}
+	\includegraphics[width=.6\linewidth]{figures/makeshift2.pdf}	
+\end{center}
+
 \subsection{User Fixed Decisions}
 
 To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
@@ -91,16 +101,6 @@ To accommodate practical applications of makeshift schedules, user positive and 
 		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ (i,j)\not\in D^-$
 	\end{itemize}
 \end{theorem}
-
-Makeshift schedules are often represented using cascade charts.
-
-\begin{center}
-	\includegraphics[width=.6\linewidth]{figures/makeshift1.pdf}
-\end{center}
-
-\begin{center}
-	\includegraphics[width=.6\linewidth]{figures/makeshift2.pdf}	
-\end{center}
 
 \subsection{Interval Scheduling}
 
@@ -168,20 +168,3 @@ Consider the following example where $Args=\{\alpha,\beta,\gamma,\delta,\varepsi
 	\item $\{\delta\}$ is not conflict-free and not stable.
 	\item $\{\beta,\varepsilon\}$ is conflict-free and stable.
 \end{itemize}
-
-\section{Explanations}
-
-
-
-\subsection{Notes}
-\begin{enumerate}
-	\item Conflicting negative and positive fixed decisions and explanation for their resolution
-	\item Command line interface and improved graphical user interface with random, schedule display
-	\item efficiency respects user fixed decisions
-	\item explanations are sorted by reducible longest completion time. as m and n grows, the explanations grow. feasibility: $O(mn)$, efficiency: $O(mn^2)$, fixed decisions $O(mn)$
-	\item Malle [112] explanations: find meanings, manage social interaction; learning
-	\item why are explainations counterarguments: causes
-	\item A tool explaining the concept of scheduling is superfluous while a tool explaining solutions concisely using mathematically-oriented may be discarded by inaccessible language. A challenge will be to strike a balance of possible explanations by targetting potential users.
-\end{enumerate}
-
-%https://ac.els-cdn.com/S0307904X12001837/1-s2.0-S0307904X12001837-main.pdf?_tid=8917b7ba-3293-40d2-a4d9-7d67b40ae499&acdnat=1546712183_67c96afaaedc7cd95cbff3dd83844cb6
