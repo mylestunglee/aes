@@ -42,14 +42,16 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 	\draw[arrow](interface) -- (main);
 \end{tikzpicture}
 
-The above graph illustrates the functional dependency between modules. A solver is required for full functionality of the tool. This could be CPLEX or GLPK.
+The above graph illustrates the functional dependency between modules in the code-base of the tool. A solver is required for full functionality of the tool. This could be CPLEX or GLPK.
 
 \section{Algorithms}
 
 \subsection{Notation}
 
+The algorithm uses operators over boolean tensors to generate frameworks and compute stability. The definitions below share notions with linear algebra over matrices.
+
 \begin{definition}
-	Let $\mathbf{0}^{d_1, ..., d_n}$ be the zero-valued binary tensor. The dimensions may be omitted if clear. Matrix subscripts are extended to $n$ dimensions.
+	Let $\mathbf{0}^{d_1, ..., d_n}$ be the zero-valued boolean tensor. The dimensions may be omitted if clear. Matrix subscripts are extended to $n$ dimensions.
 		
 	For example:
 	\begin{align*}
@@ -124,7 +126,7 @@ The above graph illustrates the functional dependency between modules. A solver 
 
 \subsection{Framework Construction}
 
-The AAFs are constructed using the definitions in paper.\cite{aes} The definitions are reprinted below. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
+The AAFs are constructed using the definitions in paper \cite{aes}. The definitions are reprinted below. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
 
 \begin{definition}
 	The feasiblity framework $\rightsquigarrow_F$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_F\langle i_2,j_2\rangle$ iff $i_1\neq i_2\land j_1=j_2$.
@@ -146,7 +148,8 @@ The AAFs are constructed using the definitions in paper.\cite{aes} The definitio
 	\end{itemize}
 \end{definition}
 
-\begin{algorithm}[h!]
+\begin{algorithm}[H]
+	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Construct-Feasibilty}{$m$, $n$}
 			\State $\rightsquigarrow_F$ $\gets$ $\mathbf{0}^{(m\times n)^2}$
@@ -166,7 +169,8 @@ The AAFs are constructed using the definitions in paper.\cite{aes} The definitio
 
 $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity. because of the complexity of zero-initialising $\rightsquigarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data structure, but results in greatly more complicated code.
 
-\begin{algorithm}[h!]
+\begin{algorithm}[H]
+	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$}
 			\State $\mathbf{C}$ $\gets$ $\mathbf{x}\cdot\mathbf{p}$
@@ -197,7 +201,8 @@ $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $
 
 The construction of $\rightsquigarrow_S$ is expensive because of the explicit for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisfy PEP and to copy $\rightsquigarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$.
 
-\begin{algorithm}[h!]
+\begin{algorithm}[H]
+	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Construct-Efficiency}{$m$, $n$, $D$, $\rightsquigarrow_F$}
 			\State $\rightsquigarrow_D$ $\gets$ $\rightsquigarrow_F$
@@ -216,13 +221,14 @@ The construction of $\rightsquigarrow_S$ is expensive because of the explicit fo
 	\end{algorithmic}
 \end{algorithm}
 
-The construction of $\rightsquigarrow_D$ has $\mathcal{O}(m^2n^2)$ computational complexity. If $D$ is assumed to be satisfiable, then $D^+$ has at most $n$ decisions while $D^-$ has at most $m-1)n$ decisions. However, if $D$ is not necessarily satisfiable to account for poorly-formulated user problems, so in general $D^+$ and $D^-$ has at most $mn$ decisions.
+The construction of $\rightsquigarrow_D$ has $\mathcal{O}(m^2n^2)$ computational complexity. If $D$ is assumed to be satisfiable, then $D^+$ has at most $n$ decisions while $D^-$ has at most $(m-1)n$ decisions. However, if $D$ is not necessarily satisfiable to account for poorly-formulated user problems, so in general $D^+$ and $D^-$ has at most $mn$ decisions.
 
 \subsection{Stability}
 
 Stability can be computed by checking whether $E$ exists within a all possible stable extensions of some $\langle Args, \rightsquigarrow\rangle$. However, a schedule cannot be reasoned on without understanding whether $E$ may be stable on $\langle Args, \rightsquigarrow\rangle$. Existing solutions require a complication pipeline using answer set solvers. To make the implementation of the tool easier, we adapt the stability computation to schedules into a concise algorithm.
 
-\begin{algorithm}[h!]
+\begin{algorithm}[H]
+	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Explain-Stability}{$\mathbf{x}$, $\rightsquigarrow$,
 			 ignoreUnattacked, ignoreConflicts}
@@ -230,7 +236,7 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 			\State conflicts $\gets\mathbf{0}^{(m\times n)^2}$
 			\For{$i\in\mathcal{M}$}
 				\For{$j\in\mathcal{J}$}
-					\If{$E_{i,j}=1$}
+					\If{$\mathbf{x}_{i,j}=1$}
 						\State unattacked $\gets$ unattacked $\incircbin{\land}$ $\incircbin{\neg}\rightsquigarrow_{i,j}$
 						\State conflicts$_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
 					\EndIf
@@ -254,7 +260,8 @@ The function returns two tensors, \emph{unattacked} encode the unattacked nodes 
 	
 \subsection{Explanation}
 
-\begin{algorithm}[h!]
+\begin{algorithm}[H]
+	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Explain-Schedule}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
 				\State $\rightsquigarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)

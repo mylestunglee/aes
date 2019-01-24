@@ -14,3 +14,4 @@ report/*.out
 report/*.bbl
 report/*.toc
 report/*.blg
+report/*.dvi
