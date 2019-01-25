@@ -3,18 +3,23 @@
 \section{Optimisation}
 
 Optimisation is the process to finding the optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to either find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimal decisions. The wide range of applications of optimisation result in  many fields of optimisation, where in this project we look at MILP.
-\begin{center}
-	\begin{tikzpicture}
-		\node[file](problem) at (0, 2){Problem};
-		\node[file](model) at (0, 0){Model};
-		\node[file](solution) at (4, 2){Solution};
-		\node[file](optimum) at (4, 0){Optimum};
-		\draw[arrow](problem) -- node [above] {solve} (solution);
-		\draw[arrow](problem) -- node [left, inner sep=10pt] {abstact} (model);
-		\draw[arrow](model) -- node [below] {optimise} (optimum);
-		\draw[arrow](optimum) -- node [right, inner sep=10pt] {intepret} (solution);
-	\end{tikzpicture}
-\end{center}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+			\node[file](problem) at (0, 2){Problem};
+			\node[file](model) at (0, 0){Model};
+			\node[file](solution) at (4, 2){Solution};
+			\node[file](optimum) at (4, 0){Optimum};
+			\draw[arrow](problem) -- node [above] {solve} (solution);
+			\draw[arrow](problem) -- node [left, inner sep=10pt] {abstact} (model);
+			\draw[arrow](model) -- node [below] {optimise} (optimum);
+			\draw[arrow](optimum) -- node [right, inner sep=10pt] {intepret} (solution);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Abstraction of problem solving}
+\end{figure}
+
 Real-life problems need to be modelled to be optimised. Problems are formulated using constraints and a cost function. Consider the following linear programming example. A person want to sell some drinks. Each unit of hot chocolate requires 1 litre of milk and 3 bars of chocolate. Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate. The person only has 5 units of milk and 12 bars of chocolate. The person sells a unit of hot chocolate for £6 and a unit of milkshake for £5. What is the best strategy for maximising profit given that all units produced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced.
 \begin{align*}
 	\max_{x,y}\ &6x+5y&\text{subject to:}\\
@@ -25,7 +30,7 @@ Real-life problems need to be modelled to be optimised. Problems are formulated 
 \end{align*}
 The problem is sufficiently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best strategy is producing 2 units of hot chocolate and 3 units of milkshake.
 \linespace
-In non-linear optimisation problems, finding global optimums in not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity. In context of the project, it would not be feasible to compute an explanation in polynomial time.
+In non-linear optimisation problems, finding global optimums is not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity. In context of the project, it would not be feasible to compute an explanation in polynomial time.
 
 \subsection{Makeshift Scheduling}
 
@@ -39,7 +44,7 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 \end{align*}
 
 \begin{definition}
-	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$ such that $S=\mathbf{x}$.
+	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$ such that $S=\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but not specify its formal definition unlike $\mathbf{x}$, which will be used in linear programming and algorithms with its precise definition.
 \end{definition}
 
 \begin{definition}
@@ -71,19 +76,25 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 	Schedule efficiency is a necessary condition for optimality.
 \end{theorem}
 
-Makeshift schedules are often represented using cascade charts. The first and second chart shows an inefficient schedule and efficient schedule respectively where $m=4$ and $n=12$.
+Makeshift schedules are often represented using cascade charts. The charts shows graphically the difference in efficiency of schedules where the problem has the parameters $m=4$ and $n=13$.
 
-\begin{center}
-	\includegraphics[width=.6\linewidth]{figures/makeshift1.pdf}
-\end{center}
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.6\linewidth]{figures/makeshift1.pdf}
+	\end{center}
+	\caption{An inefficent schedule}
+\end{figure}
 
-\begin{center}
-	\includegraphics[width=.6\linewidth]{figures/makeshift2.pdf}	
-\end{center}
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.6\linewidth]{figures/makeshift2.pdf}	
+	\end{center}
+	\caption{An efficient schedule}
+\end{figure}
 
 \subsection{User Fixed Decisions}
 
-To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
+To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
 
 \begin{definition}
 	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall (i,j)\in D^+.\ x_{i,j}=1$.
@@ -106,7 +117,9 @@ The relaxed definition of $D$ allows $D$ to be unsatisfiable, which is not permi
 
 \subsection{Interval Scheduling}
 
-...
+Interval scheduling is a natural extension to makeshift scheduling. Such scheduling have freedom in determining the starting times of its jobs. In practice, rearranging critical jobs may effect the feasiblity of a schedule. Interval scheduling is a researched widely, with many literature proposing algorithms for variants of interval scheduling \cite{is}.
+\linespace
+Interval scheduilng is defined over $m\in\mathbb{N}$ and $n\in\mathbb{N}$ jobs where they are collectively denoted by the sets $\mathcal{M}$ and $\mathcal{J}$ such that $\mathcal{M}=\{1,...,m\}$ and $\mathcal{J}=\{1,...,n\}$ respectively. Each job $j\in\mathcal{J}$ must be allocated a machine $i\in\mathcal{M}$ preemptievely. In addition, each job must be allocated between the interval $[s_j,f_j)$ such that $s_j<f_j$ where $s_j,f_j\in\mathbb{R}_{\geq 0}$ without loss of generality. Finally, each job is assoicated with a processing time $p_j\in\mathbb{R}_{\geq 0}$. No jobs are allowed to overlap. Note that $p_j>f_j-s_j$ is possible, meaning that interval schedules can be constructed to be infeasible.
 
 \section{Argumentation}
 
@@ -139,21 +152,24 @@ An abstract argumentation framework (AAF) models the relation of attacks between
 	$\forall a\in Args\backslash E.\ E\rightsquigarrow a$
 \end{definition}
 
-\begin{center}
-	\begin{tikzpicture}
-	\node[node](gamma) at (0, 0){$\gamma$};
-	\node[node](beta) at (2, 0){$\beta$};
-	\node[node](alpha) at (4, 0){$\alpha$};
-	\node[node](delta) at (2, 2){$\delta$};
-	\node[node](epsilon) at (0, 2){$\varepsilon$};
-	\draw[arrow](beta) -- (alpha);
-	\draw[arrow](beta) -- (gamma);
-	\draw[arrow](beta) -- (delta);
-	\draw[arrow](delta) -- (beta);
-	\draw[arrow](delta) to [loop](delta);
-	\draw[arrow](epsilon) -- (delta);
-	\end{tikzpicture}
-\end{center}
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\node[node](gamma) at (0, 0){$\gamma$};
+		\node[node](beta) at (2, 0){$\beta$};
+		\node[node](alpha) at (4, 0){$\alpha$};
+		\node[node](delta) at (2, 2){$\delta$};
+		\node[node](epsilon) at (0, 2){$\varepsilon$};
+		\draw[arrow](beta) -- (alpha);
+		\draw[arrow](beta) -- (gamma);
+		\draw[arrow](beta) -- (delta);
+		\draw[arrow](delta) -- (beta);
+		\draw[arrow](delta) to [loop](delta);
+		\draw[arrow](epsilon) -- (delta);
+		\end{tikzpicture}
+	\end{center}
+	\caption{An AAF represented graphically}
+\end{figure}
 
 Consider the following example where $Args=\{\alpha,\beta,\gamma,\delta,\varepsilon\}$ and $	\rightsquigarrow=\{
 \pair{\beta}{\alpha},\\
@@ -171,10 +187,40 @@ Consider the following example where $Args=\{\alpha,\beta,\gamma,\delta,\varepsi
 	\item $\{\beta,\varepsilon\}$ is conflict-free and stable.
 \end{itemize}
 
+\begin{definition}
+	An extension $E$ is admissible iff $E$ is conflict-free and $E$ attacks every argument attacking $E$.
+\end{definition}
+
+\begin{definition}
+	An extension $E$ defends an argument $\alpha$ iff for all every argument attacking $\alpha$, $E$ attacks such attacking arugment. 
+\end{definition}
+
+\begin{definition}
+	An extension $E$ is complete iff $E$ is admissible and $E$ contains all arguments $E$ defends.
+\end{definition}
+
+\begin{definition}
+	An extension $E$ is preferred iff $E$ is maximally admissible with respect to $\subseteq$.
+\end{definition}
+
 \section{Explanations}
 
-asdsa
+
 
 \section{Existing Tools}
 
-asd
+We will look at two scheduling software, Setmore from a commerical background and LEKIN \cite{sta} from a acdemic background from the explanative focus.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{figures/setmore.png}
+	\end{center}
+	\caption{Setmore interactive interface}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics{figures/lekin.jpg}
+	\end{center}
+	\caption{LEKIN interactive interface}
+\end{figure}

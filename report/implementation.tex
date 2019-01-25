@@ -14,11 +14,12 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 
 \begin{tikzpicture}
 	\fill[fill=black!10](-1.7, -0.8) rectangle (11.2, 3);
-	\node at (0, 0){External libraries};
-
+	\node at (3, 0){External libraries};
+	
+	\node[file](numpy) at (0, 0){NumPy};
 	\node[file](cplex) at (6, 0){CPLEX};
 	\node[file](glpk) at (10, 0){GLPK};
-	\node[file](graphviz) at (0, 2){Graphviz};
+	\node[file](matplotlib) at (0, 2){Matplotlib};
 	\node[file](tkinter) at (4, 2){Tkinter};		
 	\node[file](pyomo) at (8, 2){Pyomo};
 	\node[file](visualise) at (0, 4){\verb|visualise.py|};
@@ -30,7 +31,9 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 	\node[file](main) at (4, 10){\verb|main.py|};
 	\draw[arrow, dashed](cplex) -- (pyomo);
 	\draw[arrow, dashed](glpk) -- (pyomo);
-	\draw[arrow](graphviz) -- (visualise);
+	\draw[arrow](numpy) -- (matplotlib);
+	\draw[arrow](matplotlib) -- (visualise);
+	\draw[arrow](visualise) -- (schedule);
 	\draw[arrow](pyomo) -- (solver);
 	\draw[arrow](tkinter) -- (graphical);
 	\draw[arrow](visualise) -- (graphical);
