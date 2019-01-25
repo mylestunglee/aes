@@ -12,15 +12,19 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{pdfpages}
+\usepackage{hyperref}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 
 \newtheorem{theorem}{Theorem}
 
+\setlength{\parindent}{0pt}
+
 \newcommand{\reporttitle}{Explaining Optimisation Solvers}
 \newcommand{\reportauthor}{Myles Lee}
 \newcommand{\supervisor}{Dr. Kristijonas Cyras\\Prof. Francesca Toni}
+\newcommand{\marker}{Dr. Ruth Misener}
 \newcommand{\reporttype}{MEng. Individual Project}
 \newcommand{\linespace}{\vspace*{\baselineskip}\\}
 \newcommand{\pair}[2]{\langle{#1},{#2}\rangle}
@@ -43,6 +47,9 @@
 	\setcounter{tocdepth}{1}
 	\pagenumbering{roman}
 	\tableofcontents 
+	
+	\vspace*{\baselineskip}
+	A user guide will follow in the appendices with a tutorial for non-technical user to learn how to use the tool.
 	 
 	\cleardoublepage
 	\pagenumbering{arabic}
@@ -53,9 +60,10 @@
 	\input{implementation}
 	\input{evaluation}
 	
-	\begin{appendices}
-		\input{userguide}
-	\end{appendices}
+	%\begin{appendices}
+	%	\input{userguide}
+	%\end{appendices}
+
 
 	\cleardoublepage
 	\bibliography{bibliography}

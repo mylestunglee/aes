@@ -205,22 +205,83 @@ Consider the following example where $Args=\{\alpha,\beta,\gamma,\delta,\varepsi
 
 \section{Explanations}
 
+Explanation generation problems are a class of explainable planning problems. Many generation tasks appeal to either minimality or simplicity \cite{pe}. Explanations may occur over observations. For example, a sequence of states may lead to an error, an explanation can guide an agent to avoid such error. However, trustworthy and theoretical well-understood algorithms are difficult to explain to non-technical users \cite{ep}. The paper highlights concepts to explain given an optimisation context:
+\begin{itemize}
+	\item Why did the optimiser do that?
+	\item Why did the optimiser not do this?
+	\item Why does this proposal result to more optimal result?
+	\item Why can't this decision be taken?
+	\item Why do I need to re-plan at this point?
+	\item Will a better result be produced if given $n$ more hours?
+\end{itemize}
 
+Arguably, understanding cannot be captured with a few questions. Future question include the negation, where their answers are not natively their negation.
 
 \section{Existing Tools}
 
-We will look at two scheduling software, Setmore from a commerical background and LEKIN \cite{sta} from a acdemic background from the explanative focus.
+We will look at two scheduling software, Setmore and LEKIN, in terms of explainable planning. We will not look existing tools using argumentation because of relevancy, we use argumentation as a means of explanation in an intermediate process.
+
+\subsection{Setmore}
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.4]{figures/setmore.png}
 	\end{center}
-	\caption{Setmore interactive interface}
+	\caption{Setmore interactive interface \cite{setmore}}
 \end{figure}
+
+Setmore is a commercial online application that records appointments, schedules and employees. The application is designed for small business such as in healthcare \cite{setmore}, where managers can organise appointments on a calender. Makeshift schedules are formulae where employees are machines and appointments are jobs. The intuitive interface enables users to quickly glance at appointments and their times, it is graphically clear when two appointments overlap. However, under the condition that one employee is able to attend at most one appointment, the user is presented with an error message. Messages also occur when resources are fully-booked or unavailable. Scheduling error messages occur during data input, which may prove problematic when a user wishes to input a large number of appointments. Appointments cannot be over-allocated because each appointment has at most assignment by possible user inputs.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{figures/setmoreerror1.png}
+	\end{center}
+	\caption{Overlapping appointment allocation error message}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{figures/setmoreerror2.png}
+	\end{center}
+	\caption{Data input of an appointment where there are no possible services, or possible assignments}
+\end{figure}
+
+We will assess the application under its free-trail, which may limit its explanative functionality. A key observation is that there is no emphasis on the concept of an optimal schedule. Because the tool is designed for small businesses and optimality is not well-defined for arbitrary businesses, the user can graphically inspect and improve a schedule with respect to the user's notion of optimality. Modification of an existing schedule is well-facilitated within its interface, where appointments can be moved or swapped between employees. Explanations for unfeasible schedules are limited to data input verification and validation error messages.
+
+\subsection{LEKIN}
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics{figures/lekin.jpg}
 	\end{center}
-	\caption{LEKIN interactive interface}
+	\caption{LEKIN interactive interface \cite{lekin}}
 \end{figure}
+
+LEKIN is a academic-oriented scheduling application to teach students to scheduling theory and its application, developed at the Stem School of Business, NYU \cite{lekin}. The application features numerous optimisation algorithms specialised for scheduling and draws inspiration from academic for rules and heuristics \cite{sta}. The tool supports single machines, parallel machines and flexible job shop settings.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.8]{figures/lekinerror1.png}
+	\end{center}
+	\caption{Over-allocation of job J001 to multiple machines}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.8]{figures/lekinerror2.png}
+	\end{center}
+	\caption{Job J006 is not allocated to any machine}
+\end{figure}
+
+The application validates a schedule's feasibility at data input. Infeasible schedule results in error messages. The application computes optimal schedules, but has no functionality to verify its optimality. While our approach is to weaken optimality with efficiency, LEKIN takes the approach to compute common scheduling performance metrics such as makeshift completion time, tardiness and weighted metrics over machines. The advantage is that these metrics can be easily and quickly be computed and are intuitive to non-technical users given some background reading. However, these metrics are global across all machines, and give no indication to improving schedules. Non-technical users may run one of the provided optimisers to improve metrics, but no explanation is offered between the assignments of the pre-optimised and the post-optimised schedules.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.8]{figures/lekinmetric.png}
+	\end{center}
+	\caption{Performance metrics of an schedule}
+\end{figure}
+
+\subsection{Comparison}
+
+It is clear that both application offers limited explanations, explicitly by error messages and implicitly by cascade charts. However, both methods require human intuition, which is unfeasible for large schedules. Therefore, for effective knowledge transfer, localised text explanations and cascade charts help users to focus on key machines and jobs.

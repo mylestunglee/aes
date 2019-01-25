@@ -12,40 +12,42 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 
 \section{Structure}
 
-\begin{tikzpicture}
-	\fill[fill=black!10](-1.7, -0.8) rectangle (11.2, 3);
-	\node at (3, 0){External libraries};
-	
-	\node[file](numpy) at (0, 0){NumPy};
-	\node[file](cplex) at (6, 0){CPLEX};
-	\node[file](glpk) at (10, 0){GLPK};
-	\node[file](matplotlib) at (0, 2){Matplotlib};
-	\node[file](tkinter) at (4, 2){Tkinter};		
-	\node[file](pyomo) at (8, 2){Pyomo};
-	\node[file](visualise) at (0, 4){\verb|visualise.py|};
-	\node[file](graphical) at (4, 4){\verb|graphical.py|};
-	\node[file](solver) at (8, 4){\verb|solver.py|};
-	\node[file](schedule) at (0, 6){\verb|schedule.py|};
-	\node[file](argumentation) at (0, 8){\verb|argumentation.py|};
-	\node[file](interface) at (4, 8){\verb|interface.py|};
-	\node[file](main) at (4, 10){\verb|main.py|};
-	\draw[arrow, dashed](cplex) -- (pyomo);
-	\draw[arrow, dashed](glpk) -- (pyomo);
-	\draw[arrow](numpy) -- (matplotlib);
-	\draw[arrow](matplotlib) -- (visualise);
-	\draw[arrow](visualise) -- (schedule);
-	\draw[arrow](pyomo) -- (solver);
-	\draw[arrow](tkinter) -- (graphical);
-	\draw[arrow](visualise) -- (graphical);
-	\draw[arrow](graphical) -- (interface);
-	\draw[arrow](solver) -- (interface);
-	\draw[arrow](argumentation) -- (interface);
-	\draw[arrow](schedule) -- (interface);
-	\draw[arrow](schedule) -- (argumentation);
-	\draw[arrow](interface) -- (main);
-\end{tikzpicture}
+\begin{figure}[H]
+	\begin{tikzpicture}
+		\fill[fill=black!10](-1.7, -0.8) rectangle (11.2, 3);
+		\node at (3, 0){External libraries};
+		
+		\node[file](numpy) at (0, 0){NumPy};
+		\node[file](cplex) at (6, 0){CPLEX};
+		\node[file](glpk) at (10, 0){GLPK};
+		\node[file](matplotlib) at (0, 2){Matplotlib};
+		\node[file](tkinter) at (4, 2){Tkinter};		
+		\node[file](pyomo) at (8, 2){Pyomo};
+		\node[file](visualise) at (0, 4){\verb|visualise.py|};
+		\node[file](graphical) at (4, 4){\verb|graphical.py|};
+		\node[file](solver) at (8, 4){\verb|solver.py|};
+		\node[file](schedule) at (0, 6){\verb|schedule.py|};
+		\node[file](argumentation) at (0, 8){\verb|argumentation.py|};
+		\node[file](interface) at (4, 8){\verb|interface.py|};
+		\node[file](main) at (4, 10){\verb|main.py|};
+		\draw[arrow, dashed](cplex) -- (pyomo);
+		\draw[arrow, dashed](glpk) -- (pyomo);
+		\draw[arrow](numpy) -- (matplotlib);
+		\draw[arrow](matplotlib) -- (visualise);
+		\draw[arrow](visualise) -- (schedule);
+		\draw[arrow](pyomo) -- (solver);
+		\draw[arrow](tkinter) -- (graphical);
+		\draw[arrow](visualise) -- (graphical);
+		\draw[arrow](graphical) -- (interface);
+		\draw[arrow](solver) -- (interface);
+		\draw[arrow](argumentation) -- (interface);
+		\draw[arrow](schedule) -- (interface);
+		\draw[arrow](schedule) -- (argumentation);
+		\draw[arrow](interface) -- (main);
+	\end{tikzpicture}
+	\caption{The graph illustrates the functional dependency between modules in the code-base of the tool. A solver is required for full functionality of the tool. This could be CPLEX or GLPK.}
+\end{figure}
 
-The above graph illustrates the functional dependency between modules in the code-base of the tool. A solver is required for full functionality of the tool. This could be CPLEX or GLPK.
 
 \section{Algorithms}
 
@@ -138,9 +140,11 @@ The AAFs are constructed using the definitions in paper \cite{aes}. The definiti
 \begin{definition}
 	The efficiency framework $\rightsquigarrow_S$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{SEP}(i_1,i_2,j_1)\lor\text{PEP}(i_1,i_2,j_1,j_2)$ where:
 	\begin{itemize}
-		\item Single exchange property: $\text{SEP}(i_1,i_2,j_1)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}$
-		\item Pair-wise exchange property: $\text{PEP}(i_1,i_2,j_1,j_2)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}$.
+		\item Single exchange property (SEP): $\text{SEP}(i_1,i_2,j_1)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}$
+		\item Pair-wise exchange property (PEP): $\text{PEP}(i_1,i_2,j_1,j_2)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}$.
 	\end{itemize}
+
+	The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This paper refer to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality.
 \end{definition}
 
 \begin{definition}
@@ -207,7 +211,7 @@ The construction of $\rightsquigarrow_S$ is expensive because of the explicit fo
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Construct-Efficiency}{$m$, $n$, $D$, $\rightsquigarrow_F$}
+		\Function{Construct-Satisfaction}{$m$, $n$, $D$, $\rightsquigarrow_F$}
 			\State $\rightsquigarrow_D$ $\gets$ $\rightsquigarrow_F$
 			\For{$\langle i,j\rangle\in D^-$}
 				\State ${\rightsquigarrow_S}_{i,j,i,j}$ $\gets$ 1
@@ -252,7 +256,7 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 	\end{algorithmic}
 \end{algorithm}
 
-The function returns two tensors, \emph{unattacked} encode the unattacked nodes and \emph{conflicts} encode the edges are not conflict-free. \emph{ignoreUnattack} and \emph{ignoreConflicts} represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, ignoreUnattacked $=\mathbf{0}$ and ignoreConflicts $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
+The function returns two tensors, \emph{unattacked} encode the unattacked nodes and \emph{conflicts} encode the edges are not conflict-free. \emph{ignoreUnattack} and \emph{ignoreConflicts} represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, ignoreUnattacked $=\mathbf{0}$ and ignoreConflicts $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
 
 \begin{theorem}
 	\textsc{Explain-Stability} is correct where $\mathbf{x}\approx E$ under $S$:
@@ -275,9 +279,11 @@ The function returns two tensors, \emph{unattacked} encode the unattacked nodes 
 				\State $\langle$ unattacked\textsubscript{S}, conflicts\textsubscript{S} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
 				\State\textsc{Explain-Efficiency}(unattacked\textsubscript{S}, conflicts\textsubscript{S})
 
-				\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $\mathbf{x}$, $\rightsquigarrow_F$)
+				\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $D$, $\rightsquigarrow_F$)
 				\State $\langle$ unattacked\textsubscript{D}, conflicts\textsubscript{D} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_D$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
 				\State\textsc{Explain-Satisfaction}(unattacked\textsubscript{D}, conflicts\textsubscript{D})
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
+
+The above high-level algorithm generates explanations for feasibility, efficiency and satisfaction.
