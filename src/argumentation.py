@@ -159,7 +159,6 @@ def explain_efficiency(p, S, unattacked, conflicts):
 						C_max_reduced = np.max(schedule.calc_completion_times(
 							p, S_reduced))
 						reduction = C_max - C_max_reduced
-						reduction = 1
 						pairs.append((
 							(-reduction, j1, j2, i1, i2),
 							'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}'.format(
