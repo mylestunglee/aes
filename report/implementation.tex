@@ -160,7 +160,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 		\draw[arrow](ee) -- (end);
 		\draw[arrow](es) -- (end);
 	\end{tikzpicture}}
-	\caption{The flowchart summaries the required order in which algorithms are executed.}
+	\caption{The flowchart summaries the required execution order of sub-functions in the \textsc{Full-Precomputation-Explain} algorithm.}
 \end{figure}
 
 \subsection{Framework Construction}
@@ -218,7 +218,7 @@ $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $
 			\State $C_{\max}$ $\gets$ $\max(\mathbf{C})$
 			\State $\rightsquigarrow_S$ $\gets$ $\rightsquigarrow_F$
 			\For{$i_1\in\mathcal{M}$}
-				\If{$i_1\neq C_{\max}$}
+				\If{$i_1=C_{\max}$}
 					\For{$j_1\in\mathcal{J}$}
 						\If{$x_{i_1,j_1}=1$}
 							\For{$i_2\in\mathcal{M}$}
@@ -271,21 +271,34 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Explain-Stability}{$\mathbf{x}$, $\rightsquigarrow$,
-			 $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
+		\Function{Explain-Stability}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
+			\State $\mathbf{u}$ $\gets$ \textsc{Compute-Unattacked}($\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$)
+			\State $\mathbf{c}$ $\gets$ \textsc{Compute-Conflicts}($\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{c}}$)
+			\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
+		\EndFunction
+		\Function{Compute-Unattacked}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$}
 			\State $\mathbf{u}$ $\gets\incircbin{\neg}$ $\mathbf{x}$
-			\State $\mathbf{c}$ $\gets\mathbf{0}^{(m\times n)^2}$
 			\For{$i\in\mathcal{M}$}
 				\For{$j\in\mathcal{J}$}
 					\If{$x_{i,j}=1$}
 						\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}\rightsquigarrow_{i,j}$
-						\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
 					\EndIf
 				\EndFor
 			\EndFor
 			\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{u}}$
+			\State \Return $\mathbf{u}$
+		\EndFunction
+		\Function{Compute-Conflicts}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{c}}$}
+			\State $\mathbf{c}$ $\gets\mathbf{0}^{(m\times n)^2}$
+			\For{$i\in\mathcal{M}$}
+				\For{$j\in\mathcal{J}$}
+					\If{$x_{i,j}=1$}
+						\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
+					\EndIf
+				\EndFor
+			\EndFor
 			\State $\mathbf{c}$ $\gets$ $\mathbf{c}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{c}}$
-			\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
+			\State \Return $\mathbf{c}$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
@@ -293,9 +306,16 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 The function returns two tensors, $\mathbf{u}$ encode the unattacked nodes and $\mathbf{c}$ encode the edges are not conflict-free. $\bar{\mathbf{u}}$ and $\bar{\mathbf{c}}$ represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, $\bar{\mathbf{u}}$ $=\mathbf{0}$ and $\bar{\mathbf{c}}$ $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
 
 \begin{theorem}
+	\textsc{Compute-Conflicts} is correct where $\mathbf{x}\approx E$ under $S$:
+	\begin{align*}
+	\textsc{Compute-Conflicts}(\mathbf{x},\rightsquigarrow,\mathbf{0})=\mathbf{0}\Leftrightarrow E\text{ is conflict-free on }\langle Args, \rightsquigarrow\rangle
+	\end{align*}
+\end{theorem}
+
+\begin{theorem}
 	\textsc{Explain-Stability} is correct where $\mathbf{x}\approx E$ under $S$:
 	\begin{align*}
-		\textsc{Explain-Stability}(\mathbf{x},\rightsquigarrow,\mathbf{0},\mathbf{0})=\langle \mathbf{0},\mathbf{0}\rangle\Leftrightarrow E\text{ is stable on }\langle Args, \rightsquigarrow\rangle
+		\textsc{Explain-Stability}(\mathbf{x},\rightsquigarrow,\mathbf{0},\mathbf{0})=\pair{\mathbf{0}}{\mathbf{0}}\Leftrightarrow E\text{ is stable on }\langle Args, \rightsquigarrow\rangle
 	\end{align*}
 \end{theorem}
 	
@@ -427,7 +447,7 @@ The algorithm has $\mathcal{O}(m^2n^2)$ computational complexity from collecting
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Explain-Schedule}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
+		\Function{Full-Precomputation-Explain}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
 			\State $\rightsquigarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)
 			\State $\pair{\mathbf{u_F}}{\mathbf{c_F}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
 			\State\textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c_F}$)
@@ -443,7 +463,7 @@ The algorithm has $\mathcal{O}(m^2n^2)$ computational complexity from collecting
 	\end{algorithmic}
 \end{algorithm}
 
-The above high-level algorithm generates explanations for feasibility, efficiency and satisfaction. The above algorithm summaries how each function cooperates together.
+The above high-level algorithm generates explanations for feasibility, efficiency and satisfaction while summarising the interaction of construction, stability and explanation functions. The function is named with full precomputation because all frameworks are fully constructed before explanations.
 
 \subsection{Memory Limitations}
 
