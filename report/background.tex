@@ -97,7 +97,7 @@ Makeshift schedules are often represented using cascade charts. The charts shows
 To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension to makeshift problems. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
 
 \begin{definition}
-	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall (i,j)\in D^+.\ x_{i,j}=1$.
+	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall \pair{i}{j}\in D^+.\ x_{i,j}=1$.
 \end{definition}
 
 \begin{definition}
@@ -108,8 +108,8 @@ To accommodate practical applications of makeshift schedules, user positive and 
 	A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
 	\begin{itemize}
 		\item$D^+$ and $D^-$ are disjoint.
-		\item$\forall(i,j),(i',j')\in D^+.\ i=i'\lor j\neq j'$
-		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ (i,j)\not\in D^-$
+		\item$\forall\pair{i}{j},\pair{i'}{j'}\in D^+.\ i=i'\lor j\neq j'$
+		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$
 	\end{itemize}
 \end{theorem}
 

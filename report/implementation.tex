@@ -129,12 +129,18 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 	\end{align*}
 \end{definition}
 
+\subsection{Summary}
+
+This section introduces many algorithms. Below is a graph which summaries how all functions are put together without exact concern of technical details.
+
+% graph here
+
 \subsection{Framework Construction}
 
 The AAFs are constructed using the definitions in paper \cite{aes}. The definitions are reprinted below. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
 
 \begin{definition}
-	The feasiblity framework $\rightsquigarrow_F$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_F\langle i_2,j_2\rangle$ iff $i_1\neq i_2\land j_1=j_2$.
+	The feasibility framework $\rightsquigarrow_F$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_F\langle i_2,j_2\rangle$ iff $i_1\neq i_2\land j_1=j_2$.
 \end{definition}
 
 \begin{definition}
@@ -201,12 +207,12 @@ $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $
 					\EndFor
 				\EndIf
 			\EndFor
-			\State \Return $\rightsquigarrow_S$
+			\State \Return $\pair{\rightsquigarrow_S}{\mathbf{C}}$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 
-The construction of $\rightsquigarrow_S$ is expensive because of the explicit for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisfy PEP and to copy $\rightsquigarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$.
+The construction of $\rightsquigarrow_S$ is expensive because of the explicit for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisfy PEP and to copy $\rightsquigarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$. We return the value of $\mathbf{C}$ because it will be used later, rather an recompute its value when necessary
 
 \begin{algorithm}[H]
 	\caption{}
@@ -238,25 +244,25 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Explain-Stability}{$\mathbf{x}$, $\rightsquigarrow$,
-			 ignoreUnattacked, ignoreConflicts}
-			\State unattacked $\gets\incircbin{\neg}$ $\mathbf{x}$
-			\State conflicts $\gets\mathbf{0}^{(m\times n)^2}$
+			 $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
+			\State $\mathbf{u}$ $\gets\incircbin{\neg}$ $\mathbf{x}$
+			\State $\mathbf{c}$ $\gets\mathbf{0}^{(m\times n)^2}$
 			\For{$i\in\mathcal{M}$}
 				\For{$j\in\mathcal{J}$}
-					\If{$\mathbf{x}_{i,j}=1$}
-						\State unattacked $\gets$ unattacked $\incircbin{\land}$ $\incircbin{\neg}\rightsquigarrow_{i,j}$
-						\State conflicts$_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
+					\If{$x_{i,j}=1$}
+						\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}\rightsquigarrow_{i,j}$
+						\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
 					\EndIf
 				\EndFor
 			\EndFor
-			\State unattacked $\gets$ unattacked $\incircbin{\land}$ $\incircbin{\neg}$ ignoreUnattacked
-			\State conflicts $\gets$ conflicts $\incircbin{\land}$ $\incircbin{\neg}$ ignoreConflicts
-			\State \Return unattacked, conflicts
+			\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{u}}$
+			\State $\mathbf{c}$ $\gets$ $\mathbf{c}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{c}}$
+			\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 
-The function returns two tensors, \emph{unattacked} encode the unattacked nodes and \emph{conflicts} encode the edges are not conflict-free. \emph{ignoreUnattacked} and \emph{ignoreConflicts} represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, ignoreUnattacked $=\mathbf{0}$ and ignoreConflicts $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
+The function returns two tensors, $\mathbf{u}$ encode the unattacked nodes and $\mathbf{c}$ encode the edges are not conflict-free. $\bar{\mathbf{u}}$ and $\bar{\mathbf{c}}$ represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, $\bar{\mathbf{u}}$ $=\mathbf{0}$ and $\bar{\mathbf{c}}$ $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
 
 \begin{theorem}
 	\textsc{Explain-Stability} is correct where $\mathbf{x}\approx E$ under $S$:
@@ -267,23 +273,150 @@ The function returns two tensors, \emph{unattacked} encode the unattacked nodes 
 	
 \subsection{Explanation}
 
+Explanations are given in italics. Implementation of algorithms use Python's \verb|print()| to collect explanations over all algorithms in the tool's output.
+
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Explain-Schedule}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
-				\State $\rightsquigarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)
-				\State $\langle$ unattacked\textsubscript{F}, conflicts\textsubscript{F} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
-				\State\textsc{Explain-Feasibility}(unattacked\textsubscript{F}, conflicts\textsubscript{F})
-
-				\State $\rightsquigarrow_S$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$)
-				\State $\langle$ unattacked\textsubscript{S}, conflicts\textsubscript{S} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
-				\State\textsc{Explain-Efficiency}(unattacked\textsubscript{S}, conflicts\textsubscript{S})
-
-				\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $D$, $\rightsquigarrow_F$)
-				\State $\langle$ unattacked\textsubscript{D}, conflicts\textsubscript{D} $\rangle$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_D$, unattacked\textsubscript{F}, conflicts\textsubscript{F})
-				\State\textsc{Explain-Satisfaction}(unattacked\textsubscript{D}, conflicts\textsubscript{D})
+		\Function{Explain-Feasibility}{$\mathbf{u}$, $\mathbf{c}$}
+			\If{$m=0$}
+				\If{$n=0$}
+					\State \emph{There are no jobs, so the schedule is trivially feasible.}
+				\Else
+					\State \emph{There are no machines to allocate to jobs.}
+				\EndIf
+			\Else
+				\State $\mathbf{y}$ $\gets$ $\mathbf{0}^n$
+				\State $\mathbf{z}$ $\gets$ $\mathbf{0}^{(n\times m)}$
+				\For{$j\in\mathcal{J}$}
+					\For{$i_1\in\mathcal{M}$}
+						\For{$i_2\in\mathcal{M}$}
+							\If{$c_{i_1,j,i_2,j}=1$}
+								\State $y_j$ $\gets$ $1$
+								\State $z_{j,i_1}$ $\gets$ $1$
+								\State $z_{j,j_2}$ $\gets$ $1$
+							\EndIf
+						\EndFor
+					\EndFor					
+				\EndFor
+				\If{$u^T_0=\mathbf{0}\land\mathbf{y}=\mathbf{0}$}
+					\State \emph{All jobs are allocated by exactly one machine.}
+				\Else
+					\For{$j\in\mathcal{J}$}
+						\If{$u_{0,j}=1$}
+							\State \emph{Job $j$ is not allocated by any machine.}
+						\EndIf
+						\If{$y_j\neq\mathbf{0}$}
+							\State \emph{Job $j$ is over-allocated by machines $\{i\ |\ i\in\mathcal{M}, z_{j,i}=1\}$.}
+						\EndIf
+					\EndFor
+				\EndIf
+			\EndIf
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 
-The above high-level algorithm generates explanations for feasibility, efficiency and satisfaction.
+The algorithm has $\mathcal{O}(m^2n)$ computational complexity. The paper \cite{aes} does not state explanations for trivial cases when $m=0$ or $n=0$. The above algorithm handles these cases with additional explanations. A problem with the naive implementation of generating an explanation for each conflict in $\mathbf{c_F}$ results in $k^2$ explanations for $k$ conflicting machines for a job. This results in superfluous text for the user. To summarise these explanations, the algorithm constructs a pseudo-schedule $\mathbf{z}$ which can be interpreted as $\mathbf{x}$ transposed and rows filtered if $\sum_{i\in\mathcal{M}}x_{i,j}>1$ for all jobs $j$. Afterwards, the algorithm prints the non-zero indices of $\mathbf{c}'$, which refer to the machines that causes over-allocation.
+
+The algorithm features two optimisations. The variable $\mathbf{y}$ represent over-allocated jobs. $y_j=\mathbf{0}$ is faster to compute than its equivalent $z_j=\mathbf{0}$ because $y_j$ is an scalar aggregate over conflicting machines, unlike the vector $z_j$. Likewise, by the construction of $\mathbf{u_F}$, we can exploit $u^T_0=\mathbf{0}\iff\mathbf{u}=\mathbf{0}$ because $u^T_0=\frac{1}{m}\mathbf{u}^T\cdot\mathbf{1}^m$.
+
+\begin{algorithm}[H]
+	\caption{}
+	\begin{algorithmic}[1]
+		\Function{Explain-Efficiency}{$\mathbf{p}$, $\mathbf{C}$, $\mathbf{u}$, $\mathbf{c}$}				\State $i_1$ $\gets$ first argmax of $\mathbf{C}$
+			\State reasons $\gets$ empty list
+			\For{$j_1\in\mathcal{J}$}
+				\For{$i_2\in\mathcal{M}$}
+					\If{$u_{i_2,j_1}=1$}
+						\State reason $\gets$ \emph{Job $j_1$ can be allocated to machine $i_2$.}
+						\State append reason to reasons
+					\EndIf
+					\For{$j_2\in\mathcal{J}$}
+						\If{$c_{i_1,j_1,i_2,j_2}=1$}
+							\State reason $\gets$ \emph{Job $j_1$ and $j_2$ can be swapped with machines $i_1$ and $i_2$.}
+							\State append reason to reasons
+						\EndIf
+					\EndFor
+				\EndFor
+			\EndFor
+			\State sort reasons by $\langle$reduction, processing time$\rangle$
+			\If{reasons is empty}
+				\State\emph{All jobs satisfy single and pairwise exchange properties.}
+			\Else
+				\State output reasons
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+The algorithm has $\mathcal{O}(mn^2\log(mn^2))$ computational complexity. This arises from sorting reasons generated. Explanation of efficiency results in at most $m^2n^2$ lines, which  grows quickly for large schedules. To make this easier for the user to understand, we sort the explanations by its reduction, the amount the total completion time will reduce when an  single or pairwise exchange occurs. This will highlight the most significant improvements for the user. This justifies the increased complexity with the logithimic factor.
+\linespace
+A key limitation with sorting by reduction, is in the cases of multiple critical machines. In this case, all reductions are zero. This is because single or pairwise exchange results in local optimisations of the same objective value. To find a strictly more optimal schedule, we need to look $k$ steps ahead, where $k$ is the number of critical machines. To solve this, the tool will need to generate instructions of $k$ actions, of single and pair-wise exchanges. For an arbitrary large schedule, this will cause an exponential explosion in $k$ of the explanation length. We continue the assumption that exponential tractable complexity is not feasible, so therefore, a full explanation for efficiency is not feasible.
+\linespace
+An alternative solution is to restrict the explanation space by giving local explanations. Hence in the algorithm, we consider only one critical machine. This reduces the computational complexity by a factor of $m$, which is significant because efficiency is the most expensive schedule property to explain.
+
+\begin{algorithm}[H]
+	\caption{}
+	\begin{algorithmic}[1]
+		\Function{Explain-Satisfaction}{$D$, $\mathbf{u}$, $\mathbf{c}$}
+			\For{$j\in\mathcal{J}$}
+				\If{$\exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$}
+					\State\emph{Job $j$ cannot be allocated to any machine.}
+				\EndIf
+				\If{$D^-$ and $D^+$ are not disjoint}
+					\State\emph{Job $j$ subject to conflicting negative and positive fixed user decisions.}
+				\EndIf
+				\If{$|i\in\mathcal{M},\pair{i}{j}\in D^+|>1$}
+					\State\emph{Job $j$ cannot be allocated to multiple machines.}	
+				\EndIf
+			\EndFor
+			\State $\mathbf{y}$ $\gets$ $\mathbf{0}^{m\times n}$
+			\For{$i\in\mathcal{M}$}
+				\For{$j\in\mathcal{J}$}
+					\State $\mathbf{y}$ $\gets$ $\mathbf{y}$ $\incircbin{\lor}$ $c_{i,j}$
+				\EndFor
+			\EndFor
+			\If{$\mathbf{u}=\mathbf{0}\land\mathbf{y}=\mathbf{0}$}
+				\State\emph{All jobs satisfy user fixed decisions.}
+			\Else
+				\For{$i\in\mathcal{M}$}
+					\For{$j\in\mathcal{J}$}
+						\If{$u_{i,j}$}
+							\State\emph{Job $j$ must be allocated to machine $i$.}
+						\EndIf
+						\If{$y_{i,j}$}
+							\State\emph{Job $j$ must not be allocated to machine $i$.}
+						\EndIf			
+					\EndFor
+				\EndFor
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+The algorithm has $\mathcal{O}(m^2n^2)$ computational complexity from collecting conflicts into the conflicted positive fixed decision variable $\mathbf{y}$. Because of the relaxation that $D$ is not assumed to be satisfiable, we must check the sufficient conditions for this, and generate their explanations if necessary.
+
+\begin{algorithm}[H]
+	\caption{}
+	\begin{algorithmic}[1]
+		\Function{Explain-Schedule}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
+			\State $\rightsquigarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)
+			\State $\pair{\mathbf{u_F}}{\mathbf{c_F}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
+			\State\textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c_F}$)
+
+			\State $\pair{\rightsquigarrow_S}{\mathbf{C}}$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$)
+			\State $\pair{\mathbf{u_S}}{\mathbf{c_S}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, $\mathbf{u_F}$, $\mathbf{c_F}$)
+			\State\textsc{Explain-Efficiency}($\mathbf{p}$, $\mathbf{C}$, $\mathbf{u_S}$, $\mathbf{c_S}$)
+
+			\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $\mathbf{x}$, $\rightsquigarrow_F$)
+			\State $\pair{\mathbf{u_D}}{\mathbf{c_D}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_D$, $\mathbf{u_F}$, $\mathbf{c_F}$)
+			\State\textsc{Explain-Satisfaction}($\mathbf{u_D}$, $\mathbf{c_D}$)
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+The above high-level algorithm generates explanations for feasibility, efficiency and satisfaction. The above algorithm summaries how each function cooperates together.
+
+\subsection{Memory Limitations}
+
+The explanation requires at least $m^2n^2$ bytes to store the frameworks. This easily excesses 4GB for $m=200$ and $n=200$. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable.
