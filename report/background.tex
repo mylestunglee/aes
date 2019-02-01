@@ -12,7 +12,7 @@ Optimisation is the process to finding the optimal decision with respect to cons
 			\node[file](solution) at (4, 2){Solution};
 			\node[file](optimum) at (4, 0){Optimum};
 			\draw[arrow](problem) -- node [above] {solve} (solution);
-			\draw[arrow](problem) -- node [left, inner sep=10pt] {abstact} (model);
+			\draw[arrow](problem) -- node [left, inner sep=10pt] {abstract} (model);
 			\draw[arrow](model) -- node [below] {optimise} (optimum);
 			\draw[arrow](optimum) -- node [right, inner sep=10pt] {intepret} (solution);
 		\end{tikzpicture}
@@ -30,13 +30,13 @@ Real-life problems need to be modelled to be optimised. Problems are formulated 
 \end{align*}
 The problem is sufficiently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best strategy is producing 2 units of hot chocolate and 3 units of milkshake.
 \linespace
-In non-linear optimisation problems, finding global optimums is not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity. In context of the project, it would not be feasible to compute an explanation in polynomial time.
+In non-linear optimisation problems, finding global optimums is not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity for arbitrary dimensional problems. In context of the project, it is unfeasible to compute a complete explanation of optimality in polynomial time.
 
 \subsection{Makeshift Scheduling}
 
-The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $i\in\mathcal{J}$, has an associated processing time $p_i\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
+The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $j\in\mathcal{J}$, has an associated processing time $p_j\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
 \begin{align*}
-	\min_{C_{\max},\mathbf{C},\mathbf{x}}&C_{\max}&\text{ subject to:}\\
+	\min_{C_{\max},\mathbf{C},\mathbf{x}}\ &C_{\max}&\text{ subject to:}\\
 	\forall i\in\mathcal{M}.\ &C_{\max}\geq C_i\\
 	\forall i\in\mathcal{M}.\ &C_i=\sum_{j\in\mathcal{J}}x_{i,j}\cdot p_j\\
 	\forall j\in\mathcal{J}.\ &\sum_{j\in\mathcal{J}}x_{i,j}=1\\
@@ -44,7 +44,7 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 \end{align*}
 
 \begin{definition}
-	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$ such that $S=\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but not specify its formal definition unlike $\mathbf{x}$, which will be used in linear programming and algorithms with its precise definition.
+	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$ such that $S=\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but does not specify its formal representation unlike $\mathbf{x}$, which will be used in linear programming and algorithms with its precise definition.
 \end{definition}
 
 \begin{definition}
@@ -57,7 +57,7 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 \end{definition}
 
 \begin{definition}
-	A job $j\in\mathcal{J}$ is critical iff $j$ is allocated to a critical machine $i\in\mathcal{M}$ such that $x_{i,j}=1$.
+	A job $j\in\mathcal{J}$ is critical iff $j$ is allocated to a critical machine $i\in\mathcal{M}$ and $x_{i,j}=1$.
 \end{definition}
 
 \begin{definition}
@@ -76,7 +76,7 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 	Schedule efficiency is a necessary condition for optimality.
 \end{theorem}
 
-Makeshift schedules are often represented using cascade charts. The charts shows graphically the difference in efficiency of schedules where the problem has the parameters $m=4$ and $n=13$.
+Makeshift schedules are often represented using cascade charts. The charts shows graphically the difference in total completion time of schedules where the problem has the parameters $m=4$ and $n=13$.
 
 \begin{figure}[H]
 	\begin{center}
@@ -94,7 +94,7 @@ Makeshift schedules are often represented using cascade charts. The charts shows
 
 \subsection{User Fixed Decisions}
 
-To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
+To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension to makeshift problems. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
 
 \begin{definition}
 	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall (i,j)\in D^+.\ x_{i,j}=1$.
@@ -105,7 +105,7 @@ To accommodate practical applications of makeshift schedules, user positive and 
 \end{definition}
 
 \begin{theorem}
-	A fixed decision $D$ is unsatisfiable iff if the following necessary and sufficient conditions hold:
+	A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
 	\begin{itemize}
 		\item$D^+$ and $D^-$ are disjoint.
 		\item$\forall(i,j),(i',j')\in D^+.\ i=i'\lor j\neq j'$
@@ -113,13 +113,13 @@ To accommodate practical applications of makeshift schedules, user positive and 
 	\end{itemize}
 \end{theorem}
 
-The relaxed definition of $D$ allows $D$ to be unsatisfiable, which is not permitted in previous work \cite{aes}. This relaxation accomdates for poorly-formulated user problems, allowing explanations over validation of user input, in a practical setting.
+The relaxed definition of $D$ allows $D$ to be unsatisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations over validation of user input, which is more useful to users in a practical setting.
 
 \subsection{Interval Scheduling}
 
-Interval scheduling is a natural extension to makeshift scheduling. Such scheduling have freedom in determining the starting times of its jobs. In practice, rearranging critical jobs may effect the feasiblity of a schedule. Interval scheduling is a researched widely, with many literature proposing algorithms for variants of interval scheduling \cite{is}.
+Interval scheduling is a natural extension to makeshift scheduling. Makeshift scheduling has freedom in determining the starting times of its jobs. In practice, rearranging critical jobs may effect the feasibility of a schedule. Interval scheduling is a widely researched area, with many literature proposing algorithms for variants of interval scheduling \cite{is}.
 \linespace
-Interval scheduilng is defined over $m\in\mathbb{N}$ and $n\in\mathbb{N}$ jobs where they are collectively denoted by the sets $\mathcal{M}$ and $\mathcal{J}$ such that $\mathcal{M}=\{1,...,m\}$ and $\mathcal{J}=\{1,...,n\}$ respectively. Each job $j\in\mathcal{J}$ must be allocated a machine $i\in\mathcal{M}$ preemptievely. In addition, each job must be allocated between the interval $[s_j,f_j)$ such that $s_j<f_j$ where $s_j,f_j\in\mathbb{R}_{\geq 0}$ without loss of generality. Finally, each job is assoicated with a processing time $p_j\in\mathbb{R}_{\geq 0}$. No jobs are allowed to overlap. Note that $p_j>f_j-s_j$ is possible, meaning that interval schedules can be constructed to be infeasible.
+Interval scheduling is defined over $m\in\mathbb{N}$ and $n\in\mathbb{N}$ jobs where they are collectively denoted by the sets $\mathcal{M}$ and $\mathcal{J}$ such that $\mathcal{M}=\{1,...,m\}$ and $\mathcal{J}=\{1,...,n\}$ respectively. Each job $j\in\mathcal{J}$ must be allocated a machine $i\in\mathcal{M}$ preemptively. In addition, each job must be allocated between the interval $[s_j,f_j)$ such that $s_j<f_j$ where $s_j,f_j\in\mathbb{R}_{\geq 0}$ without loss of generality. Finally, each job is associated with a processing time $p_j\in\mathbb{R}_{\geq 0}$. No jobs are allowed to overlap. Note that $p_j>f_j-s_j$ is possible, meaning that interval schedules can be constructed to be infeasible.
 
 \section{Argumentation}
 
@@ -192,7 +192,7 @@ Consider the following example where $Args=\{\alpha,\beta,\gamma,\delta,\varepsi
 \end{definition}
 
 \begin{definition}
-	An extension $E$ defends an argument $\alpha$ iff for all every argument attacking $\alpha$, $E$ attacks such attacking arugment. 
+	An extension $E$ defends an argument $\alpha$ iff for all every argument attacking $\alpha$, $E$ attacks such attacking argument 
 \end{definition}
 
 \begin{definition}
@@ -230,18 +230,18 @@ We will look at two scheduling software, Setmore and LEKIN, in terms of explaina
 	\caption{Setmore interactive interface \cite{setmore}}
 \end{figure}
 
-Setmore is a commercial online application that records appointments, schedules and employees. The application is designed for small business such as in healthcare \cite{setmore}, where managers can organise appointments on a calender. Makeshift schedules are formulae where employees are machines and appointments are jobs. The intuitive interface enables users to quickly glance at appointments and their times, it is graphically clear when two appointments overlap. However, under the condition that one employee is able to attend at most one appointment, the user is presented with an error message. Messages also occur when resources are fully-booked or unavailable. Scheduling error messages occur during data input, which may prove problematic when a user wishes to input a large number of appointments. Appointments cannot be over-allocated because each appointment has at most assignment by possible user inputs.
+Setmore is a commercial online application that records appointments, schedules and employees. The application is designed for small business such as in healthcare \cite{setmore}, where managers can organise appointments on a calender. Makeshift schedules are formulae where employees are machines and appointments are jobs. The intuitive interface enables users to quickly glance at appointments and their times, it is graphically clear when two appointments overlap. However, under the condition that one employee is able to attend at most one appointment, the user is presented with an error message. Messages also occur when resources are fully-booked or unavailable. Scheduling error messages alert the user during data input, which may prove problematic when a user wishes to input a large number of appointments. Appointments cannot be over-allocated because each appointment has at most assignment one by interface restrictions.
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[scale=0.4]{figures/setmoreerror1.png}
+		\includegraphics[scale=0.6]{figures/setmoreerror1.png}
 	\end{center}
 	\caption{Overlapping appointment allocation error message}
 \end{figure}
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[scale=0.4]{figures/setmoreerror2.png}
+		\includegraphics[scale=0.6]{figures/setmoreerror2.png}
 	\end{center}
 	\caption{Data input of an appointment where there are no possible services, or possible assignments}
 \end{figure}
@@ -257,20 +257,20 @@ We will assess the application under its free-trail, which may limit its explana
 	\caption{LEKIN interactive interface \cite{lekin}}
 \end{figure}
 
-LEKIN is a academic-oriented scheduling application to teach students to scheduling theory and its application, developed at the Stem School of Business, NYU \cite{lekin}. The application features numerous optimisation algorithms specialised for scheduling and draws inspiration from academic for rules and heuristics \cite{sta}. The tool supports single machines, parallel machines and flexible job shop settings.
+LEKIN is a academic-oriented scheduling application to teach students scheduling theory and its applications, developed at the Stem School of Business, NYU \cite{lekin}. The application features numerous optimisation algorithms specialised for scheduling and draws inspiration from academic for rules and heuristics \cite{sta}. The tool supports single machines, parallel machines and flexible job shop settings.
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.8]{figures/lekinerror1.png}
 	\end{center}
-	\caption{Over-allocation of job J001 to multiple machines}
+	\caption{Over-allocation of a job to multiple machines}
 \end{figure}
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.8]{figures/lekinerror2.png}
 	\end{center}
-	\caption{Job J006 is not allocated to any machine}
+	\caption{A job is not allocated to any machine}
 \end{figure}
 
 The application validates a schedule's feasibility at data input. Infeasible schedule results in error messages. The application computes optimal schedules, but has no functionality to verify its optimality. While our approach is to weaken optimality with efficiency, LEKIN takes the approach to compute common scheduling performance metrics such as makeshift completion time, tardiness and weighted metrics over machines. The advantage is that these metrics can be easily and quickly be computed and are intuitive to non-technical users given some background reading. However, these metrics are global across all machines, and give no indication to improving schedules. Non-technical users may run one of the provided optimisers to improve metrics, but no explanation is offered between the assignments of the pre-optimised and the post-optimised schedules.

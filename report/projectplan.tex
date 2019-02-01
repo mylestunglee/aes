@@ -6,7 +6,7 @@ The primary objective of the project is to correctly implement the tool. The imp
 
 \begin{enumerate}
 	\item\textbf{Solver integration:} The tool depends on an external optimisation library. External libraries are subject to licensing issues, poor interfacing and lack of clear documentation. Hence, using solvers are a significant risk.
-	\item\textbf{Argumentation:} Implementation of the argumentation methodology requires through understanding of paper \cite{aes}. Background research is crucial for an efficient and extensible implementation. The paper explicitly states the definitions of required AFs, hence their construction should be trivial. However, their generated explanations from using the stability extension rely on human intuition and are not formally expressed. The paper states that for any schedule, there exists an explanation, implying that a formalism exists. This implementation would be challenging, but this is at the core of the project.
+	\item\textbf{Argumentation:} Implementation of the argumentation methodology requires through understanding of paper \cite{aes}. Background research is crucial for an efficient and extensible implementation. The paper explicitly states the definitions of required AAFs, hence their construction should be trivial. However, their generated explanations from using the stability extension rely on human intuition and are not formally expressed. The paper states that for any schedule, there exists an explanation, implying that a formalism exists. This implementation would be challenging, but this is at the core of the project.
 	\item\textbf{GUI:} For the tool to be accessible to computer novices, a GUI allows users to easily interact with explanations. There are many GUI tutorials for many different libraries. Choosing a GUI library will require some investigation. Creating a good user experience may be time-consuming, but this is a low risk.
 \end{enumerate}
 
@@ -16,9 +16,9 @@ Secondary objectives would include finding opportunities to expand ArgOpt. At th
 	\item Modelling dependencies between jobs. This can represent a process with a sequence of jobs.
 	\item Extending the use of abstract argumentation to include structured argumentation with schedules.
 	\item Deriving more efficient methods to compute explanations with respect to scheduling. This could include reviewing the stability algorithm. One would need to prove such more efficient methods are sound and complete.
-	\item Implementation of extended makeshift scheduling. This will demonstate that the tool is feasible for modification and extension.
+	\item Implementation of extended makeshift scheduling. This will demonstrate that the tool is feasible for modification and extension.
 	\item Evaluation of existing scheduling explanations and how good they are.
-	\item If time permits, then I could explore modifying answer set solvers for explaning stability of extensions.
+	\item If time permits, then I could explore modifying answer set solvers for explaining stability of extensions.
 \end{itemize}
 
-Each task is relatively independent and should take about a month each to explore. If implementation proves challenging, then a fall-back option will be to present theorical results without its pratical considerations. A major component of the project is to write up the final report, which will take up a large portion of the summer term. Planning the progression of the project is difficult because the background work has many future directions.
+Each task is relatively independent and should take about a month each to explore. If implementation proves challenging, then a fall-back option will be to present theoretical results without its practical considerations. A major component of the project is to write up the final report, which will take up a large portion of the summer term. Planning the progression of the project is difficult because the background work has many future directions.
