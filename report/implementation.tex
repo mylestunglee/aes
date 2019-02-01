@@ -13,6 +13,7 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 \section{Structure}
 
 \begin{figure}[H]
+	\resizebox{\textwidth}{!}{
 	\begin{tikzpicture}
 		\fill[fill=black!10](-1.7, -0.8) rectangle (11.2, 3);
 		\node at (3, 0){External libraries};
@@ -23,13 +24,13 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 		\node[file](matplotlib) at (0, 2){Matplotlib};
 		\node[file](tkinter) at (4, 2){Tkinter};		
 		\node[file](pyomo) at (8, 2){Pyomo};
-		\node[file](visualise) at (0, 4){\verb|visualise.py|};
-		\node[file](graphical) at (4, 4){\verb|graphical.py|};
-		\node[file](solver) at (8, 4){\verb|solver.py|};
-		\node[file](schedule) at (0, 6){\verb|schedule.py|};
-		\node[file](argumentation) at (0, 8){\verb|argumentation.py|};
-		\node[file](interface) at (4, 8){\verb|interface.py|};
-		\node[file](main) at (4, 10){\verb|main.py|};
+		\node[file](visualise) at (0, 4){\texttt{visualise.py}};
+		\node[file](graphical) at (4, 4){\texttt{graphical.py}};
+		\node[file](solver) at (8, 4){\texttt{solver.py}};
+		\node[file](schedule) at (0, 6){\texttt{schedule.py}};
+		\node[file](argumentation) at (0, 8){\texttt{argumentation.py}};
+		\node[file](interface) at (4, 8){\texttt{interface.py}};
+		\node[file](main) at (4, 10){\texttt{main.py}};
 		\draw[arrow, dashed](cplex) -- (pyomo);
 		\draw[arrow, dashed](glpk) -- (pyomo);
 		\draw[arrow](numpy) -- (matplotlib);
@@ -44,7 +45,8 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 		\draw[arrow](schedule) -- (interface);
 		\draw[arrow](schedule) -- (argumentation);
 		\draw[arrow](interface) -- (main);
-	\end{tikzpicture}
+	\end{tikzpicture}}
+
 	\caption{The graph illustrates the functional dependency between modules in the code-base of the tool. A solver is required for full functionality of the tool. This could be CPLEX or GLPK.}
 \end{figure}
 
@@ -135,15 +137,15 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 	\resizebox{\textwidth}{!}{
 	\begin{tikzpicture}
 		\node[node](start) at (2.5, 10){Start};
-		\node[file](cf) at (2.5, 8){\textsc{Construct-Feasibility}};
-		\node[file](ce) at (5, 6){\textsc{Construct-Efficiency}};
-		\node[file](cs) at (10, 6){\textsc{Construct-\\Satisfaction}};
-		\node[file](sf) at (0, 4){\textsc{Explain-Stability}};
-		\node[file](se) at (5, 4){\textsc{Explain-Stability}};
-		\node[file](ss) at (10, 4){\textsc{Explain-Stability}};
-		\node[file](ef) at (0, 2){\textsc{Explain-Feasibility}};
-		\node[file](ee) at (5, 2){\textsc{Explain-Efficiency}};
-		\node[file](es) at (10, 2){\textsc{Explain-Satisfaction}};
+		\node[widefile](cf) at (2.5, 8){\textsc{Construct-Feasibility}};
+		\node[widefile](ce) at (5, 6){\textsc{Construct-Efficiency}};
+		\node[widefile](cs) at (10, 6){\textsc{Construct-Satisfaction}};
+		\node[widefile](sf) at (0, 4){\textsc{Explain-Stability}};
+		\node[widefile](se) at (5, 4){\textsc{Explain-Stability}};
+		\node[widefile](ss) at (10, 4){\textsc{Explain-Stability}};
+		\node[widefile](ef) at (0, 2){\textsc{Explain-Feasibility}};
+		\node[widefile](ee) at (5, 2){\textsc{Explain-Efficiency}};
+		\node[widefile](es) at (10, 2){\textsc{Explain-Satisfaction}};
 		\node[node](end) at (5, 0){End};
 		\draw[arrow](start) -- (cf);
 		\draw[arrow](cf) -- (sf);
@@ -158,7 +160,6 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 		\draw[arrow](ee) -- (end);
 		\draw[arrow](es) -- (end);
 	\end{tikzpicture}}
-		
 	\caption{The flowchart summaries the required order in which algorithms are executed.}
 \end{figure}
 
