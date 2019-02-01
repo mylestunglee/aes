@@ -121,7 +121,7 @@ def random_schedule(m_text, p_text, nfd_text, pfd_text):
 
 	return True, S_text
 
-def explain(m_text, p_text, nfd_text, pfd_text, S_text, verbose):
+def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 	if not integer_pattern.match(m_text):
 		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
@@ -154,10 +154,11 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, verbose):
 		return False, 'Positive fixed decisions refers to undefined processing times'
 
 	# Draw schedule
-	plt.gcf().clear()
-	visualiser.draw_schedule(p, S)
+	if options['graphical']:
+		plt.gcf().clear()
+		visualiser.draw_schedule(p, S)
 
-	return True, argumentation.explain(m, p, nfd, pfd, S, verbose)
+	return True, argumentation.explain(m, p, nfd, pfd, S, options)
 
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))

@@ -10,7 +10,7 @@ import interface
 matplotlib.use("TkAgg")
 
 def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
-	S_text_initial, explain_initial, verbose, solver_name,
+	S_text_initial, explain_initial, options, solver_name,
 	time_limit):
 	root = tk.Tk()
 
@@ -144,7 +144,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(nfd_textbox),
 			textbox_get(pfd_textbox),
 			textbox_get(S_textbox),
-			verbose)
+			options)
 
 		textbox_replace(output_textbox, text)
 

@@ -126,11 +126,13 @@ def run_arguments(args):
 		eprint(S_text)
 		return
 
+	options = {'verbose': args.verbose, 'graphical': args.graphical}
+
 	# Output schedule
 	if not args.graphical:
 		if args.explain:
 			success, output_text = interface.explain(m_text, p_text, nfd_text,
-				pfd_text, S_text, args.verbose)
+				pfd_text, S_text, options)
 			if not success:
 				eprint(output_text)
 				return
@@ -142,7 +144,7 @@ def run_arguments(args):
 	# Start graphical
 	if args.graphical:
 		graphical.start(m_text, p_text, nfd_text, pfd_text, S_text,
-			args.explain, args.verbose, args.solver_name, args.time_limit)
+			args.explain, options, args.solver_name, args.time_limit)
 
 def main():
 	args = get_arguments()
