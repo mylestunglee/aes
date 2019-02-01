@@ -131,9 +131,36 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 
 \subsection{Summary}
 
-This section introduces many algorithms. Below is a graph which summaries how all functions are put together without exact concern of technical details.
-
-% graph here
+\begin{figure}[H]
+	\resizebox{\textwidth}{!}{
+	\begin{tikzpicture}
+		\node[node](start) at (2.5, 10){Start};
+		\node[file](cf) at (2.5, 8){\textsc{Construct-Feasibility}};
+		\node[file](ce) at (5, 6){\textsc{Construct-Efficiency}};
+		\node[file](cs) at (10, 6){\textsc{Construct-\\Satisfaction}};
+		\node[file](sf) at (0, 4){\textsc{Explain-Stability}};
+		\node[file](se) at (5, 4){\textsc{Explain-Stability}};
+		\node[file](ss) at (10, 4){\textsc{Explain-Stability}};
+		\node[file](ef) at (0, 2){\textsc{Explain-Feasibility}};
+		\node[file](ee) at (5, 2){\textsc{Explain-Efficiency}};
+		\node[file](es) at (10, 2){\textsc{Explain-Satisfaction}};
+		\node[node](end) at (5, 0){End};
+		\draw[arrow](start) -- (cf);
+		\draw[arrow](cf) -- (sf);
+		\draw[arrow](cf) -- (ce);
+		\draw[arrow](cf) -- (cs);
+		\draw[arrow](ce) -- (se);
+		\draw[arrow](cs) -- (ss);
+		\draw[arrow](sf) -- (ef);
+		\draw[arrow](se) -- (ee);
+		\draw[arrow](ss) -- (es);
+		\draw[arrow](ef) -- (end);
+		\draw[arrow](ee) -- (end);
+		\draw[arrow](es) -- (end);
+	\end{tikzpicture}}
+		
+	\caption{The flowchart summaries the required order in which algorithms are executed.}
+\end{figure}
 
 \subsection{Framework Construction}
 
@@ -150,7 +177,7 @@ The AAFs are constructed using the definitions in paper \cite{aes}. The definiti
 		\item Pair-wise exchange property (PEP): $\text{PEP}(i_1,i_2,j_1,j_2)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}$.
 	\end{itemize}
 
-	The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This paper refer to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality.
+	The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This report refers to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality.
 \end{definition}
 
 \begin{definition}
@@ -164,7 +191,7 @@ The AAFs are constructed using the definitions in paper \cite{aes}. The definiti
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Construct-Feasibilty}{$m$, $n$}
+		\Function{Construct-Feasibility}{$m$, $n$}
 			\State $\rightsquigarrow_F$ $\gets$ $\mathbf{0}^{(m\times n)^2}$
 			\For{$j\in\mathcal{J}$}
 				\For{$i_1\in\mathcal{M}$}
@@ -287,7 +314,7 @@ Explanations are given in italics. Implementation of algorithms use Python's \ve
 				\EndIf
 			\Else
 				\State $\mathbf{y}$ $\gets$ $\mathbf{0}^n$
-				\State $\mathbf{z}$ $\gets$ $\mathbf{0}^{(n\times m)}$
+				\State $\mathbf{z}$ $\gets$ $\mathbf{0}^{n\times m}$
 				\For{$j\in\mathcal{J}$}
 					\For{$i_1\in\mathcal{M}$}
 						\For{$i_2\in\mathcal{M}$}
@@ -419,4 +446,6 @@ The above high-level algorithm generates explanations for feasibility, efficienc
 
 \subsection{Memory Limitations}
 
-The explanation requires at least $m^2n^2$ bytes to store the frameworks. This easily excesses 4GB for $m=200$ and $n=200$. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable.
+The explanation requires at least $m^2n^2$ bytes to store the frameworks. This easily excesses 4GB for $m=200$ and $n=200$. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable. Therefore, we need to modify any function requiring a data object of size $m^2n^2$ such as $\mathbf{c}$ and $\mathbf{x}$.
+
+The framework construction functions are trivially modified to compute a sub-graph from a node, given its indices. For example, $\textsc{Construct-Feasibility}(i,j)=\rightsquigarrow_{F_{i,j}}$
