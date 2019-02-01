@@ -65,6 +65,10 @@ def get_arguments():
 		help='explain schedules in more detail',
 		action='store_true')
 	parser.add_argument(
+		'--partial',
+		help='use partial framework construction to favour memory over CPU',
+		action='store_true')
+	parser.add_argument(
 		'-t',
 		'--time_limit',
 		default=solver.default_time_limit,
@@ -126,7 +130,11 @@ def run_arguments(args):
 		eprint(S_text)
 		return
 
-	options = {'verbose': args.verbose, 'graphical': args.graphical}
+	options = {
+		'verbose': args.verbose,
+		'graphical': args.graphical,
+		'partial': args.partial
+	}
 
 	# Output schedule
 	if not args.graphical:

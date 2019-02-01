@@ -158,7 +158,7 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 		plt.gcf().clear()
 		visualiser.draw_schedule(p, S)
 
-	return True, argumentation.explain(m, p, nfd, pfd, S, options)
+	return True, argumentation.explain(m, n, p, nfd, pfd, S, options)
 
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))

@@ -101,22 +101,35 @@ def construct_partial_satisfaction_framework(nfd, pfd, i1, j1):
 	return df
 
 # Attempt to build arguments to explain why S is not a stable extension of f
-def explain_stability(S, f, ignore_unattacked=None, ignore_conflicts=None):
+def compute_unattacked(S, f, ignore_unattacked):
 	m, n = S.shape
 	unattacked = np.logical_not(S)
-	conflicts = np.zeros((m, n, m, n), dtype=bool)
-
 	for i in range(m):
 		for j in range(n):
 			if S[i, j]:
 				unattacked = np.logical_and(unattacked, np.logical_not(f[i, j, :, :]))
-				conflicts[i, j] = np.logical_and(f[i, j], S)
 
 	if not ignore_unattacked is None:
 		unattacked = np.logical_and(unattacked, np.logical_not(ignore_unattacked))
+
+	return unattacked
+
+def compute_conflicts(S, f, ignore_conflicts):
+	m, n = S.shape
+	conflicts = np.zeros((m, n, m, n), dtype=bool)
+	for i in range(m):
+		for j in range(n):
+			if S[i, j]:
+				conflicts[i, j] = np.logical_and(f[i, j], S)
+
 	if not ignore_conflicts is None:
 		conflicts = np.logical_and(conflicts, np.logical_not(ignore_conflicts))
 
+	return conflicts
+
+def explain_stability(S, f, ignore_unattacked=None, ignore_conflicts=None):
+	unattacked = compute_unattacked(S, f, ignore_unattacked)
+	conflicts = compute_conflicts(S, f, ignore_conflicts)
 	return unattacked, conflicts
 
 # Compute reasons for feasibility using stability
@@ -281,9 +294,8 @@ def format_argument(template, pair):
 	return argument
 
 # Generate explanations
-def explain(m, p, nfd, pfd, S, options):
+def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations = []
-	n = len(p)
 
 	ff = construct_feasibility_framework(m, n)
 	feasibility_unattacked, feasibility_conflicts = explain_stability(S, ff)
@@ -316,3 +328,13 @@ def explain(m, p, nfd, pfd, S, options):
 		pass
 
 	return '\n'.join(explanations)
+
+def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
+	explanations = []
+
+
+def explain(m, n, p, nfd, pfd, S, options):
+	if not options['partial']:
+		return full_precomputation_explain(m, n, p, nfd, pfd, S, options)
+	else:
+		return partial_precomputation_explain(m, n, p, nfd, pfd, S, options)
