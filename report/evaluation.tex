@@ -14,6 +14,27 @@ We can also use the survey to ask how well our tool performs with respect to app
 
 At the end of the project, we aim to present extensions of argumentation with scheduling We will explain the practicability of using argumentation Such details are open-ended.
 
+\begin{figure}
+	\begin{tabular}{lccc}
+		\hline
+		Algorithm & Computational & Memory & Tractability\\
+		\hline
+		\textsc{Construct-Feasibility} & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(m^2n^2)$ &\\
+		\textsc{Construct-Efficiency} & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(m^2n^2)$ &\\
+		\textsc{Construct-Satisfaction} & $\mathcal{O}(m^2n)$ & $\mathcal{O}(m^2n^2)$ &\\
+		\textsc{Compute-Unattacked} & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(mn)$ &\\
+		\textsc{Compute-Partial-Conflicts} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ &\\
+		\textsc{Explain-Stability} & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(m^2n^2)$ &\\
+		\textsc{Explain-Feasibility} & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
+		\textsc{Explain-Efficiency} & $\mathcal{O}(mn^2\log(mn))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
+		\textsc{Explain-Satisfaction} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
+		\textsc{Full-Precomputation-Explain} & $\mathcal{O}(m^2n^2\log n)$ & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(mn^2)$\\
+		\textsc{Partial-Precomputation-Explain} & $\mathcal{O}(m^2n^2\log n)$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
+		\hline
+	\end{tabular}
+	\caption{Computational, memory and tractability complexity of algorithms}
+\end{figure}
+
 \section{Practical Results} 
 
 I will be able to demonstrate the tool, and its functionality. This will be reflected in the report through a user documentation guide.

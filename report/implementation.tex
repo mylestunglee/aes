@@ -320,7 +320,7 @@ The AAFs are constructed using the definitions in paper \cite{aes}. The definiti
 	\end{algorithmic}
 \end{algorithm}
 
-$\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity. because of the complexity of zero-initialising $\rightsquigarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data structure, but results in greatly more complicated code.
+$\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity, because of the complexity of zero-initialising $\rightsquigarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data structure, but results in greatly more complicated code.
 
 \begin{algorithm}[H]
 	\caption{}
@@ -374,7 +374,7 @@ The construction of $\rightsquigarrow_S$ is expensive because of the explicit fo
 	\end{algorithmic}
 \end{algorithm}
 
-The construction of $\rightsquigarrow_D$ has $\mathcal{O}(m^2n^2)$ computational complexity. If $D$ is assumed to be satisfiable, then $D^+$ has at most $n$ decisions while $D^-$ has at most $(m-1)n$ decisions. However, if $D$ is not necessarily satisfiable to account for poorly-formulated user problems, so in general $D^+$ and $D^-$ has at most $mn$ decisions.
+If $D$ is assumed to be satisfiable, then $D^+$ has at most $n$ decisions while $D^-$ has at most $(m-1)n$ decisions. However, if $D$ is not necessarily satisfiable to account for poorly-formulated user problems, so in general $D^+$ and $D^-$ has at most $mn$ decisions.
 
 \subsection{Stability}
 
@@ -415,7 +415,7 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 	\end{algorithmic}
 \end{algorithm}
 
-The function \textsc{Explain-Stability} returns two tensors, $\mathbf{u}$ encode the unattacked nodes and $\mathbf{c}$ encode the edges are not conflict-free. $\bar{\mathbf{u}}$ and $\bar{\mathbf{c}}$ represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, $\bar{\mathbf{u}}$ $=\mathbf{0}$ and $\bar{\mathbf{c}}$ $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
+The function \textsc{Explain-Stability} returns two tensors, $\mathbf{u}$ encode the unattacked nodes and $\mathbf{c}$ encode the edges are not conflict-free. $\bar{\mathbf{u}}$ and $\bar{\mathbf{c}}$ represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, $\bar{\mathbf{u}}$ $=\mathbf{0}$ and $\bar{\mathbf{c}}$ $=\mathbf{0}$. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
 \linespace
 The auxiliary functions \textsc{Compute-Unattacked} and \textsc{Compute-Partial-Conflicts} are defined such that at most $\mathcal{O}(mn)$ memory is allocated. This will be discussed in the following subsections.
 
@@ -478,7 +478,7 @@ Explanations are given in italics. Implementation of algorithms use Python's \ve
 	\end{algorithmic}
 \end{algorithm}
 
-The algorithm has $\mathcal{O}(m^2n)$ computational complexity. The paper \cite{aes} does not state explanations for trivial cases when $m=0$ or $n=0$. The above algorithm handles these cases with additional explanations. A problem with the naive implementation of generating an explanation for each conflict in $\mathbf{c_F}$ results in $k^2$ explanations for $k$ conflicting machines for a job. This results in superfluous text for the user. To summarise these explanations, the algorithm constructs a pseudo-schedule $\mathbf{z}$ which can be interpreted as $\mathbf{x}$ transposed and rows filtered if $\sum_{i\in\mathcal{M}}x_{i,j}>1$ for all jobs $j$. Afterwards, the algorithm prints the non-zero indices of $\mathbf{c}'$, which refer to the machines that causes over-allocation.
+The paper \cite{aes} does not state explanations for trivial cases when $m=0$ or $n=0$. The above algorithm handles these cases with additional explanations. A problem with the naive implementation of generating an explanation for each conflict in $\mathbf{c_F}$ results in $k^2$ explanations for $k$ conflicting machines for a job. This results in superfluous text for the user. To summarise these explanations, the algorithm constructs a pseudo-schedule $\mathbf{z}$ which can be interpreted as $\mathbf{x}$ transposed and rows filtered if $\sum_{i\in\mathcal{M}}x_{i,j}>1$ for all jobs $j$. Afterwards, the algorithm prints the non-zero indices of $\mathbf{c}'$, which refer to the machines that causes over-allocation.
 
 The algorithm features two optimisations. The variable $\mathbf{y}$ represent over-allocated jobs. $y_j=\mathbf{0}$ is faster to compute than its equivalent $z_j=\mathbf{0}$ because $y_j$ is an scalar aggregate over conflicting machines, unlike the vector $z_j$. Likewise, by the construction of $\mathbf{u_F}$, we can exploit $u^T_0=\mathbf{0}\iff\mathbf{u}=\mathbf{0}$ because $u^T_0=\frac{1}{m}\mathbf{u}^T\cdot\mathbf{1}^m$.
 
@@ -511,7 +511,7 @@ The algorithm features two optimisations. The variable $\mathbf{y}$ represent ov
 	\end{algorithmic}
 \end{algorithm}
 
-The algorithm has $\mathcal{O}(mn^2\log(mn^2))$ computational complexity. This arises from sorting reasons generated. Explanation of efficiency results in at most $m^2n^2$ lines, which  grows quickly for large schedules. To make this easier for the user to understand, we sort the explanations by its reduction, the amount the total completion time will reduce when an  single or pairwise exchange occurs. This will highlight the most significant improvements for the user. This justifies the increased complexity with the logithimic factor.
+The algorithm has $\mathcal{O}(mn^2\log(mn))$ computational complexity, arising from sorting reasons generated. Explanation of efficiency results in at most $m^2n^2$ lines, which  grows quickly for large schedules. To make this easier for the user to understand, we sort the explanations by its reduction, the amount the total completion time will reduce when an  single or pairwise exchange occurs. This will highlight the most significant improvements for the user. This justifies the increased complexity with the logarithmic factor.
 \linespace
 A key limitation with sorting by reduction, is in the cases of multiple critical machines. In this case, all reductions are zero. This is because single or pairwise exchange results in local optimisations of the same objective value. To find a strictly more optimal schedule, we need to look $k$ steps ahead, where $k$ is the number of critical machines. To solve this, the tool will need to generate instructions of $k$ actions, of single and pair-wise exchanges. For an arbitrary large schedule, this will cause an exponential explosion in $k$ of the explanation length. We continue the assumption that exponential tractable complexity is not feasible, so therefore, a full explanation for efficiency is not feasible.
 \linespace
@@ -556,7 +556,7 @@ An alternative solution is to restrict the explanation space by giving local exp
 	\end{algorithmic}
 \end{algorithm}
 
-The algorithm has $\mathcal{O}(m^2n^2)$ computational complexity from collecting conflicts into the conflicted positive fixed decision variable $\mathbf{y}$. Because of the relaxation that $D$ is not assumed to be satisfiable, we must check the sufficient conditions for this, and generate their explanations if necessary.
+The variable $\mathbf{y}$ refers to allocations not satisfying $D^+$. Because of the relaxation that $D$ is not assumed to be satisfiable, we must check the sufficient conditions for this, and generate their explanations if necessary.
 
 \begin{algorithm}[H]
 	\caption{}
@@ -581,6 +581,6 @@ The above high-level algorithm generates explanations for feasibility, efficienc
 
 \subsection{Memory Limitations}
 
-The explanation requires at least $m^2n^2$ bytes to store the frameworks. This easily excesses 4GB for $m=200$ and $n=200$. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable. Therefore, we need to modify any function requiring a data object of size $m^2n^2$ such as $\mathbf{c}$ and $\mathbf{x}$.
+A full framework requires at least $m^2n^2$ bytes space in memory. For, $m=n=256$ this requires 4GiB. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable. Therefore, we need to modify any function requiring a data object of size $m^2n^2$ such as $\mathbf{c}$ and $\mathbf{x}$.
 
 The framework construction functions are trivially modified to compute a sub-graph from a node, given its indices. For example, $\textsc{Construct-Feasibility}(i,j)=\rightsquigarrow_{F_{i,j}}$
