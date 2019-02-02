@@ -136,31 +136,143 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 \begin{figure}[H]
 	\resizebox{\textwidth}{!}{
 	\begin{tikzpicture}
-		\node[node](start) at (2.5, 10){Start};
-		\node[widefile](cf) at (2.5, 8){\textsc{Construct-Feasibility}};
-		\node[widefile](ce) at (5, 6){\textsc{Construct-Efficiency}};
-		\node[widefile](cs) at (10, 6){\textsc{Construct-Satisfaction}};
-		\node[widefile](sf) at (0, 4){\textsc{Explain-Stability}};
-		\node[widefile](se) at (5, 4){\textsc{Explain-Stability}};
-		\node[widefile](ss) at (10, 4){\textsc{Explain-Stability}};
-		\node[widefile](ef) at (0, 2){\textsc{Explain-Feasibility}};
-		\node[widefile](ee) at (5, 2){\textsc{Explain-Efficiency}};
-		\node[widefile](es) at (10, 2){\textsc{Explain-Satisfaction}};
-		\node[node](end) at (5, 0){End};
-		\draw[arrow](start) -- (cf);
-		\draw[arrow](cf) -- (sf);
-		\draw[arrow](cf) -- (ce);
-		\draw[arrow](cf) -- (cs);
-		\draw[arrow](ce) -- (se);
-		\draw[arrow](cs) -- (ss);
-		\draw[arrow](sf) -- (ef);
-		\draw[arrow](se) -- (ee);
-		\draw[arrow](ss) -- (es);
-		\draw[arrow](ef) -- (end);
-		\draw[arrow](ee) -- (end);
-		\draw[arrow](es) -- (end);
+		\node[node](start) at (0, 12){Start};
+		\node[file, align=center](fpe) at (0, 6){
+			\textsc{Full-Precomputation-Explain}
+			\\\\
+			\tikz{
+				\node[file](cf) at (2.5, 8){\textsc{Construct-}\\\textsc{Feasibility}};
+				\node[file](ce) at (4, 6){\textsc{Construct-}\\\textsc{Efficiency}};
+				\node[file](cs) at (8, 6){\textsc{Construct-}\\\textsc{Satisfaction}};
+				\node[file](sf) at (0, 4){\textsc{Explain-}\\\textsc{Stability}};
+				\node[file](se) at (4, 4){\textsc{Explain-}\\\textsc{Stability}};
+				\node[file](ss) at (8, 4){\textsc{Explain-}\\\textsc{Stability}};
+				\node[file](ef) at (0, 2){\textsc{Explain-}\\\textsc{Feasibility}};
+				\node[file](ee) at (4, 2){\textsc{Explain-}\\\textsc{Efficiency}};
+				\node[file](es) at (8, 2){\textsc{Explain-}\\\textsc{Satisfaction}};
+				\draw[arrow](cf) -- (sf);
+				\draw[arrow](cf) -- (ce);
+				\draw[arrow](cf) -- (cs);
+				\draw[arrow](ce) -- (se);
+				\draw[arrow](cs) -- (ss);
+				\draw[arrow](sf) -- (ef);
+				\draw[arrow](se) -- (ee);
+				\draw[arrow](ss) -- (es);
+			};
+		};
+		\node[node](end) at (0, 0){End};
+		\draw[arrow](start) -- (fpe);
+		\draw[arrow](fpe) -- (end);
 	\end{tikzpicture}}
-	\caption{The flowchart summaries the required execution order of sub-functions in the \textsc{Full-Precomputation-Explain} algorithm.}
+	\caption{The graph summaries the required execution order of sub-functions in the \textsc{Full-Precomputation-Explain} algorithm. Nested rectangles denote nested function calls.}
+\end{figure}
+
+\begin{figure}[H]
+	\resizebox{\textwidth}{!}{
+		\begin{tikzpicture}
+		\node[node](start) at (0, 24) {Start};
+		\node[file, align=center](fpe) at (0, 12){
+			\textsc{Partial-Precomputation-Explain}
+			\\\\
+			\tikz{
+				\node[file](cf) at (2.5, 14){
+					\textsc{Compute-}\\\textsc{Unattacked}
+					\\\\
+					\tikz{
+						\node[file]{\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Feasibility}};
+					}
+				};
+				\node[file](ce) at (5, 9){
+					\textsc{Compute-}\\\textsc{Unattacked}
+					\\\\
+					\tikz{
+						\node[file]{\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Efficiency}};
+					}
+				};
+				\node[file](cs) at (10, 9){
+					\textsc{Compute-}\\\textsc{Unattacked}
+					\\\\
+					\tikz{
+						\node[file]{\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Satisfaction}};
+					}
+				};
+				\node[file](sf) at (0, 3.5){
+					\textsc{Explain-}\\\textsc{Feasibility}
+					\\\\
+					\tikz{
+						\node[file]{
+							\textsc{Compute-}\\\textsc{Conflicts}
+							\\\\
+							\tikz{
+								\node[file]{
+									\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Feasibility}
+								};
+							}
+						};
+					}
+				};
+				\node[file](se) at (5, 1){
+					\textsc{Explain-}\\\textsc{Efficiency}
+					\\\\
+					\tikz{
+						\node[file](ccf) at (0, 5){
+							\textsc{Compute-}\\\textsc{Conflicts}
+							\\\\
+							\tikz{
+								\node[file]{
+									\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Feasibility}
+								};
+							}
+						};
+						\node[file](cce) at (0, 0){
+							\textsc{Compute-}\\\textsc{Conflicts}
+							\\\\
+							\tikz{
+								\node[file]{
+									\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Efficiency}
+								};
+							}
+						};
+						\draw[arrow](ccf) -- (cce);
+					}
+				};
+				\node[file](ss) at (10, 1){
+					\textsc{Explain-}\\\textsc{Satisfaction}
+					\\\\
+					\tikz{
+						\node[file](ccf) at (0, 5){
+							\textsc{Compute-}\\\textsc{Conflicts}
+							\\\\
+							\tikz{
+								\node[file]{
+									\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Feasibility}
+								};
+							}
+						};
+						\node[file](ccs) at (0, 0){
+							\textsc{Compute-}\\\textsc{Conflicts}
+							\\\\
+							\tikz{
+								\node[file]{
+									\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Satisfaction}
+								};
+							}
+						};
+						\draw[arrow](ccf) -- (ccs);
+					}
+				};
+				\draw[arrow](cf) -- (sf);
+				\draw[arrow](cf) -- (ce);
+				\draw[arrow](cf) -- (cs);
+				\draw[arrow](ce) -- (se);
+				\draw[arrow](cs) -- (ss);
+			};
+		};
+		\node[node](end) at (0, 0){End};
+		\draw[arrow](start) -- (fpe);
+		\draw[arrow](fpe) -- (end);
+		\end{tikzpicture}}
+	\caption{The graph summaries the required execution order of sub-functions in the \textsc{Partial-Precomputation-Explain} algorithm.}
 \end{figure}
 
 \subsection{Framework Construction}
@@ -273,7 +385,11 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 	\begin{algorithmic}[1]
 		\Function{Explain-Stability}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
 			\State $\mathbf{u}$ $\gets$ \textsc{Compute-Unattacked}($\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$)
-			\State $\mathbf{c}$ $\gets$ \textsc{Compute-Conflicts}($\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{c}}$)
+			\For{$i\in\mathcal{M}$}
+				\For{$j\in\mathcal{J}$}
+					\State $c_{i,j}$ $\gets$ \textsc{Compute-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow_{i,j}$, $\bar{c}_{i,j}$)
+				\EndFor
+			\EndFor			
 			\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
 		\EndFunction
 		\Function{Compute-Unattacked}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$}
@@ -288,22 +404,20 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 			\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{u}}$
 			\State \Return $\mathbf{u}$
 		\EndFunction
-		\Function{Compute-Conflicts}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{c}}$}
-			\State $\mathbf{c}$ $\gets\mathbf{0}^{(m\times n)^2}$
-			\For{$i\in\mathcal{M}$}
-				\For{$j\in\mathcal{J}$}
-					\If{$x_{i,j}=1$}
-						\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
-					\EndIf
-				\EndFor
-			\EndFor
-			\State $\mathbf{c}$ $\gets$ $\mathbf{c}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{c}}$
-			\State \Return $\mathbf{c}$
+		\Function{Compute-Partial-Conflicts}{$\mathbf{x}$, $\rightsquigarrow_{i, j}$, $\bar{c}_{i,j}$}
+			\State $c_{i,j}$ $\gets\mathbf{0}^{m\times n}$
+			\If{$x_{i,j}=1$}
+				\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
+			\EndIf
+			\State $c_{i,j}$ $\gets$ $c_{i,j}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{c}_{i,j}$
+			\State \Return $c_{i,j}$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 
-The function returns two tensors, $\mathbf{u}$ encode the unattacked nodes and $\mathbf{c}$ encode the edges are not conflict-free. $\bar{\mathbf{u}}$ and $\bar{\mathbf{c}}$ represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, $\bar{\mathbf{u}}$ $=\mathbf{0}$ and $\bar{\mathbf{c}}$ $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
+The function \textsc{Explain-Stability} returns two tensors, $\mathbf{u}$ encode the unattacked nodes and $\mathbf{c}$ encode the edges are not conflict-free. $\bar{\mathbf{u}}$ and $\bar{\mathbf{c}}$ represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, $\bar{\mathbf{u}}$ $=\mathbf{0}$ and $\bar{\mathbf{c}}$ $=\mathbf{0}$. The algorithm has $\mathcal{O}(m^2n^2)$ computational and memory complexity. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
+\linespace
+The auxiliary functions \textsc{Compute-Unattacked} and \textsc{Compute-Partial-Conflicts} are defined such that at most $\mathcal{O}(mn)$ memory is allocated. This will be discussed in the following subsections.
 
 \begin{theorem}
 	\textsc{Compute-Conflicts} is correct where $\mathbf{x}\approx E$ under $S$:

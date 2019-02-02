@@ -114,13 +114,12 @@ def compute_unattacked(S, f, ignore_unattacked):
 
 	return unattacked
 
-def compute_conflicts(S, f, ignore_conflicts):
+def compute_partial_conflicts(S, f, ignore_conflicts, i, j):
 	m, n = S.shape
-	conflicts = np.zeros((m, n, m, n), dtype=bool)
-	for i in range(m):
-		for j in range(n):
-			if S[i, j]:
-				conflicts[i, j] = np.logical_and(f[i, j], S)
+	conflicts = np.zeros((m, n), dtype=bool)
+
+	if S[i, j]:
+		conflicts = np.logical_and(f[i, j], S)
 
 	if not ignore_conflicts is None:
 		conflicts = np.logical_and(conflicts, np.logical_not(ignore_conflicts))
@@ -129,7 +128,15 @@ def compute_conflicts(S, f, ignore_conflicts):
 
 def explain_stability(S, f, ignore_unattacked=None, ignore_conflicts=None):
 	unattacked = compute_unattacked(S, f, ignore_unattacked)
-	conflicts = compute_conflicts(S, f, ignore_conflicts)
+
+	m, n = S.shape
+	conflicts = np.zeros((m, n, m, n), dtype=bool)
+
+	for i in range(m):
+		for j in range(n):
+			conflicts[i, j] = compute_partial_conflicts(S, f,
+				None if ignore_conflicts is None else ignore_conflicts[i, j],
+				i, j)
 	return unattacked, conflicts
 
 # Compute reasons for feasibility using stability
