@@ -80,21 +80,20 @@ def construct_satisfaction_framework(nfd, pfd, ff, copy=True):
 			if nfd[i, j]:
 				df[i, j, i, j] = True
 			if pfd[i, j]:
-				df[:, :, i, j] = False
+				df[:, j, i, j] = False
 
 	return df
 
-def construct_partial_satisfaction_framework(nfd, pfd, i1, j1):
+def construct_partial_satisfaction_framework(nfd, pfd, i1, j):
 	m, n = nfd.shape
-	df = construct_partial_feasibility_framework(m, n, i1, j1)
+	df = construct_partial_feasibility_framework(m, n, i1, j)
 
-	if nfd[i1, j1]:
-		df[i1, j1] = True
+	if nfd[i1, j]:
+		df[i1, j] = True
 
 	for i2 in range(m):
-		for j2 in range(n):
-			if pfd[i2, j2]:
-				df[i2, j2] = False
+		if pfd[i2, j]:
+			df[i2, j] = False
 
 	return df
 
