@@ -101,28 +101,42 @@ def construct_partial_satisfaction_framework(nfd, pfd, i1, j1):
 	return df
 
 # Attempt to build arguments to explain why S is not a stable extension of f
-def compute_unattacked(S, f, ignore_unattacked):
+def compute_unattacked(S, f, ignore_unattacked, precomputed=True):
 	m, n = S.shape
 	unattacked = np.logical_not(S)
 	for i in range(m):
 		for j in range(n):
 			if S[i, j]:
-				unattacked = np.logical_and(unattacked, np.logical_not(f[i, j, :, :]))
+				if precomputed:
+					f_partial = f[i, j, :, :]
+				else:
+					f_partial = f(i, j)
+				unattacked = np.logical_and(unattacked, np.logical_not(f_partial))
 
 	if not ignore_unattacked is None:
 		unattacked = np.logical_and(unattacked, np.logical_not(ignore_unattacked))
 
 	return unattacked
 
-def compute_partial_conflicts(S, f, ignore_conflicts, i, j):
+def compute_partial_conflicts(S, f, ignore_conflicts, i, j, precomputed=True):
 	m, n = S.shape
 	conflicts = np.zeros((m, n), dtype=bool)
 
 	if S[i, j]:
-		conflicts = np.logical_and(f[i, j], S)
+		if precomputed:
+			f_partial = f[i, j]
+		else:
+			f_partial = f(i, j)
+
+		conflicts = np.logical_and(f_partial, S)
 
 	if not ignore_conflicts is None:
-		conflicts = np.logical_and(conflicts, np.logical_not(ignore_conflicts))
+		if precomputed:
+			ignore_conflicts_partial = ignore_conflicts[i, j]
+		else:
+			ignore_conflicts_partial = ignore_conflicts(i, j)
+
+		conflicts = np.logical_and(conflicts, np.logical_not(ignore_conflicts_partial))
 
 	return conflicts
 
@@ -135,12 +149,12 @@ def explain_stability(S, f, ignore_unattacked=None, ignore_conflicts=None):
 	for i in range(m):
 		for j in range(n):
 			conflicts[i, j] = compute_partial_conflicts(S, f,
-				None if ignore_conflicts is None else ignore_conflicts[i, j],
+				None if ignore_conflicts is None else ignore_conflicts,
 				i, j)
 	return unattacked, conflicts
 
 # Compute reasons for feasibility using stability
-def explain_feasibility(unattacked, conflicts):
+def explain_feasibility(unattacked, conflicts, precomputed=True):
 	(m, n) = unattacked.shape
 	N = range(n)
 
@@ -159,8 +173,13 @@ def explain_feasibility(unattacked, conflicts):
 	for j in N:
 		# Conflicts are symmetrical, count upper diagonal
 		for i1 in range(m):
+			if precomputed:
+				conflicts_partial = conflicts[i1, j]
+			else:
+				conflicts_partial = conflicts(i1, j)
+
 			for i2 in range(i1, m):
-				if conflicts[i1, j, i2, j]:
+				if conflicts_partial[i2, j]:
 					overallocated[j] = True
 					job_conflicts[j, i1] = True
 					job_conflicts[j, i2] = True
@@ -180,7 +199,7 @@ def explain_feasibility(unattacked, conflicts):
 		return True, reasons
 
 # Compute reasons for efficiency using stablity
-def explain_efficiency(p, S, C, C_max, unattacked, conflicts):
+def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 	(m, n) = unattacked.shape
 
 	pairs = []
@@ -197,6 +216,11 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts):
 		S_reduced = np.copy(S)
 		i1 = np.argmax(C)
 		for j1 in N:
+			if precomputed:
+				conflicts_partial = conflicts[i1, j1]
+			else:
+				conflicts_partial = conflicts(i1, j1)
+
 			for i2 in M:
 				if unattacked[i2, j1]:
 					allocated = S_reduced[:, j1].copy()
@@ -211,7 +235,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts):
 					S_reduced[:, j1] = allocated
 
 				for j2 in N:
-					if conflicts[i1, j1, i2, j2]:
+					if conflicts_partial[i2, j2]:
 						S_reduced[i1, j1] = False
 						S_reduced[i2, j2] = False
 						S_reduced[i1, j2] = True
@@ -238,7 +262,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts):
 	return True, reasons
 
 # Compute reasons for satisfaction of fixed decisions usng stabilty
-def explain_satisfaction(nfd, pfd, unattacked, conflicts):
+def explain_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
 	(m, n) = unattacked.shape
 	M = range(m)
 	N = range(n)
@@ -268,7 +292,12 @@ def explain_satisfaction(nfd, pfd, unattacked, conflicts):
 
 	for i in M:
 		for j in N:
-			nfd_conflicts = np.logical_or(nfd_conflicts, conflicts[i, j])
+			if precompute:
+				conflicts_partial = conflicts[i, j]
+			else:
+				conflicts_partial = conflicts(i, j)
+
+			nfd_conflicts = np.logical_or(nfd_conflicts, conflicts_partial)
 
 	# Generate natural language explanations
 	if reasons or np.any(nfd_conflicts) or np.any(pfd_conflicts):
@@ -300,7 +329,7 @@ def format_argument(template, pair):
 
 	return argument
 
-# Generate explanations
+# Generate explanations using naive implementation
 def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations = []
 
@@ -319,7 +348,7 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	df = construct_satisfaction_framework(nfd, pfd, ff, False)
 	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
 		feasibility_unattacked, feasibility_conflicts)
-	explanations.append(format_argument('Schedule does {}satisify fixed decisions',
+	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
 		explain_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts)))
 
 	if options['verbose']:
@@ -336,10 +365,47 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 
 	return '\n'.join(explanations)
 
+# Favour memory over CPU resource consumption
 def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations = []
+	C = schedule.calc_completion_times(p, S)
+	C_max = np.max(C)
 
+	def ff_partial(i, j):
+		return construct_partial_feasibility_framework(m, n, i, j)
 
+	def fc_partial(i, j):
+		return compute_partial_conflicts(S, ff_partial, None, i, j, False)
+
+	def ef_partial(i, j):
+		return construct_partial_efficiency_framework(m, p, S, C, C_max, i, j)
+
+	def ec_partial(i, j):
+		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
+
+	def df_partial(i, j):
+		return construct_partial_satisfaction_framework(nfd, pfd, i, j)
+
+	def dc_partial(i, j):
+		return compute_partial_conflicts(S, df_partial, fc_partial, i, j, False)
+
+	feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
+	explanations.append(format_argument('Schedule is {}feasible',
+		explain_feasibility(feasibility_unattacked, fc_partial, False)))
+
+	efficiency_unattacked = compute_unattacked(S, ef_partial,
+		feasibility_unattacked, False)
+	explanations.append(format_argument('Schedule is {}efficient',
+		explain_efficiency(p, S, C, C_max, efficiency_unattacked, ec_partial, False)))
+
+	satisfaction_unattacked = compute_unattacked(S, df_partial,
+		feasibility_unattacked, False)
+	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
+		explain_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False)))
+
+	return '\n'.join(explanations)
+
+# Switch between different explanation methods
 def explain(m, n, p, nfd, pfd, S, options):
 	if not options['partial']:
 		return full_precomputation_explain(m, n, p, nfd, pfd, S, options)
