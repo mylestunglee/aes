@@ -1,8 +1,0 @@
-Schedule is not feasible because:
- - There are no machines to allocate to jobs
-
-Schedule is efficient because:
- - All jobs satisfy single and pairwise exchange properties
-
-Schedule does not satisfies user fixed decisions because:
- - Job 1 cannot be allocated to any machine

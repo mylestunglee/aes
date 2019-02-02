@@ -95,7 +95,7 @@ def random_schedule(m_text, p_text, nfd_text, pfd_text):
 	if not integer_pattern.match(m_text):
 		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
-		return False, 'Proccessing times syntax error'
+		return False, 'Processing times syntax error'
 	if not schedule_pattern.match(nfd_text):
 		return False, 'Negative fixed decisions syntax error'
 	if not schedule_pattern.match(pfd_text):
