@@ -7,11 +7,13 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import interface
-matplotlib.use("TkAgg")
 
 def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	S_text_initial, explain_initial, options, solver_name,
 	time_limit):
+
+	matplotlib.use("TkAgg")
+
 	root = tk.Tk()
 
 	def quit():
