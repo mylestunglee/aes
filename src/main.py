@@ -95,7 +95,7 @@ def run_arguments(args):
 		if args.m <= 0:
 			eprint('m must be positive')
 			return
-		m, p, nfd, pfd = schedule.random_problem(args.m)
+		m, p, nfd, pfd = schedule.random_problem(0, args.m)
 		m_text = str(m)
 		p_text = interface.format_processing_times(p)
 		nfd_text = interface.format_schedule(nfd)

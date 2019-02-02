@@ -1,5 +1,4 @@
 import math
-import graphviz
 import numpy as np
 import matplotlib.pyplot as plt
 import schedule
@@ -55,6 +54,8 @@ def print_framework(f, m, n):
 
 # Generates an image of a framework
 def draw_framework(f, m, n, filename):
+	import graphviz
+
 	M = range(m)
 	N = range(n)
 

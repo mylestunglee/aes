@@ -25,9 +25,10 @@ def random_problem(m=default_m, n=None):
 
 def random_schedule(m, n, nfd, pfd):
 	S = np.zeros((m, n), dtype=bool)
-	for j in range(n):
-		i = np.random.randint(m)
-		S[i, j] = True
+	if m > 0:
+		for j in range(n):
+			i = np.random.randint(m)
+			S[i, j] = True
 	return S
 
 # Calculates completion time vector [C_i for i in M]

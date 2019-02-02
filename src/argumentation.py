@@ -22,7 +22,7 @@ def construct_partial_feasibility_framework(m, n, i1, j):
 def construct_efficiency_framework(m, p, S, ff):
 	ef = np.copy(ff)
 	C = schedule.calc_completion_times(p, S)
-	C_max = np.max(C)
+	C_max = np.max(C) if m > 0 else 0
 
 	if m == 0:
 		return ef, C, C_max
@@ -51,8 +51,6 @@ def construct_partial_efficiency_framework(m, p, S, C, C_max, i1, j1):
 	_, n = S.shape
 	ef = construct_partial_feasibility_framework(m, n, i1, j1)
 	J = [np.flatnonzero(S[i,:]) for i in range(m)]
-
-#	return construct_efficiency_framework(m, p, S, construct_feasibility_framework(m, n))[0][i1, j1]
 
 	if C[i1] == C_max:
 		for i2 in range(m):
@@ -117,6 +115,7 @@ def compute_unattacked(S, f, ignore_unattacked, precomputed=True):
 		unattacked = np.logical_and(unattacked, np.logical_not(ignore_unattacked))
 
 	return unattacked
+
 
 def compute_partial_conflicts(S, f, ignore_conflicts, i, j, precomputed=True):
 	m, n = S.shape
@@ -352,15 +351,6 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 		explain_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts)))
 
 	if options['verbose']:
-		# debug purposes
-#		for i in range(m):
-#			for j in range(n):
-#				pff = construct_partial_feasibility_framework(m, n, i, j)
-#				print(np.array_equal(pff, ff[i, j]))
-#				pef = construct_partial_efficiency_framework(m, p, S, C, C_max, i, j)
-#				print(np.array_equal(pef, ef[i, j]))
-#				psf = construct_partial_satisfaction_framework(nfd, pfd, i, j)
-#				print(np.array_equal(psf, df[i, j]))
 		pass
 
 	return '\n'.join(explanations)
@@ -369,7 +359,7 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations = []
 	C = schedule.calc_completion_times(p, S)
-	C_max = np.max(C)
+	C_max = np.max(C) if m > 0 else 0
 
 	def ff_partial(i, j):
 		return construct_partial_feasibility_framework(m, n, i, j)
