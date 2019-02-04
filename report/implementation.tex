@@ -582,5 +582,48 @@ The above high-level algorithm generates explanations for feasibility, efficienc
 \subsection{Memory Limitations}
 
 A full framework requires at least $m^2n^2$ bytes space in memory. For, $m=n=256$ this requires 4GiB. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable. Therefore, we need to modify any function requiring a data object of size $m^2n^2$ such as $\mathbf{c}$ and $\mathbf{x}$.
-
+\linespace
 The framework construction functions are trivially modified to compute a sub-graph from a node, given its indices. For example, $\textsc{Construct-Feasibility}(i,j)=\rightsquigarrow_{F_{i,j}}$
+
+\begin{algorithm}[H]
+	\caption{}
+	\begin{algorithmic}[1]
+		\Function{Partial-Precomputation-Explain}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
+			\Function{$\rightsquigarrow'_F$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Feasibility}($m$, $n$, $i$, $j$)
+			\EndFunction
+			\Function{$c'_F$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
+			\EndFunction
+			\Function{$\rightsquigarrow'_S$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $i$, $j$)
+			\EndFunction
+			\Function{$c'_S$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_S$, $\rightsquigarrow'_F$)
+			\EndFunction
+			\Function{$\rightsquigarrow'_D$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Satisfaction}($m$, $n$, $D$, $i$, $j$)
+			\EndFunction
+			\Function{$c'_D$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_D$, $\rightsquigarrow'_F$)
+			\EndFunction
+			\State a
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+%    feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
+%    explanations.append(format_argument('Schedule is {}feasible',
+%        explain_feasibility(feasibility_unattacked, fc_partial, False)))
+
+%    efficiency_unattacked = compute_unattacked(S, ef_partial,
+%        feasibility_unattacked, False)
+%    explanations.append(format_argument('Schedule is {}efficient',
+%        explain_efficiency(p, S, C, C_max, efficiency_unattacked, ec_partial, False)))
+
+%    satisfaction_unattacked = compute_unattacked(S, df_partial,
+%        feasibility_unattacked, False)
+%    explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
+%        explain_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False)))
+
+
