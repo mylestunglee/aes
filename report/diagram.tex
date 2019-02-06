@@ -1,0 +1,100 @@
+\chapter{Diagrams}
+
+\tikzstyle{box} = [draw, inner sep=5pt, align=center]
+
+\begin{tikzpicture}
+	\node[box]{
+	\tikz{
+		\node[box](cf) at (2, 8){
+			$\mathbf{u_F}$
+			\baselineskip=5pt
+			\\
+			\tikz{
+				\node[box]{$\rightsquigarrow^{\pair{i}{j}}_F$};
+			}
+		};
+		\node[box](ce) at (3, 5){
+			$\mathbf{u_S}$
+			\\
+			\tikz{
+				\node[box]{$\rightsquigarrow^{\pair{i}{j}}_S$};
+			}
+		};
+		\node[box](cs) at (6, 5){
+			$\mathbf{u_D}$
+			\\
+			\tikz{
+				\node[box]{$\rightsquigarrow^{\pair{i}{j}}_D$};
+			}
+		};
+		\node[box](sf) at (0, 1.5){
+			$\psi_F$
+			\\
+			\tikz{
+				\node[box]{
+					$\mathbf{c_F}^{\pair{i}{j}}$
+					\\
+					\tikz{
+						\node[box]{$\rightsquigarrow^{\pair{i}{j}}_F$};
+					}
+				};
+			}
+		};
+		\node[box](se) at (3, 0){
+			$\psi_S$
+			\\
+			\tikz{
+				\node[box](ccf) at (0, 3){
+					$\mathbf{c_F}^{\pair{i}{j}}$
+					\\
+					\tikz{
+						\node[box]{
+							$\rightsquigarrow^{\pair{i}{j}}_F$
+						};
+					}
+				};
+				\node[box](cce) at (0, 0){
+					$\mathbf{c_S}^{\pair{i}{j}}$
+					\\
+					\tikz{
+						\node[box]{
+							$\rightsquigarrow^{\pair{i}{j}}_S$
+						};
+					}
+				};
+				\draw[arrow](ccf) -- (cce);
+			}
+		};
+		\node[box](ss) at (6, 0){
+			$\psi_D$
+			\\
+			\tikz{
+				\node[box](ccf) at (0, 3){
+					$\mathbf{c_F}^{\pair{i}{j}}$
+					\\
+					\tikz{
+						\node[box]{
+							$\rightsquigarrow^{\pair{i}{j}}_F$
+						};
+					}
+				};
+				\node[box](ccs) at (0, 0){
+					$\mathbf{c_S}^{\pair{i}{j}}$
+					\\
+					\tikz{
+						\node[box]{
+							$\rightsquigarrow^{\pair{i}{j}}_S$
+						};
+					}
+				};
+				\draw[arrow](ccf) -- (ccs);
+			}
+		};
+		\draw[arrow](cf) -- (sf);
+		\draw[arrow](cf) -- (ce);
+		\draw[arrow](cf) -- (cs);
+		\draw[arrow](ce) -- (se);
+		\draw[arrow](cs) -- (ss);
+		}
+	};
+\end{tikzpicture}

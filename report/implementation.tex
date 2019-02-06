@@ -201,7 +201,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 					\\\\
 					\tikz{
 						\node[file]{
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -216,7 +216,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 					\\\\
 					\tikz{
 						\node[file](ccf) at (0, 5){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -225,7 +225,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 							}
 						};
 						\node[file](cce) at (0, 0){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -241,7 +241,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 					\\\\
 					\tikz{
 						\node[file](ccf) at (0, 5){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -250,7 +250,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 							}
 						};
 						\node[file](ccs) at (0, 0){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -592,22 +592,27 @@ The framework construction functions are trivially modified to compute a sub-gra
 			\Function{$\rightsquigarrow'_F$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Feasibility}($m$, $n$, $i$, $j$)
 			\EndFunction
-			\Function{$c'_F$}{$i$, $j$}
+			\Function{$\mathbf{c'_F}$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
 			\EndFunction
 			\Function{$\rightsquigarrow'_S$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $i$, $j$)
 			\EndFunction
-			\Function{$c'_S$}{$i$, $j$}
+			\Function{$\mathbf{c'_S}$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_S$, $\rightsquigarrow'_F$)
 			\EndFunction
 			\Function{$\rightsquigarrow'_D$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Satisfaction}($m$, $n$, $D$, $i$, $j$)
 			\EndFunction
-			\Function{$c'_D$}{$i$, $j$}
+			\Function{$\mathbf{c'_D}$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_D$, $\rightsquigarrow'_F$)
 			\EndFunction
-			\State a
+			\State $\mathbf{u_F}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
+			\State \textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c'_F}$)
+			\State $\mathbf{u_S}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_S$, $\mathbf{u_F}$)
+			\State \textsc{Explain-Efficiency}($\mathbf{u_S}$, $\mathbf{c'_S}$)
+			\State $\mathbf{u_D}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_D$, $\mathbf{u_F}$)
+			\State \textsc{Explain-Satisfaction}($\mathbf{u_D}$, $\mathbf{c'_D}$)
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
