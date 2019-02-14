@@ -39,28 +39,49 @@ At the end of the project, we aim to present extensions of argumentation with sc
 
 I will be able to demonstrate the tool, and its functionality. This will be reflected in the report through a user documentation guide.
 
-\subsection{Full vs. Partial Precomputation}
+\subsection{Full versus Partial Precomputation}
+
+We will compare two algorithmic approaches to AAF construction. The algorithms are implemented, then profiled for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of 2 core CPU at 2GHz with 2GB RAM.
+\linespace
+Time comparison:
+\begin{itemize}
+	\item Elasped time measurements are noisy.
+	\item For less than 100 jobs, both approaches have approaxmatley equal timings.
+	\item From profiling, the tool takes 0.7 seconds to startup.
+	\item Partial precomputation is 26\% slower than full precomputation on average from the samples illustrated on the graph, excluding startup time.
+	\item Both graphs hints at quadratic complexity.
+\end{itemize}
+
+Memory comparison:
+\begin{itemize}
+	\item For less than 40 jobs, both approaches have approaxmately equal memory usage.
+	\item From profiling, the tool uses 72MiB to startup.
+	\item For a large number of jobs, partial-precomputation is 18 times more efficient than full precomputation excluding startup memory.
+	\item Both graphs hints at quadratic complexity.
+\end{itemize}
+
+\newpage
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{figures/precomputation_cpu_small}
-	\caption{CPU elapsed time comparison for small number of jobs where $m=10$}
+	\includegraphics[scale=0.7]{figures/precomputation_cpu_small}
+	\caption{Elapsed time comparison where $m=10$ and $0\leq n\leq 100$ with 1000 samples.}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{figures/precomputation_cpu_big}
-	\caption{CPU elapsed time comparison for large number of jobs where $m=10$}
+	\includegraphics[scale=0.7]{figures/precomputation_cpu_big}
+	\caption{Elapsed time comparison where $m=10$ and $0\leq n\leq 800$ with 8000 samples.}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{figures/precomputation_memory_small}
-	\caption{Maximum allocated memory comparison for large number of jobs where $m=10$}
+	\includegraphics[scale=0.7]{figures/precomputation_memory_small}
+	\caption{Maximum allocated memory comparison where $m=10$ and $0\leq n\leq 100$ with 1000 samples.}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{figures/precomputation_memory_big}
-	\caption{Maximum allocated memory comparison for large number of jobs where $m=10$}
+	\includegraphics[scale=0.7]{figures/precomputation_memory_big}
+	\caption{Maximum allocated memory comparison where $m=10$ and $0\leq n\leq 800$ with 8000 samples.}
 \end{figure}

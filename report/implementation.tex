@@ -201,7 +201,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 					\\\\
 					\tikz{
 						\node[file]{
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -216,7 +216,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 					\\\\
 					\tikz{
 						\node[file](ccf) at (0, 5){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -225,7 +225,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 							}
 						};
 						\node[file](cce) at (0, 0){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -241,7 +241,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 					\\\\
 					\tikz{
 						\node[file](ccf) at (0, 5){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -250,7 +250,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 							}
 						};
 						\node[file](ccs) at (0, 0){
-							\textsc{Compute-}\\\textsc{Conflicts}
+							\textsc{Compute-}\\\textsc{Partial-}\\\textsc{Conflicts}
 							\\\\
 							\tikz{
 								\node[file]{
@@ -277,7 +277,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 
 \subsection{Framework Construction}
 
-The AAFs are constructed using the definitions in paper \cite{aes}. The definitions are reprinted below. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
+The AAFs are constructed using the definitions in paper \cite{aes}. The definitions are reprinted for feasibility and fixed decisions only. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
 
 \begin{definition}
 	The feasibility framework $\rightsquigarrow_F$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_F\langle i_2,j_2\rangle$ iff $i_1\neq i_2\land j_1=j_2$.
@@ -286,11 +286,11 @@ The AAFs are constructed using the definitions in paper \cite{aes}. The definiti
 \begin{definition}
 	The efficiency framework $\rightsquigarrow_S$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{SEP}(i_1,i_2,j_1)\lor\text{PEP}(i_1,i_2,j_1,j_2)$ where:
 	\begin{itemize}
-		\item Single exchange property (SEP): $\text{SEP}(i_1,i_2,j_1)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}$
-		\item Pair-wise exchange property (PEP): $\text{PEP}(i_1,i_2,j_1,j_2)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}$.
+		\item Single exchange property (SEP): $\text{SEP}(i_1,i_2,j_1, D)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}\land\pair{i_1}{j_1}\not\in D^+\land\pair{i_2}{j_1}\not\in D^-$
+		\item Pair-wise exchange property (PEP): $\text{PEP}(i_1,i_2,j_1,j_2, D)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}\land\pair{i_1}{j_1}\not\in D^+\land\pair{i_2}{j_2}\not\in D^+\land\pair{i_2}{j_1}\not\in D^-\land\pair{i_1}{j_2}\not\in D^-$.
 	\end{itemize}
 
-	The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This report refers to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality.
+	The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This report refers to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality. In addition, the paper does considers efficiency and satisfaction to fixed decisions seperately, we extend the notion of efficiency to respect these decisions. With the paper's definition of efficiency, the tool would recommend exchanges which violate fixed decisions.
 \end{definition}
 
 \begin{definition}
@@ -325,7 +325,7 @@ $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$}
+		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\rightsquigarrow_F$}
 			\State $\mathbf{C}$ $\gets$ $\mathbf{x}\cdot\mathbf{p}$
 			\State $C_{\max}$ $\gets$ $\max(\mathbf{C})$
 			\State $\rightsquigarrow_S$ $\gets$ $\rightsquigarrow_F$
@@ -334,11 +334,11 @@ $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $
 					\For{$j_1\in\mathcal{J}$}
 						\If{$x_{i_1,j_1}=1$}
 							\For{$i_2\in\mathcal{M}$}
-								\If{$\text{SEP}(i_1,j_1,i_2)$}
+								\If{$\text{SEP}(i_1,j_1,i_2,D)$}
 									\State ${\rightsquigarrow_S}_{i_1,j_1,i_2,j_1}$ $\gets$ 0
 								\EndIf
 								\For{$j_2\in\mathcal{J}$}
-									\If{$\text{PEP}(i_1,j_1,i_2,j_2)$}
+									\If{$\text{PEP}(i_1,j_1,i_2,j_2,D)$}
 										\State ${\rightsquigarrow_S}_{i_1,j_2,i_2,j_2}$ $\gets$ 1
 									\EndIf
 								\EndFor
@@ -566,7 +566,7 @@ The variable $\mathbf{y}$ refers to allocations not satisfying $D^+$. Because of
 			\State $\pair{\mathbf{u_F}}{\mathbf{c_F}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
 			\State\textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c_F}$)
 
-			\State $\pair{\rightsquigarrow_S}{\mathbf{C}}$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$)
+			\State $\pair{\rightsquigarrow_S}{\mathbf{C}}$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\rightsquigarrow_F$)
 			\State $\pair{\mathbf{u_S}}{\mathbf{c_S}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, $\mathbf{u_F}$, $\mathbf{c_F}$)
 			\State\textsc{Explain-Efficiency}($\mathbf{p}$, $\mathbf{C}$, $\mathbf{u_S}$, $\mathbf{c_S}$)
 
@@ -582,5 +582,53 @@ The above high-level algorithm generates explanations for feasibility, efficienc
 \subsection{Memory Limitations}
 
 A full framework requires at least $m^2n^2$ bytes space in memory. For, $m=n=256$ this requires 4GiB. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable. Therefore, we need to modify any function requiring a data object of size $m^2n^2$ such as $\mathbf{c}$ and $\mathbf{x}$.
-
+\linespace
 The framework construction functions are trivially modified to compute a sub-graph from a node, given its indices. For example, $\textsc{Construct-Feasibility}(i,j)=\rightsquigarrow_{F_{i,j}}$
+
+\begin{algorithm}[H]
+	\caption{}
+	\begin{algorithmic}[1]
+		\Function{Partial-Precomputation-Explain}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
+			\Function{$\rightsquigarrow'_F$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Feasibility}($m$, $n$, $i$, $j$)
+			\EndFunction
+			\Function{$\mathbf{c'_F}$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
+			\EndFunction
+			\Function{$\rightsquigarrow'_S$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $i$, $j$)
+			\EndFunction
+			\Function{$\mathbf{c'_S}$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_S$, $\rightsquigarrow'_F$)
+			\EndFunction
+			\Function{$\rightsquigarrow'_D$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Satisfaction}($m$, $n$, $D$, $i$, $j$)
+			\EndFunction
+			\Function{$\mathbf{c'_D}$}{$i$, $j$}
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_D$, $\rightsquigarrow'_F$)
+			\EndFunction
+			\State $\mathbf{u_F}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
+			\State \textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c'_F}$)
+			\State $\mathbf{u_S}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_S$, $\mathbf{u_F}$)
+			\State \textsc{Explain-Efficiency}($\mathbf{u_S}$, $\mathbf{c'_S}$)
+			\State $\mathbf{u_D}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_D$, $\mathbf{u_F}$)
+			\State \textsc{Explain-Satisfaction}($\mathbf{u_D}$, $\mathbf{c'_D}$)
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+%    feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
+%    explanations.append(format_argument('Schedule is {}feasible',
+%        explain_feasibility(feasibility_unattacked, fc_partial, False)))
+
+%    efficiency_unattacked = compute_unattacked(S, ef_partial,
+%        feasibility_unattacked, False)
+%    explanations.append(format_argument('Schedule is {}efficient',
+%        explain_efficiency(p, S, C, C_max, efficiency_unattacked, ec_partial, False)))
+
+%    satisfaction_unattacked = compute_unattacked(S, df_partial,
+%        feasibility_unattacked, False)
+%    explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
+%        explain_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False)))
+
+
