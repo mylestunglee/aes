@@ -6,7 +6,7 @@ The success of the project can be measured by comparing the project results with
 \linespace
 Arguably, the most important outcome of this project is that the tool is functionality correct. This means the tool is required to explain schedules for feasibility, efficiency and satisfaction with respect to user decisions.
 \linespace
-One objective is to implement an accessible tool. To measure accessibility, we can refer to the tractability complexity from explanations. The length of explanations either in the number of words or characters may be correlated with understandability. Alternatively, we can conduct a survey targetted towards potential users. Because the understandability of explanations are difficult to measure, we will attempt to quantity this using multiple choice questions. To carefully evaluate explanations, one would need to refer to cognitive science, which is beyond the scope of this project. In addition, we can measure performance to reflect responsiveness and scalability of the tool. This may be achieved by using profiling utilities to measure performance metrics such as time to generate explanations and memory consumption.
+One objective is to implement an accessible tool. To measure accessibility, we can refer to the tractability complexity from explanations. The length of explanations either in the number of words or characters may be correlated with understandability. Alternatively, we can conduct a survey targeted towards potential users. Because the understandability of explanations are difficult to measure, we will attempt to quantity this using multiple choice questions. To carefully evaluate explanations, one would need to refer to cognitive science, which is beyond the scope of this project. In addition, we can measure performance to reflect responsiveness and scalability of the tool. This may be achieved by using profiling utilities to measure performance metrics such as time to generate explanations and memory consumption.
 \linespace
 We can also use the survey to ask how well our tool performs with respect to applicability and knowledge transfer. We can also infer the practical limitations from the tool to measure the applicability.
 
@@ -45,8 +45,8 @@ We will compare two algorithmic approaches to AAF construction. The algorithms a
 \linespace
 Time comparison:
 \begin{itemize}
-	\item Elasped time measurements are noisy.
-	\item For less than 100 jobs, both approaches have approaxmatley equal timings.
+	\item Elapsed time measurements are noisy.
+	\item For less than 100 jobs, both approaches have approximately equal timings.
 	\item From profiling, the tool takes 0.7 seconds to startup.
 	\item Partial precomputation is 26\% slower than full precomputation on average from the samples illustrated on the graph, excluding startup time.
 	\item Both graphs hints at quadratic complexity.
@@ -54,7 +54,7 @@ Time comparison:
 
 Memory comparison:
 \begin{itemize}
-	\item For less than 40 jobs, both approaches have approaxmately equal memory usage.
+	\item For less than 40 jobs, both approaches have approximately equal memory usage.
 	\item From profiling, the tool uses 72MiB to startup.
 	\item For a large number of jobs, partial-precomputation is 18 times more efficient than full precomputation excluding startup memory.
 	\item Both graphs hints at quadratic complexity.

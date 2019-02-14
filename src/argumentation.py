@@ -30,15 +30,15 @@ def construct_efficiency_framework(m, p, nfd, pfd, S, ff):
 	M = range(m)
 	J = [np.flatnonzero(S[i,:]) for i in M]
 
-	# If feasible assigment (i1, j1)
+	# If feasible assignment (i1, j1)
 	for i1 in M:
 		if C[i1] == C_max:
 			for j1 in J[i1]:
 				for i2 in M:
-					# Single exchange propertry
+					# Single exchange property
 					if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
 						ef[i1, j1, i2, j1] = False
-					# If feasible assigment (i2, j2)
+					# If feasible assignment (i2, j2)
 					for j2 in J[i2]:
 						#  Pairwise exchange property
 						if (i1 != i2 and j1 != j2 and
@@ -56,10 +56,10 @@ def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1):
 
 	if C[i1] == C_max:
 		for i2 in range(m):
-			# Single exchange propertry
+			# Single exchange property
 			if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
 				ef[i2, j1] = False
-			# If feasible assigment (i2, j2)
+			# If feasible assignment (i2, j2)
 			for j2 in J[i2]:
 				#  Pairwise exchange property
 				if (i1 != i2 and j1 != j2 and
@@ -200,7 +200,7 @@ def explain_feasibility(unattacked, conflicts, precomputed=True):
 		reasons = ['All jobs are allocated by exactly one machine']
 		return True, reasons
 
-# Compute reasons for efficiency using stablity
+# Compute reasons for efficiency using stability
 def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 	(m, n) = unattacked.shape
 
@@ -263,7 +263,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 		reasons = ['All jobs satisfy single and pairwise exchange properties']
 	return True, reasons
 
-# Compute reasons for satisfaction of fixed decisions usng stabilty
+# Compute reasons for satisfaction of fixed decisions using stability
 def explain_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
 	(m, n) = unattacked.shape
 	M = range(m)
@@ -285,7 +285,7 @@ def explain_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
 
 		if np.count_nonzero(pfd[:, j]) > 1:
 			satisfiable[j] = False
-			reasons.append('Job {} cannot be allocated to muliple machines {{{}}}'.format(
+			reasons.append('Job {} cannot be allocated to multiple machines {{{}}}'.format(
 				j + 1, ', '.join([str(i + 1) for i in M if pfd[i, j]])))
 
 	# Summarise fixed decision conflicts with schedule
