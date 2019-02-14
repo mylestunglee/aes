@@ -277,7 +277,7 @@ The algorithm uses operators over boolean tensors to generate frameworks and com
 
 \subsection{Framework Construction}
 
-The AAFs are constructed using the definitions in paper \cite{aes}. The definitions are reprinted below. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
+The AAFs are constructed using the definitions in paper \cite{aes}. The definitions are reprinted for feasibility and fixed decisions only. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
 
 \begin{definition}
 	The feasibility framework $\rightsquigarrow_F$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_F\langle i_2,j_2\rangle$ iff $i_1\neq i_2\land j_1=j_2$.
@@ -286,11 +286,11 @@ The AAFs are constructed using the definitions in paper \cite{aes}. The definiti
 \begin{definition}
 	The efficiency framework $\rightsquigarrow_S$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{SEP}(i_1,i_2,j_1)\lor\text{PEP}(i_1,i_2,j_1,j_2)$ where:
 	\begin{itemize}
-		\item Single exchange property (SEP): $\text{SEP}(i_1,i_2,j_1)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}$
-		\item Pair-wise exchange property (PEP): $\text{PEP}(i_1,i_2,j_1,j_2)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}$.
+		\item Single exchange property (SEP): $\text{SEP}(i_1,i_2,j_1, D)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}$
+		\item Pair-wise exchange property (PEP): $\text{PEP}(i_1,i_2,j_1,j_2, D)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}$.
 	\end{itemize}
 
-	The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This report refers to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality.
+	The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This report refers to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality. In addition, the paper does considers efficiency and satisfaction to fixed decisions seperately, we extend the notion of efficiency to respect these decisions. With the paper's definition of efficiency, the tool would recommend exchanges which violate fixed decisions.
 \end{definition}
 
 \begin{definition}
@@ -325,7 +325,7 @@ $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$}
+		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\rightsquigarrow_F$}
 			\State $\mathbf{C}$ $\gets$ $\mathbf{x}\cdot\mathbf{p}$
 			\State $C_{\max}$ $\gets$ $\max(\mathbf{C})$
 			\State $\rightsquigarrow_S$ $\gets$ $\rightsquigarrow_F$
@@ -566,7 +566,7 @@ The variable $\mathbf{y}$ refers to allocations not satisfying $D^+$. Because of
 			\State $\pair{\mathbf{u_F}}{\mathbf{c_F}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
 			\State\textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c_F}$)
 
-			\State $\pair{\rightsquigarrow_S}{\mathbf{C}}$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $\rightsquigarrow_F$)
+			\State $\pair{\rightsquigarrow_S}{\mathbf{C}}$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\rightsquigarrow_F$)
 			\State $\pair{\mathbf{u_S}}{\mathbf{c_S}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, $\mathbf{u_F}$, $\mathbf{c_F}$)
 			\State\textsc{Explain-Efficiency}($\mathbf{p}$, $\mathbf{C}$, $\mathbf{u_S}$, $\mathbf{c_S}$)
 
@@ -596,7 +596,7 @@ The framework construction functions are trivially modified to compute a sub-gra
 				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
 			\EndFunction
 			\Function{$\rightsquigarrow'_S$}{$i$, $j$}
-				\State \Return \textsc{Construct-Partial-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $i$, $j$)
+				\State \Return \textsc{Construct-Partial-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $i$, $j$)
 			\EndFunction
 			\Function{$\mathbf{c'_S}$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_S$, $\rightsquigarrow'_F$)
