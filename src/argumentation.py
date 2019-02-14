@@ -19,7 +19,7 @@ def construct_partial_feasibility_framework(m, n, i1, j):
 	return ff
 
 # Creates an efficiency framework from a feasibility framework
-def construct_efficiency_framework(m, p, S, ff):
+def construct_efficiency_framework(m, p, nfd, pfd, S, ff):
 	ef = np.copy(ff)
 	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C) if m > 0 else 0
@@ -30,39 +30,43 @@ def construct_efficiency_framework(m, p, S, ff):
 	M = range(m)
 	J = [np.flatnonzero(S[i,:]) for i in M]
 
-	# If feasible assigment (i1, j1)
+	# If feasible assignment (i1, j1)
 	for i1 in M:
 		if C[i1] == C_max:
 			for j1 in J[i1]:
 				for i2 in M:
-					# Single exchange propertry
-					if C[i1] > C[i2] + p[j1]:
+					# Single exchange property
+					if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
 						ef[i1, j1, i2, j1] = False
-					# If feasible assigment (i2, j2)
+					# If feasible assignment (i2, j2)
 					for j2 in J[i2]:
 						#  Pairwise exchange property
 						if (i1 != i2 and j1 != j2 and
 							p[j1] > p[j2] and
-							C[i1] + p[j2] > C[i2] + p[j1]):
+							C[i1] + p[j2] > C[i2] + p[j1] and
+							not pfd[i1, j1] and not pfd[i2, j2] and
+							not nfd[i2, j1] and not nfd[i1, j2]):
 							ef[i1, j1, i2, j2] = True
 	return ef, C, C_max
 
-def construct_partial_efficiency_framework(m, p, S, C, C_max, i1, j1):
+def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1):
 	_, n = S.shape
 	ef = construct_partial_feasibility_framework(m, n, i1, j1)
 	J = [np.flatnonzero(S[i,:]) for i in range(m)]
 
 	if C[i1] == C_max:
 		for i2 in range(m):
-			# Single exchange propertry
-			if C[i1] > C[i2] + p[j1]:
+			# Single exchange property
+			if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
 				ef[i2, j1] = False
-			# If feasible assigment (i2, j2)
+			# If feasible assignment (i2, j2)
 			for j2 in J[i2]:
 				#  Pairwise exchange property
 				if (i1 != i2 and j1 != j2 and
 					p[j1] > p[j2] and
-					C[i1] + p[j2] > C[i2] + p[j1]):
+					C[i1] + p[j2] > C[i2] + p[j1] and
+					not pfd[i1, j1] and not pfd[i2, j2] and
+					not nfd[i2, j1] and not nfd[i1, j2]):
 					ef[i2, j2] = True
 
 	return ef
@@ -196,7 +200,7 @@ def explain_feasibility(unattacked, conflicts, precomputed=True):
 		reasons = ['All jobs are allocated by exactly one machine']
 		return True, reasons
 
-# Compute reasons for efficiency using stablity
+# Compute reasons for efficiency using stability
 def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 	(m, n) = unattacked.shape
 
@@ -259,7 +263,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 		reasons = ['All jobs satisfy single and pairwise exchange properties']
 	return True, reasons
 
-# Compute reasons for satisfaction of fixed decisions usng stabilty
+# Compute reasons for satisfaction of fixed decisions using stability
 def explain_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
 	(m, n) = unattacked.shape
 	M = range(m)
@@ -281,7 +285,7 @@ def explain_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
 
 		if np.count_nonzero(pfd[:, j]) > 1:
 			satisfiable[j] = False
-			reasons.append('Job {} cannot be allocated to muliple machines {{{}}}'.format(
+			reasons.append('Job {} cannot be allocated to multiple machines {{{}}}'.format(
 				j + 1, ', '.join([str(i + 1) for i in M if pfd[i, j]])))
 
 	# Summarise fixed decision conflicts with schedule
@@ -336,7 +340,7 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations.append(format_argument('Schedule is {}feasible',
 		explain_feasibility(feasibility_unattacked, feasibility_conflicts)))
 
-	ef, C, C_max = construct_efficiency_framework(m, p, S, ff)
+	ef, C, C_max = construct_efficiency_framework(m, p, nfd, pfd, S, ff)
 
 	efficiency_unattacked, efficiency_conflicts = explain_stability(S, ef,
 		feasibility_unattacked, feasibility_conflicts)
@@ -367,7 +371,7 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 		return compute_partial_conflicts(S, ff_partial, None, i, j, False)
 
 	def ef_partial(i, j):
-		return construct_partial_efficiency_framework(m, p, S, C, C_max, i, j)
+		return construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i, j)
 
 	def ec_partial(i, j):
 		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
