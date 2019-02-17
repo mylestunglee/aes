@@ -19,8 +19,11 @@ def construct_partial_feasibility_framework(m, n, i1, j):
 	return ff
 
 # Creates an efficiency framework from a feasibility framework
-def construct_efficiency_framework(m, p, nfd, pfd, S, ff):
-	ef = np.copy(ff)
+def construct_efficiency_framework(m, p, nfd, pfd, S, ff, copy=True):
+	if copy:
+		ef = np.copy(ff)
+	else:
+		ef = ff
 	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C) if m > 0 else 0
 
@@ -162,9 +165,9 @@ def explain_feasibility(unattacked, conflicts, precomputed=True):
 
 	if m == 0:
 		if n == 0:
-			return True, ['There are no machines or jobs']
+			return True, [('nomachinejob', [])]
 		else:
-			return False, ['There are no machines to allocate to jobs']
+			return False, [('nomachine', [])]
 
 	# Summarise unallocated jobs
 	unallocated = unattacked[0]
@@ -189,15 +192,14 @@ def explain_feasibility(unattacked, conflicts, precomputed=True):
 	# Generate natural language explanations
 	if np.any(unallocated) or np.any(overallocated):
 		# Explain unallocated
-		reasons = ['Job {} is not allocated by any machine'.format(j + 1) for j in range(n) if unallocated[j]]
+		reasons = [('unallocated', [j]) for j in range(n) if unallocated[j]]
 		# Explain overallocations
-		reasons += ['Job {} is over-allocated by multiple machines {{{}}}'.
-			format(j + 1,', '.join([str(i + 1) for i in np.flatnonzero(job_conflicts[j])]))
+		reasons += [('overallocated', [j, list(np.flatnonzero(job_conflicts[j]))])
 			for j in N if overallocated[j]]
 
 		return False, reasons
 	else:
-		reasons = ['All jobs are allocated by exactly one machine']
+		reasons = [('feasible', [])]
 		return True, reasons
 
 # Compute reasons for efficiency using stability
@@ -210,10 +212,11 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 		M = range(m)
 		N = range(n)
 
+		# Round number to 3 decimal places
 		def round(x):
 			if x == 0:
 				return 0
-			return np.round(x, -int(np.floor(np.log10(abs(x)))) + 2)
+			return str(np.round(x, -int(np.floor(np.log10(abs(x)))) + 2))
 
 		S_reduced = np.copy(S)
 		i1 = np.argmax(C)
@@ -224,6 +227,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 				conflicts_partial = conflicts(i1, j1)
 
 			for i2 in M:
+				# Single exchange
 				if unattacked[i2, j1]:
 					allocated = S_reduced[:, j1].copy()
 					S_reduced[:, j1] = False
@@ -232,11 +236,11 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 					reduction = C_max - C_max_reduced
 					pairs.append((
 						(-reduction, j1, i2),
-						'Job {} can be allocated to machine {} to reduce by {}'.format(
-						j1 + 1, i2 + 1, round(reduction))))
+						('move', [j1, i2, round(reduction)])))
 					S_reduced[:, j1] = allocated
 
 				for j2 in N:
+					# Pairwise exchange
 					if conflicts_partial[i2, j2]:
 						S_reduced[i1, j1] = False
 						S_reduced[i2, j2] = False
@@ -247,8 +251,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 						reduction = C_max - C_max_reduced
 						pairs.append((
 							(-reduction, j1, j2, i1, i2),
-							'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}'.format(
-							j1 + 1, j2 + 1, i1 + 1, i2 + 1, round(reduction))))
+							('swap', [j1, j2, i1, i2, round(reduction)])))
 						S_reduced[i1, j1] = True
 						S_reduced[i2, j2] = True
 						S_reduced[i1, j2] = False
@@ -260,33 +263,39 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 		_, reasons = zip(*pairs)
 		return False, reasons
 	else:
-		reasons = ['All jobs satisfy single and pairwise exchange properties']
+		reasons = [('efficient', [])]
 	return True, reasons
 
-# Compute reasons for satisfaction of fixed decisions using stability
-def explain_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
+# Compute reasons for problem satisfaction of fixed decisions
+def explain_problem_satisfaction(nfd, pfd):
+	(m, n) = nfd.shape
+	reasons = []
+	satisfiable = np.ones(n, dtype=bool)
+	for j in range(n):
+		# All negative, all reject allocations
+		if np.all(nfd[:, j]):
+			satisfiable[j] = False
+			reasons.append(('allnfd', [j]))
+
+		# Conflicting positive and negative
+		incompatible = list(np.flatnonzero(np.logical_and(nfd[:, j], pfd[:, j])))
+		if incompatible:
+			satisfiable[j] = False
+			reasons.append(('conflictfd', [j, incompatible]))
+
+		# Competition over one job
+		if np.count_nonzero(pfd[:, j]) > 1:
+			satisfiable[j] = False
+			reasons.append(('manypfd', [j, list(np.flatnonzero(pfd[:, j]))]))
+
+	return satisfiable, reasons
+
+# Compute reasons for schedule satisfaction of fixed decisions using stability
+def explain_schedule_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
 	(m, n) = unattacked.shape
 	M = range(m)
 	N = range(n)
-	reasons = []
-
-	# Summarise fixed decision self-conflicts
-	satisfiable = np.ones(n, dtype=bool)
-	for j in N:
-		if np.all(nfd[:, j]):
-			satisfiable[j] = False
-			reasons.append('Job {} cannot be allocated to any machine'.format(j + 1))
-
-		incompatible = np.flatnonzero(np.logical_and(nfd[:, j], pfd[:, j]))
-		if np.any(incompatible):
-			satisfiable[j] = False
-			reasons.append('Job {} cannot be allocated and not be allocated to machines {{{}}}'.format(
-				j + 1, ', '.join([str(i + 1) for i in incompatible])))
-
-		if np.count_nonzero(pfd[:, j]) > 1:
-			satisfiable[j] = False
-			reasons.append('Job {} cannot be allocated to multiple machines {{{}}}'.format(
-				j + 1, ', '.join([str(i + 1) for i in M if pfd[i, j]])))
+	satisfiable, reasons = explain_problem_satisfaction(nfd, pfd)
 
 	# Summarise fixed decision conflicts with schedule
 	pfd_conflicts = unattacked
@@ -307,25 +316,61 @@ def explain_satisfaction(nfd, pfd, unattacked, conflicts, precompute=True):
 			if satisfiable[j]:
 				for i in M:
 					if nfd_conflicts[i, j]:
-						reasons.append('Job {} must not be allocated to machine {}'.format(j + 1, i + 1))
+						reasons.append(('nfd', [j, i]))
 					if pfd_conflicts[i, j]:
-						reasons.append('Job {} must be allocated to machine {}'.format(j + 1, i + 1))
+						reasons.append(('pfd', [j, i]))
 		return False, reasons
 	else:
-		reasons = ['All jobs satisfy all fixed decisions']
+		reasons = [('satisfies', [])]
 		return True, reasons
 
+# Format nested lists into set notation
+def format_list(x):
+	if type(x) is list:
+		return '{{{}}}'.format(', '.join([format_list(i) for i in x]))
+
+	if type(x) is str:
+		return x
+
+	# Assume integer
+	return str(x + 1)
+
+# Format low-level, unformatted reasons into understandable reasons
+def format_reason(reason):
+	key_reason, indices = reason
+	positions = [format_list(i) for i in indices]
+
+	reason_templates = {
+		'nomachinejob': 'There are no machines or jobs',
+		'nomachine': 'There are no machines to allocate to jobs',
+		'unallocated': 'Job {} is not allocated by any machine',
+		'overallocated': 'Job {} is allocated to multiple machines {}',
+		'feasible': 'All jobs are allocated by exactly one machine',
+		'move': 'Job {} can be allocated to machine {} to reduce by {}',
+		'swap': 'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}',
+		'efficient': 'All jobs satisfy single and pairwise exchange properties',
+		'allnfd': 'Job {} cannot be allocated to any machine',
+		'conflictfd': 'Job {} cannot be allocated and not be allocated to machines {}',
+		'manypfd': 'Job {} cannot be allocated to multiple machines {}',
+		'nfd': 'Job {} must not be allocated to machine {}',
+		'pfd': 'Job {} must be allocated to machine {}',
+		'satisfies': 'All jobs satisfy all fixed decisions'
+	}
+
+	return reason_templates[key_reason].format(*positions)
+
 # Use templates to construct natural language argument to explain property of schedule
-def format_argument(template, pair):
-	satisfied, reasons = pair
+def format_argument(property_template, explained_property):
+	satisfied, reasons = explained_property
 
 	if satisfied:
-		claim = template.format('')
+		claim = property_template.format('')
 	else:
-		claim = template.format('not ')
+		claim = property_template.format('not ')
 
 	if reasons:
-		argument = '{} because:\n - {}\n'.format(claim, '\n - '.join(reasons))
+		argument = '{} because:\n - {}\n'.format(
+			claim, '\n - '.join(map(format_reason, reasons)))
 	else:
 		argument = '{}\n'.format(claim)
 
@@ -340,18 +385,17 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations.append(format_argument('Schedule is {}feasible',
 		explain_feasibility(feasibility_unattacked, feasibility_conflicts)))
 
-	ef, C, C_max = construct_efficiency_framework(m, p, nfd, pfd, S, ff)
+	df = construct_satisfaction_framework(nfd, pfd, ff)
+	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
+		feasibility_unattacked, feasibility_conflicts)
+	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
+		explain_schedule_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts)))
 
+	ef, C, C_max = construct_efficiency_framework(m, p, nfd, pfd, S, ff, False)
 	efficiency_unattacked, efficiency_conflicts = explain_stability(S, ef,
 		feasibility_unattacked, feasibility_conflicts)
 	explanations.append(format_argument('Schedule is {}efficient',
 		explain_efficiency(p, S, C, C_max, efficiency_unattacked, efficiency_conflicts)))
-
-	df = construct_satisfaction_framework(nfd, pfd, ff, False)
-	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
-		feasibility_unattacked, feasibility_conflicts)
-	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
-		explain_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts)))
 
 	if options['verbose']:
 		pass
@@ -386,15 +430,15 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations.append(format_argument('Schedule is {}feasible',
 		explain_feasibility(feasibility_unattacked, fc_partial, False)))
 
+	satisfaction_unattacked = compute_unattacked(S, df_partial,
+		feasibility_unattacked, False)
+	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
+		explain_schedule_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False)))
+
 	efficiency_unattacked = compute_unattacked(S, ef_partial,
 		feasibility_unattacked, False)
 	explanations.append(format_argument('Schedule is {}efficient',
 		explain_efficiency(p, S, C, C_max, efficiency_unattacked, ec_partial, False)))
-
-	satisfaction_unattacked = compute_unattacked(S, df_partial,
-		feasibility_unattacked, False)
-	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
-		explain_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False)))
 
 	return '\n'.join(explanations)
 
