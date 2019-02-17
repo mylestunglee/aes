@@ -5,6 +5,7 @@ __pycache__
 src/*.problem
 src/*.schedule
 src/*.txt
+src/scripts/log
 report/*.aux
 report/*.log
 report/*.pdf
