@@ -77,9 +77,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		# Generate schedule
 		success, text = interface.optimal_schedule(
 			m_spinbox.get(),
-			textbox_get(p_textbox),
-			textbox_get(nfd_textbox),
-			textbox_get(pfd_textbox),
+			textbox_get(p_textbox, True),
+			textbox_get(nfd_textbox, True),
+			textbox_get(pfd_textbox, True),
 			solver_name,
 			time_limit)
 
@@ -92,9 +92,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		# Generate schedule
 		success, text = interface.random_schedule(
 			m_spinbox.get(),
-			textbox_get(p_textbox),
-			textbox_get(nfd_textbox),
-			textbox_get(pfd_textbox))
+			textbox_get(p_textbox, True),
+			textbox_get(nfd_textbox, True),
+			textbox_get(pfd_textbox, True))
 
 		if success:
 			textbox_replace(S_textbox, text)
@@ -142,10 +142,10 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	def explain():
 		_, text = interface.explain(
 			m_spinbox.get(),
-			textbox_get(p_textbox),
-			textbox_get(nfd_textbox),
-			textbox_get(pfd_textbox),
-			textbox_get(S_textbox),
+			textbox_get(p_textbox, True),
+			textbox_get(nfd_textbox, True),
+			textbox_get(pfd_textbox, True),
+			textbox_get(S_textbox, True),
 			options)
 
 		textbox_replace(output_textbox, text)
@@ -287,8 +287,12 @@ def textbox_replace(textbox, text):
 	if disabled:
 		textbox.config(state='disabled')
 
-def textbox_get(textbox):
-	return textbox.get('1.0', tk.END + '-1c')
+# Get textbox's value, endline appends '\n'
+def textbox_get(textbox, endline=False):
+	if endline:
+		return textbox.get('1.0', tk.END)
+	else:
+		return textbox.get('1.0', tk.END + '-1c')
 
 def spinbox_replace(spinbox, text):
 	spinbox.delete(0, tk.END)

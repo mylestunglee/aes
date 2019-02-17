@@ -212,8 +212,8 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 		M = range(m)
 		N = range(n)
 
-		# Round number to 3 decimal places
-		def round(x):
+		# format number to 3 decimal places
+		def format(x):
 			if x == 0:
 				return 0
 			return str(np.round(x, -int(np.floor(np.log10(abs(x)))) + 2))
@@ -236,7 +236,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 					reduction = C_max - C_max_reduced
 					pairs.append((
 						(-reduction, j1, i2),
-						('move', [j1, i2, round(reduction)])))
+						('move', [j1, i2, format(reduction)])))
 					S_reduced[:, j1] = allocated
 
 				for j2 in N:
@@ -251,7 +251,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 						reduction = C_max - C_max_reduced
 						pairs.append((
 							(-reduction, j1, j2, i1, i2),
-							('swap', [j1, j2, i1, i2, round(reduction)])))
+							('swap', [j1, j2, i1, i2, format(reduction)])))
 						S_reduced[i1, j1] = True
 						S_reduced[i2, j2] = True
 						S_reduced[i1, j2] = False
@@ -327,7 +327,7 @@ def explain_schedule_satisfaction(nfd, pfd, unattacked, conflicts, precompute=Tr
 # Format nested lists into set notation
 def format_list(x):
 	if type(x) is list:
-		return '{{{}}}'.format(', '.join([format_list(i) for i in x]))
+		return '{{{}}}'.format(', '.join(format_list(i) for i in x))
 
 	if type(x) is str:
 		return x
