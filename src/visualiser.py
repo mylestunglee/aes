@@ -93,13 +93,22 @@ def draw_framework(f, m, n, filename):
 	graph.render(filename)
 
 # Generates a column chart of jobs against machines
-def draw_schedule(p, S):
+def draw_schedule(p, S, S_old=None, filename=None):
+	if not filename is None:
+		plt.clf()
+
 	(m, n) = S.shape
+	if S_old is None:
+		S_old = S
+
 	max_jobs = np.max(np.sum(S, axis=1)) if m > 0 and n > 0 else 0
 	if max_jobs > 10 or m >= 30:
 		draw_schedule_undetailed(p, S)
 	else:
-		draw_schedule_detailed(p, S)
+		draw_schedule_detailed(p, S, S_old)
+
+	if not filename is None:
+		plt.savefig(filename)
 
 def draw_schedule_undetailed(p, S):
 	(m, _) = S.shape
@@ -113,7 +122,7 @@ def draw_schedule_undetailed(p, S):
 
 	plt.gca().invert_yaxis()
 
-def draw_schedule_detailed(p, S):
+def draw_schedule_detailed(p, S, S_old):
 	(m, n) = S.shape
 
 	N = np.arange(n)
@@ -122,18 +131,21 @@ def draw_schedule_detailed(p, S):
 	accum = np.zeros(m)
 
 	for j in N:
-	    widths = S[:, j].astype(float) * p[j]
-	    bars = plt.barh(M, widths, left=accum, color='lightgrey', edgecolor='grey', linewidth=S[:, j].astype(int))
-	    accum += widths
+		widths = S[:, j].astype(float) * p[j]
+		backcolours = ['lightgrey' if S_old[i, j] else 'lightpink' for i in range(m)]
 
-	    for bar in bars:
-	        if bar.get_width() > 0:
-	            plt.text(
-	                bar.get_x() + bar.get_width() / 2,
-	                bar.get_y() + bar.get_height() / 2,
-	                j + 1,
-	                ha='center',
-	                va='center')
+		bars = plt.barh(M, widths, left=accum, color=backcolours, edgecolor='grey', linewidth=S[:, j].astype(int))
+		accum += widths
+
+		for bar in bars:
+			# Set job label
+			if bar.get_width() > 0:
+				plt.text(
+					bar.get_x() + bar.get_width() / 2,
+					bar.get_y() + bar.get_height() / 2,
+					j + 1,
+					ha='center',
+					va='center')
 
 	plt.xlabel('time')
 	plt.ylabel('machine')
