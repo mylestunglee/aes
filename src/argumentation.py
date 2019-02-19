@@ -362,7 +362,7 @@ def format_reason(reason):
 	return reason_templates[key_reason].format(*positions)
 
 # Use templates to construct natural language argument to explain property of schedule
-def format_argument(property_template, explained_property):
+def format_argument(property_template, explained_property, selected=None):
 	satisfied, reasons = explained_property
 
 	if satisfied:
@@ -371,8 +371,15 @@ def format_argument(property_template, explained_property):
 		claim = property_template.format('not ')
 
 	if reasons:
-		argument = '{} because:\n - {}\n'.format(
-			claim, '\n - '.join(map(format_reason, reasons)))
+		# Construct claim with listed reasons
+		argument = '{} because:\n'.format(claim)
+		for k, reason in enumerate(reasons):
+			# Highlight reason for potential action
+			if k == selected:
+				prefix = '>-<'
+			else:
+				prefix = ' - '
+			argument += '{} {}\n'.format(prefix, format_reason(reason))
 	else:
 		argument = '{}\n'.format(claim)
 

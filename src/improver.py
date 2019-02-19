@@ -153,19 +153,29 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 	# Find future improvements
 	action_class, reasons, nexts = improve_once(m, n, p, nfd, pfd, S, all_actions)
 
+	if len(nexts) == 1:
+		print(nexts, len(nexts))
+		[((_, _, selected_reason), _)] = nexts
+		print(selected_reason)
+	else:
+		selected_reason = None
+
 	# Format main action_class
 	if action_class == 'problem':
-		explanation += format_argument('Problem is {}satisfiable', (False, reasons))
+		explanation += format_argument('Problem is {}satisfiable',
+			(False, reasons), selected_reason)
 	elif action_class == 'feasibility':
-		explanation += format_argument('Schedule is {}feasible', (False, reasons))
+		explanation += format_argument('Schedule is {}feasible',
+			(False, reasons), selected_reason)
 	elif action_class == 'none':
-		explanation += format_argument('Schedule is {}feasible', (True, []))
+		explanation += format_argument('Schedule is {}feasible',
+			(True, []), selected_reason)
 	else:
 		print('Unknown action_class')
 
 	next_explanations = []
 
-	# Loop over each possible actions, if not all_actions then go to next actoin
+	# Loop over each possible actions, if not all_actions then go to next action
 	for k, next in enumerate(nexts):
 		if action_class == 'problem':
 			action, (better_nfd, better_pfd) = next
