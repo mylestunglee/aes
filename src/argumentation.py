@@ -327,8 +327,10 @@ def explain_schedule_satisfaction(nfd, pfd, unattacked, conflicts, precompute=Tr
 # Format nested lists into set notation
 def format_list(x):
 	if type(x) is list:
+		# Wrap multiple indices into sets
 		return '{{{}}}'.format(', '.join(format_list(i) for i in x))
 
+	# Return already formatted string
 	if type(x) is str:
 		return x
 
@@ -444,7 +446,16 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 
 # Switch between different explanation methods
 def explain(m, n, p, nfd, pfd, S, options):
+	# just a debug option
+	if options['verbose']:
+		import improver
+
+		explanation = improver.improve(m, n, p, nfd, pfd, S)
+
+		return explanation
+
 	if not options['partial']:
 		return full_precomputation_explain(m, n, p, nfd, pfd, S, options)
 	else:
 		return partial_precomputation_explain(m, n, p, nfd, pfd, S, options)
+
