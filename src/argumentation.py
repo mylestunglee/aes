@@ -1,6 +1,9 @@
 import numpy as np
 import schedule
 
+bullet = ' -  '
+highlighted = '>-< '
+
 # Creates an argumentation framework representing feasibility as an adjacency matrix
 def construct_feasibility_framework(m, n):
 	ff = np.zeros((m, n, m, n), dtype=bool)

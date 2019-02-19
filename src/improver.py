@@ -154,9 +154,7 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 	action_class, reasons, nexts = improve_once(m, n, p, nfd, pfd, S, all_actions)
 
 	if len(nexts) == 1:
-		print(nexts, len(nexts))
 		[((_, _, selected_reason), _)] = nexts
-		print(selected_reason)
 	else:
 		selected_reason = None
 
@@ -194,35 +192,60 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 	if next_explanations:
 		next_explanation = '\n'.join(next_explanations)
 		if all_actions:
-			next_explanation = textwrawp.indent(next_explanation, '\t')
+			next_explanation = textwrap.indent(next_explanation, '\t')
 
 		return '{}{}'.format(explanation, next_explanation)
 	else:
 		return explanation.rstrip('\n')
 
+# Remove text-based lists with latex lists
+def format_latex_lists(text):
+	result = []
+	in_list = False
+	for line in text.splitlines():
+		if line.startswith(bullet) or line.startswith(highlighted):
+			item = line[len(bullet):]
+			# Start of list
+			if not in_list:
+				result.append('\\begin{itemize}')
+				in_list = True
+			# Standard bullet point
+			if line.startswith(bullet):
+				result.append('\\item {}'.format(item))
+			else:
+				result.append('\\item\\textbf{{{}}}'.format(item))
+		else:
+			if in_list:
+				# End of list
+				result.append('\\end{itemize}')
+				in_list = False
+			result.append(line)
+	return '\n'.join(result)
+
 # Wrapper for improvement with latex
 def improve(m, n, p, nfd, pfd, S):
 	# Get bulk explanation
 	explanation = improve_recursive(m, n, p, nfd, pfd, S, False, True)
+	# Format lists
+	explanation = format_latex_lists(explanation)
 	# Force new lines in latex
 	explanation = explanation.replace('\n', '\n\n')
 	# Remove indentation
 	explanation = explanation.replace('\t', '')
-	template = '''\\documentclass[10pt, a4paper]{{report}}
+	template = '''\\documentclass[10pt, a4paper, twocolumn]{{report}}
 \\usepackage{{graphicx}}
 \\usepackage[margin=1in]{{geometry}}
-\\usepackage{{multicol}}
 \\setlength\\parindent{{0pt}}
-\\setlength\\parskip{{0pt}}
+\\setlength\columnseprule{{0.4pt}}
 \\begin{{document}}
-	\\begin{{multicols*}}{{2}}
-	 	{}
- 	\\end{{multicols*}}
+ 	{}
 \\end{{document}}
 '''
 	report = template.format(explanation)
 	with open('report.tex', 'w') as file:
 		file.write(report)
+
+	return ''
 
 # Wrapper for improvement without latex
 def improve_internal(m, n, p, nfd, pfd, S):
