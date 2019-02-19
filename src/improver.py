@@ -180,7 +180,7 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 			next_explanations.append(format_action(action))
 			next_explanations.append(
 				improve_recursive(m, n, p, better_nfd, better_pfd, S,
-					all_actions, generate_latex, '{}_{}'.format(prefix, k), S))
+					all_actions, generate_latex, '{}_{}'.format(prefix, k + 1), S))
 		elif action_class == 'feasibility':
 			action, better_S = next
 			next_explanations.append(format_action(action))

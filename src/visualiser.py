@@ -130,11 +130,43 @@ def draw_schedule_detailed(p, S, S_old):
 
 	accum = np.zeros(m)
 
+	# Draw currently assigned jobs
 	for j in N:
 		widths = S[:, j].astype(float) * p[j]
-		backcolours = ['lightgrey' if S_old[i, j] else 'lightpink' for i in range(m)]
+		backcolours = ['whitesmoke' if S_old[i, j] else 'lightgrey' for i in range(m)]
 
-		bars = plt.barh(M, widths, left=accum, color=backcolours, edgecolor='grey', linewidth=S[:, j].astype(int))
+		# Thicker line for new jobs
+		def compute_linewidth(i, j):
+			if S[i, j]:
+				if S_old[i, j]:
+					return 1
+				else:
+					return 2
+			else:
+				return 0
+
+		bars = plt.barh(M, widths, left=accum, color=backcolours,
+			edgecolor='grey', linewidth=[compute_linewidth(i, j) for i in M])
+		accum += widths
+
+		for bar in bars:
+			# Set job label
+			if bar.get_width() > 0:
+				plt.text(
+					bar.get_x() + bar.get_width() / 2,
+					bar.get_y() + bar.get_height() / 2,
+					j + 1,
+					ha='center',
+					va='center')
+
+	# Draw previously assigned jobs
+	for j in N:
+		draw = np.logical_and(np.logical_not(S[:, j]), S_old[:, j])
+		widths = draw.astype(float) * p[j]
+
+		# Thicker dashes for removed jobs
+		bars = plt.barh(M, widths, left=accum, color='white', edgecolor='grey',
+			linewidth=2*draw.astype(int), linestyle='--')
 		accum += widths
 
 		for bar in bars:
