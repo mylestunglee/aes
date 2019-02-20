@@ -239,7 +239,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 					reduction = C_max - C_max_reduced
 					pairs.append((
 						(-reduction, j1, i2),
-						('move', [j1, i2, format(reduction)])))
+						('move', [j1, i1, i2, format(reduction)])))
 					S_reduced[:, j1] = allocated
 
 				for j2 in N:
@@ -351,7 +351,7 @@ def format_reason(reason):
 		'unallocated': 'Job {} is not allocated by any machine',
 		'overallocated': 'Job {} is allocated to multiple machines {}',
 		'feasible': 'All jobs are allocated by exactly one machine',
-		'move': 'Job {} can be allocated to machine {} to reduce by {}',
+		'move': 'Job {} can be allocated from machine {} to {} to reduce by {}',
 		'swap': 'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}',
 		'efficient': 'All jobs satisfy single and pairwise exchange properties',
 		'allnfd': 'Job {} cannot be allocated to any machine',
@@ -423,17 +423,17 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	def fc_partial(i, j):
 		return compute_partial_conflicts(S, ff_partial, None, i, j, False)
 
-	def ef_partial(i, j):
-		return construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i, j)
-
-	def ec_partial(i, j):
-		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
-
 	def df_partial(i, j):
 		return construct_partial_satisfaction_framework(nfd, pfd, i, j)
 
 	def dc_partial(i, j):
 		return compute_partial_conflicts(S, df_partial, fc_partial, i, j, False)
+
+	def ef_partial(i, j):
+		return construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i, j)
+
+	def ec_partial(i, j):
+		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
 
 	feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
 	explanations.append(format_argument('Schedule is {}feasible',

@@ -40,10 +40,11 @@ def problem_reasons_to_actions(reasons):
 	return [(key_reason, indices, k) for k, (key_reason, indices) in enumerate(reasons)]
 
 # Convert reasons to actions, where one reason may have multiple actions
-def feasibility_reasons_to_actions(m, nfd, pfd, reasons):
+def schedule_reasons_to_actions(m, nfd, pfd, S, reasons):
 	actions = []
 
 	for k, (key_reason, indices) in enumerate(reasons):
+		# Feasibility
 		if key_reason == 'unallocated':
 			[j] = indices
 			# If unallocated job must go to a pfd
@@ -62,15 +63,15 @@ def feasibility_reasons_to_actions(m, nfd, pfd, reasons):
 			for i in is_:
 				if not pfd[i, j]:
 					actions.append((key_reason, [j, i], k))
+		# Satisfaction
+		elif key_reason == 'nfd' or key_reason == 'pfd':
+			# Failed pfd does not say where it is currently allocated
+			if key_reason == 'pfd':
+				[j, _] = indices
+				[i1] = np.flatnonzero(S[:, j])
+			else:
+				[j, i1] = indices
 
-	return actions
-
-def satisfaction_reasons_to_actions(m, nfd, pfd, reasons):
-	actions = []
-
-	for k, (key_reason, indices) in enumerate(reasons):
-		if key_reason == 'nfd' or key_reason == 'pfd':
-			[j, i1] = indices
 			if np.any(pfd[:, j]):
 				for i2 in range(m):
 					if pfd[i2, j]:
@@ -79,6 +80,13 @@ def satisfaction_reasons_to_actions(m, nfd, pfd, reasons):
 				for i2 in range(m):
 					if not nfd[i2, j]:
 						actions.append(('move', [j, i1, i2], k))
+		# Efficiency
+		elif key_reason == 'move':
+			[j, i1, i2, _] = indices
+			actions.append((key_reason, [j, i1, i2], k))
+		elif key_reason == 'swap':
+			[j1, j2, i1, i2, _] = indices
+			actions.append((key_reason, [j1, j2, i1, i2], k))
 
 	return actions
 
@@ -97,6 +105,12 @@ def apply_schedule_action(S, action):
 		[j, i1, i2] = indices
 		better_S[i1, j] = False
 		better_S[i2, j] = True
+	elif key_action == 'swap':
+		[j1, j2, i1, i2] = indices
+		better_S[i1, j1] = False
+		better_S[i2, j1] = True
+		better_S[i2, j2] = False
+		better_S[i1, j2] = True
 	else:
 		print('key_action was not processed')
 
@@ -112,7 +126,8 @@ def format_action(action):
 		'manypfd': 'Translating conflicting positive to negative fixed decisions for job {}',
 		'unallocated': 'Assigning job {} to machine {}',
 		'overallocated': 'Unassigning job {} with machine {}',
-		'move': 'Moving job from machine {} to {}'
+		'move': 'Moving job {} from machine {} to {}',
+		'swap': 'Swapping jobs {} and {} with machines {} and {}'
 	}
 
 	return action_templates[key_action].format(*positions)
@@ -145,7 +160,7 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 
 	# Resolve
 	if not success:
-		actions = feasibility_reasons_to_actions(m, nfd, pfd, reasons)
+		actions = schedule_reasons_to_actions(m, nfd, pfd, S, reasons)
 		if all_actions:
 			return 'feasibility', reasons, [(action, apply_schedule_action(S, action))
 				for action in actions]
@@ -168,7 +183,7 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 
 	# Resolve
 	if not success:
-		actions = satisfaction_reasons_to_actions(m, nfd, pfd, reasons)
+		actions = schedule_reasons_to_actions(m, nfd, pfd, S, reasons)
 		if all_actions:
 			return 'satisfaction', reasons, [(action, apply_schedule_action(S, action))
 				for action in actions]
@@ -177,7 +192,31 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 			better_S = apply_schedule_action(S, action)
 			return 'satisfaction', reasons, [(action, better_S)]
 
-	# feasible
+	# Fix inefficient job
+	def ef_partial(i, j):
+		return construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i, j)
+
+	def ec_partial(i, j):
+		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
+
+	C = schedule.calc_completion_times(p, S)
+	C_max = np.max(C) if m > 0 else 0
+	efficiency_unattacked = compute_unattacked(S, ef_partial,
+		feasibility_unattacked, False)
+	success, reasons = explain_efficiency(p, S, C, C_max, efficiency_unattacked,
+		ec_partial, False)
+
+	# Resolve
+	if not success:
+		actions = schedule_reasons_to_actions(m, nfd, pfd, S, reasons)
+		if all_actions:
+			return 'efficiency', reasons, [(action, apply_schedule_action(S, action))
+				for action in actions]
+		else:
+			action = select_action(actions)
+			better_S = apply_schedule_action(S, action)
+			return 'efficiency', reasons, [(action, better_S)]
+
 	return 'none', [], []
 
 # Depth-first search of makeshift schedule improvement tree
@@ -194,10 +233,7 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='
 		else:
 			used_prefix = prefix[2:]
 
-		if all_actions:
-			explanation = '\subsection*{{Step {}}}'.format(used_prefix.replace('_', '.'))
-		else:
-			explanation = '\subsection*{{Step {}}}'.format(used_prefix.count('_') + 1)
+		explanation = '\subsection*{{{}}}'.format(used_prefix.replace('_', '.'))
 		filename = '{}{}.png'.format(basename, used_prefix)
 		draw_schedule(p, S, S_old, filename)
 		explanation += '\includegraphics[width=0.5\\textwidth]{{{}}}\n'.format(filename)
@@ -223,8 +259,11 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='
 	elif action_class == 'satisfaction':
 		explanation += format_argument('Schedule does {}satisfies user fixed decisions',
 			(False, reasons), selected_reason)
+	elif action_class == 'efficiency':
+		explanation += format_argument('Schedule is {}efficient',
+			(False, reasons), selected_reason)
 	elif action_class == 'none':
-		explanation += format_argument('Schedule is {}feasible',
+		explanation += format_argument('Schedule is {}efficient',
 			(True, []), selected_reason)
 	else:
 		print('Unknown action_class')
