@@ -25,10 +25,16 @@ def get_arguments():
 		'--graphical',
 		help='displays graphical user interface',
 		action='store_true')
-	parser.add_argument(
+	E_parser = parser.add_mutually_exclusive_group()
+	E_parser.add_argument(
 		'-e',
 		'--explain',
 		help='generate explanation',
+		action='store_true')
+	E_parser.add_argument(
+		'-E',
+		'--report',
+		help='generate a PDF of an efficient schedule by recursively apply and explain suggested improvements',
 		action='store_true')
 	P_parser = parser.add_mutually_exclusive_group()
 	P_parser.add_argument(
@@ -58,12 +64,8 @@ def get_arguments():
 		action='store_true')
 	parser.add_argument(
 		'-o',
-		'--output')
-	parser.add_argument(
-		'-v',
-		'--verbose',
-		help='explain schedules in more detail',
-		action='store_true')
+		'--output',
+		help='output filename for selected problem, schedule or explanation')
 	parser.add_argument(
 		'--partial',
 		help='use partial framework construction to favour memory over CPU',
@@ -131,12 +133,11 @@ def run_arguments(args):
 		return
 
 	options = {
-		'verbose': args.verbose,
 		'graphical': args.graphical,
 		'partial': args.partial
 	}
 
-	# Output schedule
+	# Do something with a schedule
 	if not args.graphical:
 		if args.explain:
 			success, output_text = interface.explain(m_text, p_text, nfd_text,
@@ -145,6 +146,9 @@ def run_arguments(args):
 				eprint(output_text)
 				return
 			try_output(args.output, output_text)
+		elif args.report:
+			interface.gen_improvement_report(m_text, p_text, nfd_text,
+				pfd_text, S_text, args.output)
 		else:
 			try_output(args.output, S_text)
 		return

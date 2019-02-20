@@ -409,9 +409,6 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	explanations.append(format_argument('Schedule is {}efficient',
 		explain_efficiency(p, S, C, C_max, efficiency_unattacked, efficiency_conflicts)))
 
-	if options['verbose']:
-		pass
-
 	return '\n'.join(explanations)
 
 # Favour memory over CPU resource consumption
@@ -456,16 +453,10 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 
 # Switch between different explanation methods
 def explain(m, n, p, nfd, pfd, S, options):
-	# just a debug option
-	if options['verbose']:
-		import improver
-
-		explanation = improver.improve(m, n, p, nfd, pfd, S)
-
-		return explanation
-
-	if not options['partial']:
-		return full_precomputation_explain(m, n, p, nfd, pfd, S, options)
-	else:
+	if options['partial']:
+		# Saves a lot of memory but a bit slower
 		return partial_precomputation_explain(m, n, p, nfd, pfd, S, options)
+	else:
+		# Faster but naive implementation is easier to debug
+		return full_precomputation_explain(m, n, p, nfd, pfd, S, options)
 

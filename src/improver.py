@@ -1,4 +1,6 @@
 import textwrap
+import os
+import subprocess
 from argumentation import *
 from visualiser import *
 
@@ -133,9 +135,13 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 	return 'none', [], []
 
 # Depth-first search of makeshift schedule improvement tree
-def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix='1', S_old=None):
-	# Generate plot for latex
-	if generate_latex:
+#	all_actions: whether to visit all local improvements or select the best action
+#	basename: prefix of all temporary saved files
+#	prefix: used to uniquely identify recursion depth and index
+#	S_old: holds the previous schedules, used to pretty draw diff charts
+def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='1', S_old=None):
+	# Generate plot for Latex
+	if not basename is None:
 		# Replace accumated prefix with a more human-readable index
 		if prefix == '1':
 			used_prefix = 'Initial'
@@ -143,7 +149,7 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 			used_prefix = prefix[2:]
 
 		explanation = '\subsection*{{{}}}'.format(used_prefix.replace('_', '.'))
-		filename = '{}.png'.format(used_prefix)
+		filename = '{}{}.png'.format(basename, used_prefix)
 		draw_schedule(p, S, S_old, filename)
 		explanation += '\includegraphics[width=0.5\\textwidth]{{{}}}\n'.format(filename)
 	else:
@@ -180,13 +186,13 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 			next_explanations.append(format_action(action))
 			next_explanations.append(
 				improve_recursive(m, n, p, better_nfd, better_pfd, S,
-					all_actions, generate_latex, '{}_{}'.format(prefix, k), S))
+					all_actions, basename, '{}_{}'.format(prefix, k), S))
 		elif action_class == 'feasibility':
 			action, better_S = next
 			next_explanations.append(format_action(action))
 			next_explanations.append(
 				improve_recursive(m, n, p, nfd, pfd, better_S, all_actions,
-					generate_latex, '{}_{}'.format(prefix, k + 1), S))
+					basename, '{}_{}'.format(prefix, k + 1), S))
 
 	# Nested explanations have nested indentation if there are multiple next actions
 	if next_explanations:
@@ -198,7 +204,7 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 	else:
 		return explanation.rstrip('\n')
 
-# Remove text-based lists with latex lists
+# Remove text-based lists with Latex lists
 def format_latex_lists(text):
 	result = []
 	in_list = False
@@ -222,13 +228,18 @@ def format_latex_lists(text):
 			result.append(line)
 	return '\n'.join(result)
 
-# Wrapper for improvement with latex
-def improve(m, n, p, nfd, pfd, S):
+# Wrapper for improvement with Latex
+def gen_improvement_report(m, n, p, nfd, pfd, S, filename):
+	# Get name of the file without extensions or path
+	if filename is None:
+		basename = 'report'
+	else:
+		basename = os.path.splitext(filename)[0]
 	# Get bulk explanation
-	explanation = improve_recursive(m, n, p, nfd, pfd, S, False, True)
+	explanation = improve_recursive(m, n, p, nfd, pfd, S, False, basename)
 	# Format lists
 	explanation = format_latex_lists(explanation)
-	# Force new lines in latex
+	# Force new lines in Latex
 	explanation = explanation.replace('\n', '\n\n')
 	# Remove indentation
 	explanation = explanation.replace('\t', '')
@@ -241,13 +252,18 @@ def improve(m, n, p, nfd, pfd, S):
  	{}
 \\end{{document}}
 '''
+	# Create Latex body
 	report = template.format(explanation)
-	with open('report.tex', 'w') as file:
+	report_filename = '{}.tex'.format(basename)
+	# Save Latex file
+	with open(report_filename, 'w') as file:
 		file.write(report)
 
-	return ''
+	# Compile report with no stdout
+	with open(os.devnull, 'w') as devnull:
+		subprocess.run(['pdflatex', report_filename], stdout=devnull)
 
-# Wrapper for improvement without latex
+# Wrapper for improvement without Latex
 def improve_internal(m, n, p, nfd, pfd, S):
 	explanation = improve_recursive(m, n, p, nfd, pfd, S, True, True)
 	return explanation + '\n'
