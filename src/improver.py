@@ -257,23 +257,25 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='
 
 	# Format main action_class
 	if action_class == 'problem':
-		explanation += format_argument('Problem is {}satisfiable',
+		argument = format_argument('Problem is {}satisfiable',
 			(False, reasons), selected_reason)
 	elif action_class == 'feasibility':
-		explanation += format_argument('Schedule is {}feasible',
+		argument = format_argument('Schedule is {}feasible',
 			(False, reasons), selected_reason)
 	elif action_class == 'satisfaction':
-		explanation += format_argument('Schedule does {}satisfies user fixed decisions',
+		argument = format_argument('Schedule does {}satisfies user fixed decisions',
 			(False, reasons), selected_reason)
 	elif action_class == 'efficiency':
-		explanation += format_argument('Schedule is {}efficient',
+		argument = format_argument('Schedule is {}efficient',
 			(False, reasons), selected_reason)
 	elif action_class == 'none':
-		explanation += format_argument('Schedule is {}efficient',
+		argument = format_argument('Schedule is {}efficient',
 			(True, []), selected_reason)
 	else:
 		print('Unknown action_class')
 
+	# Format argument for Latex
+	explanation += argument.replace('{', '\\{').replace('}', '\\}')
 	next_explanations = []
 
 	# Loop over each possible actions, if not all_actions then go to next action
