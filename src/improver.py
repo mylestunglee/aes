@@ -65,6 +65,23 @@ def feasibility_reasons_to_actions(m, nfd, pfd, reasons):
 
 	return actions
 
+def satisfaction_reasons_to_actions(m, nfd, pfd, reasons):
+	actions = []
+
+	for k, (key_reason, indices) in enumerate(reasons):
+		if key_reason == 'nfd' or key_reason == 'pfd':
+			[j, i1] = indices
+			if np.any(pfd[:, j]):
+				for i2 in range(m):
+					if pfd[i2, j]:
+						actions.append(('move', [j, i1, i2], k))
+			else:
+				for i2 in range(m):
+					if not nfd[i2, j]:
+						actions.append(('move', [j, i1, i2], k))
+
+	return actions
+
 # Apply action modelled as action on schedule
 def apply_schedule_action(S, action):
 	key_action, indices, _ = action
@@ -76,6 +93,10 @@ def apply_schedule_action(S, action):
 	elif key_action == 'overallocated':
 		[j, i] = indices
 		better_S[i, j] = False
+	elif key_action == 'move':
+		[j, i1, i2] = indices
+		better_S[i1, j] = False
+		better_S[i2, j] = True
 	else:
 		print('key_action was not processed')
 
@@ -90,7 +111,8 @@ def format_action(action):
 		'conflictfd': 'Removing conflicting fixed decisions for job {}',
 		'manypfd': 'Translating conflicting positive to negative fixed decisions for job {}',
 		'unallocated': 'Assigning job {} to machine {}',
-		'overallocated': 'Unassigning job {} with machine {}'
+		'overallocated': 'Unassigning job {} with machine {}',
+		'move': 'Moving job from machine {} to {}'
 	}
 
 	return action_templates[key_action].format(*positions)
@@ -119,9 +141,10 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 		return compute_partial_conflicts(S, ff_partial, None, i, j, False)
 
 	feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
-	feasible, reasons = explain_feasibility(feasibility_unattacked, fc_partial, False)
+	success, reasons = explain_feasibility(feasibility_unattacked, fc_partial, False)
 
-	if not feasible:
+	# Resolve
+	if not success:
 		actions = feasibility_reasons_to_actions(m, nfd, pfd, reasons)
 		if all_actions:
 			return 'feasibility', reasons, [(action, apply_schedule_action(S, action))
@@ -130,6 +153,29 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 			action = select_action(actions)
 			better_S = apply_schedule_action(S, action)
 			return 'feasibility', reasons, [(action, better_S)]
+
+	# Fix unsatisfying job
+	def df_partial(i, j):
+		return construct_partial_satisfaction_framework(nfd, pfd, i, j)
+
+	def dc_partial(i, j):
+		return compute_partial_conflicts(S, df_partial, fc_partial, i, j, False)
+
+	satisfaction_unattacked = compute_unattacked(S, df_partial,
+		feasibility_unattacked, False)
+	success, reasons = explain_schedule_satisfaction(nfd, pfd, satisfaction_unattacked,
+		dc_partial, False)
+
+	# Resolve
+	if not success:
+		actions = satisfaction_reasons_to_actions(m, nfd, pfd, reasons)
+		if all_actions:
+			return 'satisfaction', reasons, [(action, apply_schedule_action(S, action))
+				for action in actions]
+		else:
+			action = select_action(actions)
+			better_S = apply_schedule_action(S, action)
+			return 'satisfaction', reasons, [(action, better_S)]
 
 	# feasible
 	return 'none', [], []
@@ -148,7 +194,10 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='
 		else:
 			used_prefix = prefix[2:]
 
-		explanation = '\subsection*{{{}}}'.format(used_prefix.replace('_', '.'))
+		if all_actions:
+			explanation = '\subsection*{{Step {}}}'.format(used_prefix.replace('_', '.'))
+		else:
+			explanation = '\subsection*{{Step {}}}'.format(used_prefix.count('_') + 1)
 		filename = '{}{}.png'.format(basename, used_prefix)
 		draw_schedule(p, S, S_old, filename)
 		explanation += '\includegraphics[width=0.5\\textwidth]{{{}}}\n'.format(filename)
@@ -171,6 +220,9 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='
 	elif action_class == 'feasibility':
 		explanation += format_argument('Schedule is {}feasible',
 			(False, reasons), selected_reason)
+	elif action_class == 'satisfaction':
+		explanation += format_argument('Schedule does {}satisfies user fixed decisions',
+			(False, reasons), selected_reason)
 	elif action_class == 'none':
 		explanation += format_argument('Schedule is {}feasible',
 			(True, []), selected_reason)
@@ -187,7 +239,7 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='
 			next_explanations.append(
 				improve_recursive(m, n, p, better_nfd, better_pfd, S,
 					all_actions, basename, '{}_{}'.format(prefix, k), S))
-		elif action_class == 'feasibility':
+		else:
 			action, better_S = next
 			next_explanations.append(format_action(action))
 			next_explanations.append(

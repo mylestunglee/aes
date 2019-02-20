@@ -196,6 +196,8 @@ def gen_improvement_report(m_text, p_text, nfd_text, pfd_text, S_text, filename)
 
 	improver.gen_improvement_report(m, n, p, nfd, pfd, S, filename)
 
+	return True, ''
+
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))
 

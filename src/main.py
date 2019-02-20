@@ -147,8 +147,11 @@ def run_arguments(args):
 				return
 			try_output(args.output, output_text)
 		elif args.report:
-			interface.gen_improvement_report(m_text, p_text, nfd_text,
+			success, output_text = interface.gen_improvement_report(m_text, p_text, nfd_text,
 				pfd_text, S_text, args.output)
+			if not success:
+				eprint(output_text)
+				return
 		else:
 			try_output(args.output, S_text)
 		return
