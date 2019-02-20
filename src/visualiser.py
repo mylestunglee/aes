@@ -1,6 +1,8 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as pat
+
 import schedule
 
 # Prints ASCII representation of a schedule
@@ -75,7 +77,7 @@ def draw_framework(f, m, n, filename):
 		elif f[i1, j1, i2, j2] and k1 == k2:
 			graph.edge(label(i1, j1), label(i2, j2))
 
-	graph = graphviz.Digraph(format='png')
+	graph = graphviz.Digraph(format='png', dpi=300)
 
 	# Construct nodes
 	for i in M:
@@ -108,7 +110,7 @@ def draw_schedule(p, S, S_old=None, filename=None):
 		draw_schedule_detailed(p, S, S_old)
 
 	if not filename is None:
-		plt.savefig(filename)
+		plt.savefig(filename, bbox_inches='tight', pad_inches=0, transparent=True)
 
 def draw_schedule_undetailed(p, S):
 	(m, _) = S.shape
@@ -130,23 +132,22 @@ def draw_schedule_detailed(p, S, S_old):
 
 	accum = np.zeros(m)
 
+	thicklinewidth = 3
+
 	# Draw currently assigned jobs
 	for j in N:
 		widths = S[:, j].astype(float) * p[j]
-		backcolours = ['whitesmoke' if S_old[i, j] else 'lightgrey' for i in range(m)]
 
-		# Thicker line for new jobs
-		def compute_linewidth(i, j):
-			if S[i, j]:
-				if S_old[i, j]:
-					return 1
-				else:
-					return 2
-			else:
-				return 0
+		# Plot main boxes
+		bars = plt.barh(M, widths, left=accum, facecolor='lightgrey',
+			edgecolor='grey', linewidth=S[:, j].astype(int))
 
-		bars = plt.barh(M, widths, left=accum, color=backcolours,
-			edgecolor='grey', linewidth=[compute_linewidth(i, j) for i in M])
+		plt.barh(M, widths, left=accum, facecolor='none',
+			edgecolor='black', linewidth=thicklinewidth*
+			np.logical_and(S[:, j], np.logical_not(S_old[:, j])).astype(int),
+			linestyle='--')
+
+		# Next jobs
 		accum += widths
 
 		for bar in bars:
@@ -165,8 +166,8 @@ def draw_schedule_detailed(p, S, S_old):
 		widths = draw.astype(float) * p[j]
 
 		# Thicker dashes for removed jobs
-		bars = plt.barh(M, widths, left=accum, color='white', edgecolor='grey',
-			linewidth=2*draw.astype(int), linestyle='--')
+		bars = plt.barh(M, widths, left=accum, facecolor='none', edgecolor='black',
+			linewidth=thicklinewidth*draw.astype(int), linestyle='--')
 		accum += widths
 
 		for bar in bars:

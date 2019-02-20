@@ -1,4 +1,5 @@
-import textwrap
+import os
+import subprocess
 from argumentation import *
 from visualiser import *
 
@@ -38,10 +39,11 @@ def problem_reasons_to_actions(reasons):
 	return [(key_reason, indices, k) for k, (key_reason, indices) in enumerate(reasons)]
 
 # Convert reasons to actions, where one reason may have multiple actions
-def feasibility_reasons_to_actions(m, nfd, pfd, reasons):
+def schedule_reasons_to_actions(m, nfd, pfd, S, reasons):
 	actions = []
 
 	for k, (key_reason, indices) in enumerate(reasons):
+		# Feasibility
 		if key_reason == 'unallocated':
 			[j] = indices
 			# If unallocated job must go to a pfd
@@ -60,6 +62,30 @@ def feasibility_reasons_to_actions(m, nfd, pfd, reasons):
 			for i in is_:
 				if not pfd[i, j]:
 					actions.append((key_reason, [j, i], k))
+		# Satisfaction
+		elif key_reason == 'nfd' or key_reason == 'pfd':
+			# Failed pfd does not say where it is currently allocated
+			if key_reason == 'pfd':
+				[j, _] = indices
+				[i1] = np.flatnonzero(S[:, j])
+			else:
+				[j, i1] = indices
+
+			if np.any(pfd[:, j]):
+				for i2 in range(m):
+					if pfd[i2, j]:
+						actions.append(('move', [j, i1, i2], k))
+			else:
+				for i2 in range(m):
+					if not nfd[i2, j]:
+						actions.append(('move', [j, i1, i2], k))
+		# Efficiency
+		elif key_reason == 'move':
+			[j, i1, i2, _] = indices
+			actions.append((key_reason, [j, i1, i2], k))
+		elif key_reason == 'swap':
+			[j1, j2, i1, i2, _] = indices
+			actions.append((key_reason, [j1, j2, i1, i2], k))
 
 	return actions
 
@@ -74,6 +100,16 @@ def apply_schedule_action(S, action):
 	elif key_action == 'overallocated':
 		[j, i] = indices
 		better_S[i, j] = False
+	elif key_action == 'move':
+		[j, i1, i2] = indices
+		better_S[i1, j] = False
+		better_S[i2, j] = True
+	elif key_action == 'swap':
+		[j1, j2, i1, i2] = indices
+		better_S[i1, j1] = False
+		better_S[i2, j1] = True
+		better_S[i2, j2] = False
+		better_S[i1, j2] = True
 	else:
 		print('key_action was not processed')
 
@@ -88,7 +124,9 @@ def format_action(action):
 		'conflictfd': 'Removing conflicting fixed decisions for job {}',
 		'manypfd': 'Translating conflicting positive to negative fixed decisions for job {}',
 		'unallocated': 'Assigning job {} to machine {}',
-		'overallocated': 'Unassigning job {} with machine {}'
+		'overallocated': 'Unassigning job {} with machine {}',
+		'move': 'Moving job {} from machine {} to {}',
+		'swap': 'Swapping jobs {} and {} with machines {} and {}'
 	}
 
 	return action_templates[key_action].format(*positions)
@@ -117,10 +155,11 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 		return compute_partial_conflicts(S, ff_partial, None, i, j, False)
 
 	feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
-	feasible, reasons = explain_feasibility(feasibility_unattacked, fc_partial, False)
+	success, reasons = explain_feasibility(feasibility_unattacked, fc_partial, False)
 
-	if not feasible:
-		actions = feasibility_reasons_to_actions(m, nfd, pfd, reasons)
+	# Resolve
+	if not success:
+		actions = schedule_reasons_to_actions(m, nfd, pfd, S, reasons)
 		if all_actions:
 			return 'feasibility', reasons, [(action, apply_schedule_action(S, action))
 				for action in actions]
@@ -129,26 +168,84 @@ def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
 			better_S = apply_schedule_action(S, action)
 			return 'feasibility', reasons, [(action, better_S)]
 
-	# feasible
+	# Fix unsatisfying job
+	def df_partial(i, j):
+		return construct_partial_satisfaction_framework(nfd, pfd, i, j)
+
+	def dc_partial(i, j):
+		return compute_partial_conflicts(S, df_partial, fc_partial, i, j, False)
+
+	satisfaction_unattacked = compute_unattacked(S, df_partial,
+		feasibility_unattacked, False)
+	success, reasons = explain_schedule_satisfaction(nfd, pfd, satisfaction_unattacked,
+		dc_partial, False)
+
+	# Resolve
+	if not success:
+		actions = schedule_reasons_to_actions(m, nfd, pfd, S, reasons)
+		if all_actions:
+			return 'satisfaction', reasons, [(action, apply_schedule_action(S, action))
+				for action in actions]
+		else:
+			action = select_action(actions)
+			better_S = apply_schedule_action(S, action)
+			return 'satisfaction', reasons, [(action, better_S)]
+
+	# Fix inefficient job
+	def ef_partial(i, j):
+		return construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i, j)
+
+	def ec_partial(i, j):
+		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
+
+	C = schedule.calc_completion_times(p, S)
+	C_max = np.max(C) if m > 0 else 0
+	efficiency_unattacked = compute_unattacked(S, ef_partial,
+		feasibility_unattacked, False)
+	success, reasons = explain_efficiency(p, S, C, C_max, efficiency_unattacked,
+		ec_partial, False)
+
+	# Restrict the maximum number of efficiency suggestions
+	max_reasons = 8
+	reasons = reasons[:max_reasons]
+
+	# Resolve
+	if not success:
+		actions = schedule_reasons_to_actions(m, nfd, pfd, S, reasons)
+		if all_actions:
+			return 'efficiency', reasons, [(action, apply_schedule_action(S, action))
+				for action in actions]
+		else:
+			action = select_action(actions)
+			better_S = apply_schedule_action(S, action)
+			return 'efficiency', reasons, [(action, better_S)]
+
 	return 'none', [], []
 
-# Depth-first search of makeshift schedule improvement tree
-def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix='1', S_old=None):
-	# Generate plot for latex
-	if generate_latex:
-		# Replace accumated prefix with a more human-readable index
-		if prefix == '1':
-			used_prefix = 'Initial'
-		else:
-			used_prefix = prefix[2:]
 
-		explanation = '\subsection*{{{}}}'.format(used_prefix.replace('_', '.'))
-		filename = '{}.png'.format(used_prefix)
-		draw_schedule(p, S, S_old, filename)
-		explanation += '\includegraphics[width=0.5\\textwidth]{{{}}}\n'.format(filename)
+def next_label(accum, index, branch):
+	if branch:
+		return '{}_{}'.format(accum, index + 1)
 	else:
-		# Skip plots and headers
-		explanation = ''
+		return '{}'.format(int(accum) + 1)
+
+# Depth-first search of makeshift schedule improvement tree
+#	all_actions: whether to visit all local improvements or select the best action
+#	basename: prefix of all temporary saved files
+#	prefix: used to uniquely identify recursion depth and index
+#	S_old: holds the previous schedules, used to pretty draw diff charts
+def improve_recursive(m, n, p, nfd, pfd, S, all_actions, basename=None, prefix='1', S_old=None):
+	print(prefix)
+
+	# Generate plot for Latex
+	filename = '{}{}.png'.format(basename, prefix)
+	draw_schedule(p, S, S_old, filename)
+	explanation = '''
+\\subsection*{{Step {}}}
+\\begin{{center}}
+	\\includegraphics[width=0.75\\textwidth]{{{}}}
+\\end{{center}}
+'''.format(prefix, filename)
 
 	# Find future improvements
 	action_class, reasons, nexts = improve_once(m, n, p, nfd, pfd, S, all_actions)
@@ -165,8 +262,14 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 	elif action_class == 'feasibility':
 		explanation += format_argument('Schedule is {}feasible',
 			(False, reasons), selected_reason)
+	elif action_class == 'satisfaction':
+		explanation += format_argument('Schedule does {}satisfies user fixed decisions',
+			(False, reasons), selected_reason)
+	elif action_class == 'efficiency':
+		explanation += format_argument('Schedule is {}efficient',
+			(False, reasons), selected_reason)
 	elif action_class == 'none':
-		explanation += format_argument('Schedule is {}feasible',
+		explanation += format_argument('Schedule is {}efficient',
 			(True, []), selected_reason)
 	else:
 		print('Unknown action_class')
@@ -175,30 +278,25 @@ def improve_recursive(m, n, p, nfd, pfd, S, all_actions, generate_latex, prefix=
 
 	# Loop over each possible actions, if not all_actions then go to next action
 	for k, next in enumerate(nexts):
+		next_prefix = next_label(prefix, k, all_actions)
+
 		if action_class == 'problem':
 			action, (better_nfd, better_pfd) = next
 			next_explanations.append(format_action(action))
 			next_explanations.append(
 				improve_recursive(m, n, p, better_nfd, better_pfd, S,
-					all_actions, generate_latex, '{}_{}'.format(prefix, k + 1), S))
-		elif action_class == 'feasibility':
+					all_actions, basename, next_prefix, S))
+		else:
 			action, better_S = next
 			next_explanations.append(format_action(action))
 			next_explanations.append(
 				improve_recursive(m, n, p, nfd, pfd, better_S, all_actions,
-					generate_latex, '{}_{}'.format(prefix, k + 1), S))
+					basename, next_prefix, S))
 
 	# Nested explanations have nested indentation if there are multiple next actions
-	if next_explanations:
-		next_explanation = '\n'.join(next_explanations)
-		if all_actions:
-			next_explanation = textwrap.indent(next_explanation, '\t')
+	return '{}{}'.format(explanation, '\n'.join(next_explanations))
 
-		return '{}{}'.format(explanation, next_explanation)
-	else:
-		return explanation.rstrip('\n')
-
-# Remove text-based lists with latex lists
+# Remove text-based lists with Latex lists
 def format_latex_lists(text):
 	result = []
 	in_list = False
@@ -207,7 +305,7 @@ def format_latex_lists(text):
 			item = line[len(bullet):]
 			# Start of list
 			if not in_list:
-				result.append('\\begin{itemize}')
+				result.append('\\begin{itemize}[noitemsep]')
 				in_list = True
 			# Standard bullet point
 			if line.startswith(bullet):
@@ -220,34 +318,40 @@ def format_latex_lists(text):
 				result.append('\\end{itemize}')
 				in_list = False
 			result.append(line)
+	# Terminate itemize if not caught in lists
+	if in_list:
+		result.append('\\end{itemize}')
 	return '\n'.join(result)
 
-# Wrapper for improvement with latex
-def improve(m, n, p, nfd, pfd, S):
+# Wrapper for improvement with Latex
+def gen_improvement_report(m, n, p, nfd, pfd, S, filename):
+	# Get name of the file without extensions or path
+	if filename is None:
+		basename = 'report'
+	else:
+		basename = os.path.splitext(filename)[0]
 	# Get bulk explanation
-	explanation = improve_recursive(m, n, p, nfd, pfd, S, False, True)
+	explanation = improve_recursive(m, n, p, nfd, pfd, S, False, basename)
 	# Format lists
 	explanation = format_latex_lists(explanation)
-	# Force new lines in latex
-	explanation = explanation.replace('\n', '\n\n')
-	# Remove indentation
-	explanation = explanation.replace('\t', '')
-	template = '''\\documentclass[10pt, a4paper, twocolumn]{{report}}
+	report = '''\\documentclass[24pt, a4paper]{{report}}
 \\usepackage{{graphicx}}
-\\usepackage[margin=1in]{{geometry}}
-\\setlength\\parindent{{0pt}}
-\\setlength\columnseprule{{0.4pt}}
+\\usepackage{{enumitem}}
+\\usepackage[top=1in,bottom=1in]{{geometry}}
 \\begin{{document}}
  	{}
 \\end{{document}}
-'''
-	report = template.format(explanation)
-	with open('report.tex', 'w') as file:
+'''.format(explanation)
+	report_filename = '{}.tex'.format(basename)
+	# Save Latex file
+	with open(report_filename, 'w') as file:
 		file.write(report)
 
-	return ''
+	# Compile report with no stdout
+	with open(os.devnull, 'w') as devnull:
+		subprocess.run(['pdflatex', report_filename], stdout=devnull)
 
-# Wrapper for improvement without latex
+# Wrapper for improvement without Latex
 def improve_internal(m, n, p, nfd, pfd, S):
 	explanation = improve_recursive(m, n, p, nfd, pfd, S, True, True)
 	return explanation + '\n'

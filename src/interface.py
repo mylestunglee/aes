@@ -5,6 +5,7 @@ import schedule
 import visualiser
 import solver
 import argumentation
+import improver
 
 delimiter = ';\n'
 integer_pattern = re.compile(r'^[0-9]+$')
@@ -159,6 +160,43 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 		visualiser.draw_schedule(p, S)
 
 	return True, argumentation.explain(m, n, p, nfd, pfd, S, options)
+
+# Explain and optimise at the same time
+def gen_improvement_report(m_text, p_text, nfd_text, pfd_text, S_text, filename):
+	if not integer_pattern.match(m_text):
+		return False, 'Number of machines syntax error'
+	if not float_pattern.match(p_text):
+		return False, 'Proccessing times syntax error'
+	if not schedule_pattern.match(nfd_text):
+		return False, 'Negative fixed decisions syntax error'
+	if not schedule_pattern.match(pfd_text):
+		return False, 'Positive fixed decisions syntax error'
+	if not schedule_pattern.match(S_text):
+		return False, 'Schedule syntax error'
+
+	m = int(m_text)
+	p = parse_processing(p_text)
+	n = p.shape[0]
+	nfd = parse_schedule(nfd_text, m, n)
+	pfd = parse_schedule(pfd_text, m, n)
+	S = parse_schedule(S_text, m, n)
+
+	if m != S.shape[0]:
+		return False, 'Schedule refers to undefined machines'
+	if m != nfd.shape[0]:
+		return False, 'Negative fixed decisions refers to undefined machines'
+	if m != pfd.shape[0]:
+		return False, 'Positive fixed decisions refers to undefined machines'
+	if n != S.shape[1]:
+		return False, 'Schedule refers to undefined processing times'
+	if n != nfd.shape[1]:
+		return False, 'Negative fixed decisions refers to undefined processing times'
+	if n != pfd.shape[1]:
+		return False, 'Positive fixed decisions refers to undefined processing times'
+
+	improver.gen_improvement_report(m, n, p, nfd, pfd, S, filename)
+
+	return True, ''
 
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))
