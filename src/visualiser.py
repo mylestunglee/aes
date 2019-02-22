@@ -20,7 +20,7 @@ def draw_schedule(p, S, S_old=None):
 	# Plot fills exactly to axis boundaries
 	plt.margins(0, 0)
 	# Trim top and right border of image
-	plt.subplots_adjust(top = 1, right=1, left=0.04)
+	plt.subplots_adjust(top = 1, right=1)
 
 def draw_schedule_undetailed(p, S):
 	(m, _) = S.shape
