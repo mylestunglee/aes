@@ -60,9 +60,10 @@ def optimal_schedule(m, p, nfd, pfd, solver_name, time_limit):
 
 	result = solver.solve(model)
 	C_max = model.C_max.value
+
 	# No solution
 	if C_max == None:
-		return None, None
+		return None
 
 	# Construct schedule
 	n = len(p)
@@ -71,4 +72,4 @@ def optimal_schedule(m, p, nfd, pfd, solver_name, time_limit):
 		for j in range(n):
 			S[i, j] = model.x[i, j].value != 0
 
-	return C_max, S
+	return S

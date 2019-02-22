@@ -62,51 +62,51 @@ def is_problem_action(key_action):
 def apply_problem_action(nfd, pfd, action):
 	key_action, indices = action
 
-	better_nfd = nfd.copy()
-	better_pfd = pfd.copy()
+	nfd_better = nfd.copy()
+	pfd_better = pfd.copy()
 
 	if key_action == 'allnfd':
 		[j] = indices
-		better_nfd[:, j] = False
+		nfd_better[:, j] = False
 	elif key_action == 'conflictfd':
 		[j, is_] = indices
 		for i in is_:
-			better_nfd[i, j] = False
-			better_pfd[i, j] = False
+			nfd_better[i, j] = False
+			pfd_better[i, j] = False
 	elif key_action == 'manypfd':
 		[j, is_] = indices
-		better_pfd[:, j] = False
-		better_nfd[:, j] = True
+		pfd_better[:, j] = False
+		nfd_better[:, j] = True
 		for i in is_:
-			better_nfd[i, j] = False
+			nfd_better[i, j] = False
 	else:
 		print('key_action is not problem related')
 
-	return better_nfd, better_pfd
+	return nfd_better, pfd_better
 
 # Apply action modelled as action on schedule
 def apply_schedule_action(S, action):
 	key_action, indices = action
-	better_S = S.copy()
+	S_better = S.copy()
 
 	if key_action == 'unallocated':
 		[j, i] = indices
-		better_S[i, j] = True
+		S_better[i, j] = True
 	elif key_action == 'overallocated':
 		[j, i] = indices
-		better_S[i, j] = False
+		S_better[i, j] = False
 	elif key_action == 'move':
 		[j, i1, i2] = indices
-		better_S[i1, j] = False
-		better_S[i2, j] = True
+		S_better[i1, j] = False
+		S_better[i2, j] = True
 	elif key_action == 'swap':
 		[j1, j2, i1, i2] = indices
-		better_S[i1, j1] = False
-		better_S[i2, j1] = True
-		better_S[i2, j2] = False
-		better_S[i1, j2] = True
+		S_better[i1, j1] = False
+		S_better[i2, j1] = True
+		S_better[i2, j2] = False
+		S_better[i1, j2] = True
 	else:
 		print('key_action was not processed')
 
-	return better_S
+	return S_better
 

@@ -58,7 +58,8 @@ def save_problem(filename, m_text, p_text, nfd_text, pfd_text):
 	text = format_problem(m_text, p_text, nfd_text, pfd_text)
 	return save_text(filename, text)
 
-def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit):
+# Attempts to parse problem in text format into internal format
+def parse_problem(m_text, p_text, nfd_text, pfd_text):
 	if not integer_pattern.match(m_text):
 		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
@@ -83,76 +84,57 @@ def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit
 	if n != pfd.shape[1]:
 		return False, 'Positive fixed decisions refers to undefined processing times'
 
-	_, S = solver.optimal_schedule(m, p, nfd, pfd, solver_name, time_limit)
+	return True, (m, n, p, nfd, pfd)
 
-	if S is None:
-		return False, 'Solver failed to find feasible schedule'
+# Attempts to parse problem and schedule
+def parse_problem_schedule(m_text, p_text, nfd_text, pfd_text, S_text):
+	success, result = parse_problem(m_text, p_text, nfd_text, pfd_text)
+	if not success:
+		return success, result
 
-	S_text = format_schedule(S)
+	(m, n, p, nfd, pfd) = result
 
-	return True, S_text
-
-def random_schedule(m_text, p_text, nfd_text, pfd_text):
-	if not integer_pattern.match(m_text):
-		return False, 'Number of machines syntax error'
-	if not float_pattern.match(p_text):
-		return False, 'Processing times syntax error'
-	if not schedule_pattern.match(nfd_text):
-		return False, 'Negative fixed decisions syntax error'
-	if not schedule_pattern.match(pfd_text):
-		return False, 'Positive fixed decisions syntax error'
-
-	m = int(m_text)
-	p = parse_processing(p_text)
-	n = p.shape[0]
-	nfd = parse_schedule(nfd_text, m, n)
-	pfd = parse_schedule(pfd_text, m, n)
-
-	if m != nfd.shape[0]:
-		return False, 'Negative fixed decisions refers to undefined machines'
-	if m != pfd.shape[0]:
-		return False, 'Positive fixed decisions refers to undefined machines'
-	if n != nfd.shape[1]:
-		return False, 'Negative fixed decisions refers to undefined processing times'
-	if n != pfd.shape[1]:
-		return False, 'Positive fixed decisions refers to undefined processing times'
-
-	S = schedule.random_schedule(m, n, nfd, pfd)
-	S_text = format_schedule(S)
-
-	return True, S_text
-
-def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
-	if not integer_pattern.match(m_text):
-		return False, [('Number of machines syntax error', [])]
-	if not float_pattern.match(p_text):
-		return False, [('Proccessing times syntax error', [])]
-	if not schedule_pattern.match(nfd_text):
-		return False, [('Negative fixed decisions syntax error', [])]
-	if not schedule_pattern.match(pfd_text):
-		return False, [('Positive fixed decisions syntax error', [])]
 	if not schedule_pattern.match(S_text):
-		return False, [('Schedule syntax error', [])]
+		return False, 'Schedule syntax error'
 
-	m = int(m_text)
-	p = parse_processing(p_text)
-	n = p.shape[0]
-	nfd = parse_schedule(nfd_text, m, n)
-	pfd = parse_schedule(pfd_text, m, n)
 	S = parse_schedule(S_text, m, n)
 
 	if m != S.shape[0]:
-		return False, [('Schedule refers to undefined machines', [])]
-	if m != nfd.shape[0]:
-		return False, [('Negative fixed decisions refers to undefined machines', [])]
-	if m != pfd.shape[0]:
-		return False, [('Positive fixed decisions refers to undefined machines', [])]
+		return False, 'Schedule refers to undefined machines'
 	if n != S.shape[1]:
-		return False, [('Schedule refers to undefined processing times', [])]
-	if n != nfd.shape[1]:
-		return False, [('Negative fixed decisions refers to undefined processing times', [])]
-	if n != pfd.shape[1]:
-		return False, [('Positive fixed decisions refers to undefined processing times', [])]
+		return False, 'Schedule refers to undefined processing times'
+
+	return True, (m, n, p, nfd, pfd, S)
+
+def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit):
+	success, result = parse_problem(m_text, p_text, nfd_text, pfd_text)
+	if not success:
+		return success, result
+
+	(m, n, p, nfd, pfd) = result
+
+	S = solver.optimal_schedule(m, p, nfd, pfd, solver_name, time_limit)
+
+	if S is None:
+		return False, 'Solver failed to find feasible schedule'
+	else:
+		return True, format_schedule(S)
+
+def random_schedule(m_text, p_text, nfd_text, pfd_text):
+	success, result = parse_problem(m_text, p_text, nfd_text, pfd_text)
+	if not success:
+		return success, result
+	(m, n, _, nfd, pfd) = result
+	S = schedule.random_schedule(m, n, nfd, pfd)
+	return True, format_schedule(S)
+
+def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
+	success, result = parse_problem_schedule(m_text, p_text, nfd_text,
+		pfd_text, S_text)
+	if not success:
+		return success, result
+
+	(m, n, p, nfd, pfd, S) = result
 
 	# Draw schedule
 	if options['graphical']:
@@ -162,54 +144,31 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 	return True, argumentation.explain(m, n, p, nfd, pfd, S, options)
 
 def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
-	if not integer_pattern.match(m_text):
-		return False, 'Number of machines syntax error'
-	if not float_pattern.match(p_text):
-		return False, 'Proccessing times syntax error'
-	if not schedule_pattern.match(nfd_text):
-		return False, 'Negative fixed decisions syntax error'
-	if not schedule_pattern.match(pfd_text):
-		return False, 'Positive fixed decisions syntax error'
-	if not schedule_pattern.match(S_text):
-		return False, 'Schedule syntax error'
+	success, result = parse_problem(m_text, p_text, nfd_text, pfd_text, S_text)
+	if not success:
+		return success, result
 
-	m = int(m_text)
-	p = parse_processing(p_text)
-	n = p.shape[0]
-	nfd = parse_schedule(nfd_text, m, n)
-	pfd = parse_schedule(pfd_text, m, n)
-	S = parse_schedule(S_text, m, n)
+	(m, n, p, nfd, pfd, S) = result
 
-	if m != S.shape[0]:
-		return False, 'Schedule refers to undefined machines'
-	if m != nfd.shape[0]:
-		return False, 'Negative fixed decisions refers to undefined machines'
-	if m != pfd.shape[0]:
-		return False, 'Positive fixed decisions refers to undefined machines'
-	if n != S.shape[1]:
-		return False, 'Schedule refers to undefined processing times'
-	if n != nfd.shape[1]:
-		return False, 'Negative fixed decisions refers to undefined processing times'
-	if n != pfd.shape[1]:
-		return False, 'Positive fixed decisions refers to undefined processing times'
-
+	# Decide to apply action to decisions or schedule
 	key_action, indices = action
 	if act.is_problem_action(key_action):
-		better_nfd, better_pfd = act.apply_problem_action(nfd, pfd, action)
-		nfd_text = format_schedule(better_nfd)
-		pfd_text = format_schedule(better_pfd)
-		better_S = None
+		nfd_better, pfd_better = act.apply_problem_action(nfd, pfd, action)
+		nfd_text = format_schedule(nfd_better)
+		pfd_text = format_schedule(pfd_better)
+		S_better = None
 	else:
-		better_S = act.apply_schedule_action(S, action)
-		S_text = format_schedule(better_S)
+		S_better = act.apply_schedule_action(S, action)
+		S_text = format_schedule(S_better)
 
 	# Draw schedule
-	if options['graphical'] and not better_S is None:
+	if options['graphical'] and not S_better is None:
 		plt.gcf().clear()
-		visualiser.draw_schedule(p, better_S, S)
+		visualiser.draw_schedule(p, S_better, S)
 
 	return True, (nfd_text, pfd_text, S_text)
 
+# Parse colon space-delimited integer structure
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))
 
