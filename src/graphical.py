@@ -148,10 +148,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(S_textbox, True),
 			options)
 
-		for line in lines:
-			reason, actions = line
-			E_listbox.insert(tk.END, reason)
-
+		listbox_set(E_listbox, [reason for reason, _ in lines])
 		fig.canvas.draw()
 
 	def save_output():
@@ -192,73 +189,94 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	S_scrollbar = attach_scrollbar(S_frame, S_textbox)
 	explain_button = tk.Button(S_frame, text='Explain', command=explain)
 
+	def dummy():
+		pass
+
 	right_frame = tk.Frame(root)
 	fig = plt.figure(0)
 	S_figure = FigureCanvasTkAgg(fig, master=right_frame).get_tk_widget()
-	E_listbox = tk.Listbox(right_frame)
-	output_scrollbar = attach_scrollbar(right_frame, E_listbox)
-	save_output_button = tk.Button(right_frame, text='Save output', command=save_output)
+	E_frame = tk.LabelFrame(right_frame, text='Explanation')
+	E_listbox = tk.Listbox(E_frame)
+	E_scrollbar = attach_scrollbar(E_frame, E_listbox)
+	save_E_button = tk.Button(E_frame, text='Save', command=save_output)
+	action_frame = tk.LabelFrame(right_frame, text='Actions')
+	action_listbox = tk.Listbox(action_frame)
+	action_scrollbar = attach_scrollbar(action_frame, action_listbox)
+	apply_action_button = tk.Button(action_frame, text='Apply', command=dummy)
 
 	# Geometry
 	padding = 8
+	h_fill = tk.W + tk.E
+	v_fill = tk.N + tk.S
+	fill = h_fill + v_fill
 
 	root.geometry("1280x720")
 	root.rowconfigure(0, weight=1)
 	root.columnconfigure(1, weight=1)
 
-	left_frame.grid(row=0, column=0, sticky=tk.N+tk.S)
+	left_frame.grid(row=0, column=0, sticky=v_fill)
 	left_frame.rowconfigure(0, weight=1)
 	left_frame.rowconfigure(1, weight=1)
 
-	problem_frame.grid(row=0, column=0, padx=padding, pady=padding, sticky=tk.N+tk.S)
-	problem_command_frame.grid(row=0, column=0, columnspan=3, padx=padding, pady=padding, sticky=tk.W+tk.E)
+	problem_frame.grid(row=0, column=0, padx=padding, pady=padding, sticky=v_fill)
+	problem_command_frame.grid(row=0, column=0, columnspan=3, padx=padding, pady=padding, sticky=h_fill)
 
 	problem_command_frame.columnconfigure(0, weight=1)
 	problem_command_frame.columnconfigure(1, weight=1)
 	problem_command_frame.columnconfigure(2, weight=1)
-	random_problem_button.grid(row=0, column=0, sticky=tk.W+tk.E)
-	load_problem_button.grid(row=0, column=1, padx=padding, sticky=tk.W+tk.E)
-	save_problem_button.grid(row=0, column=2, sticky=tk.W+tk.E)
+	random_problem_button.grid(row=0, column=0, sticky=h_fill)
+	load_problem_button.grid(row=0, column=1, padx=padding, sticky=h_fill)
+	save_problem_button.grid(row=0, column=2, sticky=h_fill)
 	problem_frame.rowconfigure(2, weight=1)
 	problem_frame.rowconfigure(3, weight=1)
 	problem_frame.rowconfigure(4, weight=1)
 
-	m_label.grid(row=1, column=0, padx=padding, sticky=tk.W+tk.E)
-	m_spinbox.grid(row=1, column=1, columnspan=2, padx=(0, padding), sticky=tk.W+tk.E)
-	p_label.grid(row=2, column=0, padx=padding, pady=padding, sticky=tk.W+tk.E)
-	p_textbox.grid(row=2, column=1, pady=padding, sticky=tk.N+tk.S)
-	p_scrollbar.grid(row=2, column=2, padx=(0, padding), pady=padding, sticky=tk.N+tk.S)
-	nfd_label.grid(row=3, column=0, padx=padding, sticky=tk.W+tk.E)
-	nfd_textbox.grid(row=3, column=1, sticky=tk.N+tk.S)
-	nfd_scrollbar.grid(row=3, column=2, padx=(0, padding), sticky=tk.N+tk.S)
-	pfd_label.grid(row=4, column=0, padx=padding, pady=padding, sticky=tk.W+tk.E)
-	pfd_textbox.grid(row=4, column=1, pady=padding, sticky=tk.N+tk.S)
-	pfd_scrollbar.grid(row=4, column=2, padx=(0, padding), pady=padding, sticky=tk.N+tk.S)
+	m_label.grid(row=1, column=0, padx=padding, sticky=h_fill)
+	m_spinbox.grid(row=1, column=1, columnspan=2, padx=(0, padding), sticky=h_fill)
+	p_label.grid(row=2, column=0, padx=padding, pady=padding, sticky=h_fill)
+	p_textbox.grid(row=2, column=1, pady=padding, sticky=v_fill)
+	p_scrollbar.grid(row=2, column=2, padx=(0, padding), pady=padding, sticky=v_fill)
+	nfd_label.grid(row=3, column=0, padx=padding, sticky=h_fill)
+	nfd_textbox.grid(row=3, column=1, sticky=v_fill)
+	nfd_scrollbar.grid(row=3, column=2, padx=(0, padding), sticky=v_fill)
+	pfd_label.grid(row=4, column=0, padx=padding, pady=padding, sticky=h_fill)
+	pfd_textbox.grid(row=4, column=1, pady=padding, sticky=v_fill)
+	pfd_scrollbar.grid(row=4, column=2, padx=(0, padding), pady=padding, sticky=v_fill)
 
-	S_frame.grid(row=1, column=0, padx=padding, pady=padding, ipadx=50, sticky=tk.N+tk.S+tk.W+tk.E)
+	S_frame.grid(row=1, column=0, padx=padding, pady=(0, padding), ipadx=50, sticky=fill)
 	S_frame.rowconfigure(1, weight=1)
 	S_frame.columnconfigure(0, weight=1)
-	S_command_frame.grid(row=0, column=0, columnspan=2, padx=padding, pady=padding, sticky=tk.W+tk.E)
+	S_command_frame.grid(row=0, column=0, columnspan=2, padx=padding, pady=padding, sticky=h_fill)
 	S_command_frame.columnconfigure(0, weight=1)
 	S_command_frame.columnconfigure(1, weight=1)
 	S_command_frame.columnconfigure(2, weight=1)
 	S_command_frame.columnconfigure(3, weight=1)
-	S_optimal_schedule_button.grid(row=0, column=0, padx=(0, padding), sticky=tk.W+tk.E)
-	S_random_button.grid(row=0, column=1, padx=(0, padding), sticky=tk.W+tk.E)
-	load_S_button.grid(row=0, column=2, padx=(0, padding), sticky=tk.W+tk.E)
-	save_S_button.grid(row=0, column=3, sticky=tk.W+tk.E)
-	S_textbox.grid(row=1, column=0, padx=(padding, 0), sticky=tk.N+tk.S+tk.W+tk.E)
-	S_scrollbar.grid(row=1, column=1, padx=(0, padding), sticky=tk.N+tk.S)
-	explain_button.grid(row=2, column=0, columnspan=2, padx=padding, pady=padding, sticky=tk.W+tk.E)
+	S_optimal_schedule_button.grid(row=0, column=0, padx=(0, padding), sticky=h_fill)
+	S_random_button.grid(row=0, column=1, padx=(0, padding), sticky=h_fill)
+	load_S_button.grid(row=0, column=2, padx=(0, padding), sticky=h_fill)
+	save_S_button.grid(row=0, column=3, sticky=h_fill)
+	S_textbox.grid(row=1, column=0, padx=(padding, 0), sticky=fill)
+	S_scrollbar.grid(row=1, column=1, padx=(0, padding), sticky=v_fill)
+	explain_button.grid(row=2, column=0, columnspan=2, padx=padding, pady=padding, sticky=h_fill)
 
-	right_frame.grid(row=0, column=1, padx=padding, pady=padding, sticky=tk.N+tk.S+tk.W+tk.E)
-	right_frame.rowconfigure(0, weight=1)
+	right_frame.grid(row=0, column=1, sticky=fill)
 	right_frame.rowconfigure(1, weight=1)
 	right_frame.columnconfigure(0, weight=1)
-	S_figure.grid(row=0, column=0, columnspan=2, sticky=tk.N+tk.S+tk.W+tk.E)
-	E_listbox.grid(row=1, column=0, sticky=tk.N+tk.S+tk.W+tk.E)
-	output_scrollbar.grid(row=1, column=1, sticky=tk.N+tk.S)
-	save_output_button.grid(row=2, column=0, columnspan=2, pady=padding, sticky=tk.W+tk.E)
+	right_frame.columnconfigure(1, weight=1)
+	S_figure.grid(row=0, column=0, columnspan=2, sticky=h_fill, padx=padding, pady=padding)
+	E_frame.grid(row=1, column=0, sticky=fill, padx=padding, pady=(0, padding))
+	E_frame.rowconfigure(0, weight=1)
+	E_frame.columnconfigure(0, weight=1)
+	E_listbox.grid(row=0, column=0, sticky=fill, padx=(padding, 0))
+	E_scrollbar.grid(row=0, column=1, sticky=v_fill, padx=(0, padding))
+	save_E_button.grid(row=1, column=0, columnspan=2, padx=padding, pady=padding, sticky=h_fill)
+	action_frame.grid(row=1, column=1, sticky=fill, padx=padding, pady=(0, padding))
+	action_frame.rowconfigure(0, weight=1)
+	action_frame.columnconfigure(0, weight=1)
+	action_frame.rowconfigure(0, weight=1)
+	action_listbox.grid(row=0, column=0, sticky=fill, padx=(padding, 0), pady=(padding, 0))
+	action_scrollbar.grid(row=0, column=1, sticky=v_fill, padx=(0, padding))
+	apply_action_button.grid(row=1, column=0, columnspan=2, padx=padding, pady=padding, sticky=h_fill)
 
 	# Initial state from command line
 	spinbox_set(m_spinbox, m_text_initial)
