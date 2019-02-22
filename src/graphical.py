@@ -183,22 +183,22 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			action_listbox.select_set(0)
 
 	# Apply selected action to schedule
-	def apply():
+	def apply(_=None):
 		# If action is selected
 		indices = list(action_listbox.curselection())
 		if indices:
 			# Find internal representation of action
 			action_index = indices[0]
 			reason_index = E_listbox.curselection()[0]
-			action = actions_lookup[reason_index][action_index]
+			_, action = actions_lookup[reason_index][action_index]
 
 			# Apply action
 			nfd_text, pfd_text, S_text = interface.apply(
 				m_spinbox.get(),
 				textbox_get(p_textbox),
-				textbox_get(nfd_textbox, False),
-				textbox_get(pfd_textbox, False),
-				textbox_get(S_textbox, False),
+				textbox_get(nfd_textbox),
+				textbox_get(pfd_textbox),
+				textbox_get(S_textbox),
 				action,
 				options)
 
@@ -210,7 +210,12 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			# Automate next step
 			explain()
 
-	root.protocol("WM_DELETE_WINDOW", quit)
+	# When tab is pressed
+	def focus_next_window(event):
+	    event.widget.tk_focusNext().focus()
+	    return('break')
+
+	root.protocol('WM_DELETE_WINDOW', quit)
 	root.title('Argumentative Explainable Scheduler')
 	input_textbox_width = 30
 
@@ -219,20 +224,23 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 
 	problem_frame = tk.LabelFrame(left_frame, text='Problem')
 	problem_command_frame = tk.Frame(problem_frame)
+	random_problem_button = tk.Button(problem_command_frame, text='Randomise', command=random_problem)
 	load_problem_button = tk.Button(problem_command_frame, text='Load', command=load_problem)
 	save_problem_button = tk.Button(problem_command_frame, text='Save', command=save_problem)
-	random_problem_button = tk.Button(problem_command_frame, text='Randomise', command=random_problem)
 	m_label = tk.Label(problem_frame, text='Number of machines', anchor=tk.E)
 	m_spinbox = tk.Spinbox(problem_frame, from_=0, to_=tk.sys.maxsize)
 	p_label = tk.Label(problem_frame, text='Processing times', anchor=tk.E)
 	p_textbox = tk.Text(problem_frame, height=3, width=input_textbox_width)
 	p_scrollbar = attach_scrollbar(problem_frame, p_textbox)
+	p_textbox.bind('<Tab>', focus_next_window)
 	nfd_label = tk.Label(problem_frame, text='Negative fixed decisions', anchor=tk.E)
 	nfd_textbox = tk.Text(problem_frame, height=3, width=input_textbox_width)
 	nfd_scrollbar = attach_scrollbar(problem_frame, nfd_textbox)
+	nfd_textbox.bind('<Tab>', focus_next_window)
 	pfd_label = tk.Label(problem_frame, text='Positive fixed decisions', anchor=tk.E)
 	pfd_textbox = tk.Text(problem_frame, height=3, width=input_textbox_width)
 	pfd_scrollbar = attach_scrollbar(problem_frame, pfd_textbox)
+	pfd_textbox.bind('<Tab>', focus_next_window)
 
 	S_frame = tk.LabelFrame(left_frame, text='Schedule')
 	S_command_frame = tk.Frame(S_frame)
@@ -241,6 +249,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	load_S_button = tk.Button(S_command_frame, text='Load', command=load_schedule)
 	save_S_button = tk.Button(S_command_frame, text='Save', command=save_schedule)
 	S_textbox = tk.Text(S_frame, height=3, width=input_textbox_width)
+	S_textbox.bind('<Tab>', focus_next_window)
 	S_scrollbar = attach_scrollbar(S_frame, S_textbox)
 	explain_button = tk.Button(S_frame, text='Explain', command=explain)
 
@@ -250,6 +259,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	E_frame = tk.LabelFrame(right_frame, text='Explanation')
 	E_listbox = tk.Listbox(E_frame, exportselection=False)
 	E_listbox.bind('<<ListboxSelect>>', on_select_reason)
+	E_listbox.bind('<Return>', apply)
 	E_scrollbar = attach_scrollbar(E_frame, E_listbox)
 	save_E_button = tk.Button(E_frame, text='Save', command=save_explanation)
 	action_frame = tk.LabelFrame(right_frame, text='Actions')
