@@ -1,0 +1,37 @@
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage[toc]{appendix}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{datetime}
+\usepackage{amsthm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{shapes.multipart}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\setlength{\parindent}{0pt}
+
+\newcommand{\reporttitle}{Explaining Optimisation Solvers}
+\newcommand{\reportauthor}{Myles Lee}
+\newcommand{\supervisor}{Dr. Kristijonas Cyras\\Prof. Francesca Toni}
+\newcommand{\marker}{Dr. Ruth Misener}
+\newcommand{\reporttype}{MEng. Individual Project}
+\newcommand{\linespace}{\vspace*{\baselineskip}\\}
+\newcommand{\pair}[2]{\langle{#1},{#2}\rangle}
+\tikzstyle{file} = [draw, inner sep=10pt]
+\tikzstyle{node} = [draw, circle, inner sep=5pt]
+\tikzstyle{arrow} = [-{Stealth[scale=2]}]
+
+\makeatletter
+\newcommand{\incircbin}{\mathpalette\@incircbin}
+\newcommand\@incircbin[2]{\mathbin{\ooalign{\hidewidth$#1#2$\hidewidth\crcr$#1\bigcirc$}}}

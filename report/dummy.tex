@@ -1,0 +1,19 @@
+\documentclass[10pt, a4paper]{report}
+
+\input{definitions}
+
+\begin{document}	
+	\input{interval}
+	
+\begin{align*}
+	\min_{\mathbf{x}}\ &C_{\max}&\text{subject to:}\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\mathcal{T}\ &C_{\max}\geq x_{i,j,t}(t+p_j)\\
+	\forall j\in\mathcal{J}\ &\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}=1&(\alpha)\\
+	\forall i\in\mathcal{M}\ \forall t\in\mathcal{T}\ &\sum_{j\in\mathcal{J}}\sum_{t'=\max\{t-p_j+1,0\}}^t x_{i,j,t'}\leq 1&(\beta)\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{0,...,s_j-1\}\ &x_{i,j,t}=0&(\gamma)\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{f_j-p_j+1,...,T-1\}\ &x_{i,j,t}=0&(\delta)\\
+	\forall\pair{i}{j}\in D^-\ &\sum_{t\in\mathcal{T}}x_{i,j,t}=0&(\varepsilon)\\
+	\forall\pair{i}{j}\in D^+\ &\sum_{t\in\mathcal{T}}x_{i,j,t}=1&(\zeta)\\
+\end{align*}
+
+\end{document}
