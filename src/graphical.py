@@ -192,7 +192,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			_, action = actions_lookup[reason_index][action_index]
 
 			# Apply action
-			nfd_text, pfd_text, S_text = interface.apply(
+			success, result = interface.apply(
 				m_spinbox.get(),
 				textbox_get(p_textbox),
 				textbox_get(nfd_textbox),
@@ -201,15 +201,21 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 				action,
 				options)
 
-			# Update textboxes
-			textbox_set(nfd_textbox, nfd_text)
-			textbox_set(pfd_textbox, pfd_text)
-			textbox_set(S_textbox, S_text)
+			if success:
+				# Unpack results
+				nfd_text, pfd_text, S_text = result
 
-			# Automate next step, but do not draw again for explanation
-			draw_options = dict(options)
-			draw_options['graphical'] = False
-			explain(draw_options)
+				# Update textboxes
+				textbox_set(nfd_textbox, nfd_text)
+				textbox_set(pfd_textbox, pfd_text)
+				textbox_set(S_textbox, S_text)
+
+				# Automate next step, but do not draw again for explanation
+				draw_options = dict(options)
+				draw_options['graphical'] = False
+				explain(draw_options)
+			else:
+				E_listbox_set([result])
 
 	# When tab is pressed
 	def focus_next_window(event):

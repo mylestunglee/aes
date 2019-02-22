@@ -163,15 +163,15 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 
 def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
 	if not integer_pattern.match(m_text):
-		return False, [('Number of machines syntax error', [])]
+		return False, 'Number of machines syntax error'
 	if not float_pattern.match(p_text):
-		return False, [('Proccessing times syntax error', [])]
+		return False, 'Proccessing times syntax error'
 	if not schedule_pattern.match(nfd_text):
-		return False, [('Negative fixed decisions syntax error', [])]
+		return False, 'Negative fixed decisions syntax error'
 	if not schedule_pattern.match(pfd_text):
-		return False, [('Positive fixed decisions syntax error', [])]
+		return False, 'Positive fixed decisions syntax error'
 	if not schedule_pattern.match(S_text):
-		return False, [('Schedule syntax error', [])]
+		return False, 'Schedule syntax error'
 
 	m = int(m_text)
 	p = parse_processing(p_text)
@@ -181,17 +181,17 @@ def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
 	S = parse_schedule(S_text, m, n)
 
 	if m != S.shape[0]:
-		return False, [('Schedule refers to undefined machines', [])]
+		return False, 'Schedule refers to undefined machines'
 	if m != nfd.shape[0]:
-		return False, [('Negative fixed decisions refers to undefined machines', [])]
+		return False, 'Negative fixed decisions refers to undefined machines'
 	if m != pfd.shape[0]:
-		return False, [('Positive fixed decisions refers to undefined machines', [])]
+		return False, 'Positive fixed decisions refers to undefined machines'
 	if n != S.shape[1]:
-		return False, [('Schedule refers to undefined processing times', [])]
+		return False, 'Schedule refers to undefined processing times'
 	if n != nfd.shape[1]:
-		return False, [('Negative fixed decisions refers to undefined processing times', [])]
+		return False, 'Negative fixed decisions refers to undefined processing times'
 	if n != pfd.shape[1]:
-		return False, [('Positive fixed decisions refers to undefined processing times', [])]
+		return False, 'Positive fixed decisions refers to undefined processing times'
 
 	key_action, indices = action
 	if act.is_problem_action(key_action):
@@ -208,7 +208,7 @@ def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
 		plt.gcf().clear()
 		visualiser.draw_schedule(p, better_S, S)
 
-	return nfd_text, pfd_text, S_text
+	return True, (nfd_text, pfd_text, S_text)
 
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))
