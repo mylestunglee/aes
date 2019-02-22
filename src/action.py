@@ -1,5 +1,8 @@
 import numpy as np
 
+def is_problem_action(key_action):
+	return key_action in ['allnfd', 'conflictfd', 'manypfd']
+
 # Convert reasons to actions, where one reason may have multiple actions
 def reason_to_actions(m, nfd, pfd, S, reason):
 	actions = []
@@ -7,7 +10,7 @@ def reason_to_actions(m, nfd, pfd, S, reason):
 	key_reason, indices = reason
 
 	# Problem
-	if key_reason in ['allnfd', 'conflictfd', 'manypfd']:
+	if is_problem_action(key_reason):
 		actions.append(reason)
 	# Feasibility
 	elif key_reason == 'unallocated':
@@ -55,9 +58,6 @@ def reason_to_actions(m, nfd, pfd, S, reason):
 
 	return actions
 
-def is_problem_action(key_action):
-	return key_action in ['allnfd', 'conflictfd', 'manypfd']
-
 # Fix user decisions based on action
 def apply_problem_action(nfd, pfd, action):
 	key_action, indices = action
@@ -79,8 +79,6 @@ def apply_problem_action(nfd, pfd, action):
 		nfd_better[:, j] = True
 		for i in is_:
 			nfd_better[i, j] = False
-	else:
-		print('key_action is not problem related')
 
 	return nfd_better, pfd_better
 
@@ -105,8 +103,6 @@ def apply_schedule_action(S, action):
 		S_better[i2, j1] = True
 		S_better[i2, j2] = False
 		S_better[i1, j2] = True
-	else:
-		print('key_action was not processed')
 
 	return S_better
 

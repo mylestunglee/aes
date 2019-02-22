@@ -66,14 +66,13 @@ def format_action(action):
     positions = [format_list(i) for i in indices]
 
     action_templates = {
-        'allnfd': 'Removing all negative fixed decisions for job {}',
-        'conflictfd': 'Removing conflicting fixed decisions for job {}',
-        'manypfd': 'Translating conflicting positive to negative fixed decisions for job {}'
-,
-        'unallocated': 'Assigning job {} to machine {}',
-        'overallocated': 'Unassigning job {} with machine {}',
-        'move': 'Moving job {} from machine {} to {}',
-        'swap': 'Swapping jobs {} and {} with machines {} and {}'
+        'allnfd': 'Remove all negative fixed decisions for job {}',
+        'conflictfd': 'Remove conflicting fixed decisions for job {}',
+        'manypfd': 'Relax conflicting positive to negative fixed decisions for job {}',
+        'unallocated': 'Assign job {} to machine {}',
+        'overallocated': 'Unassign job {} with machine {}',
+        'move': 'Move job {} from machine {} to {}',
+        'swap': 'Swap jobs {} and {} with machines {} and {}'
     }
 
     return action_templates[key_action].format(*positions)

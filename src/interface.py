@@ -144,7 +144,8 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 	return True, argumentation.explain(m, n, p, nfd, pfd, S, options)
 
 def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
-	success, result = parse_problem(m_text, p_text, nfd_text, pfd_text, S_text)
+	success, result = parse_problem_schedule(m_text, p_text, nfd_text,
+		pfd_text, S_text)
 	if not success:
 		return success, result
 
