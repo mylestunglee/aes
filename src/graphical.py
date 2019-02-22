@@ -138,7 +138,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		save_file(textbox_get(S_textbox), 'Save schedule as',
 			[('Schedule files', '*.schedule'), ('Any files', '*')])
 
-	def explain():
+	def explain(options=options):
 		_, lines = interface.explain(
 			m_spinbox.get(),
 			textbox_get(p_textbox),
@@ -159,7 +159,6 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 				on_select_reason()
 				break
 
-		# Update nice picture
 		fig.canvas.draw()
 
 	def save_explanation():
@@ -207,8 +206,10 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_set(pfd_textbox, pfd_text)
 			textbox_set(S_textbox, S_text)
 
-			# Automate next step
-			explain()
+			# Automate next step, but do not draw again for explanation
+			draw_options = dict(options)
+			draw_options['graphical'] = False
+			explain(draw_options)
 
 	# When tab is pressed
 	def focus_next_window(event):
@@ -264,6 +265,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	save_E_button = tk.Button(E_frame, text='Save', command=save_explanation)
 	action_frame = tk.LabelFrame(right_frame, text='Actions')
 	action_listbox = tk.Listbox(action_frame)
+	action_listbox.bind('<Return>', apply)
 	action_scrollbar = attach_scrollbar(action_frame, action_listbox)
 	apply_action_button = tk.Button(action_frame, text='Apply', command=apply)
 

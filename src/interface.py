@@ -5,6 +5,7 @@ import schedule
 import visualiser
 import solver
 import argumentation
+import action as act
 
 delimiter = ';\n'
 integer_pattern = re.compile(r'^[0-9]+$')
@@ -161,7 +162,52 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 	return True, argumentation.explain(m, n, p, nfd, pfd, S, options)
 
 def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
-	print(action)
+	if not integer_pattern.match(m_text):
+		return False, [('Number of machines syntax error', [])]
+	if not float_pattern.match(p_text):
+		return False, [('Proccessing times syntax error', [])]
+	if not schedule_pattern.match(nfd_text):
+		return False, [('Negative fixed decisions syntax error', [])]
+	if not schedule_pattern.match(pfd_text):
+		return False, [('Positive fixed decisions syntax error', [])]
+	if not schedule_pattern.match(S_text):
+		return False, [('Schedule syntax error', [])]
+
+	m = int(m_text)
+	p = parse_processing(p_text)
+	n = p.shape[0]
+	nfd = parse_schedule(nfd_text, m, n)
+	pfd = parse_schedule(pfd_text, m, n)
+	S = parse_schedule(S_text, m, n)
+
+	if m != S.shape[0]:
+		return False, [('Schedule refers to undefined machines', [])]
+	if m != nfd.shape[0]:
+		return False, [('Negative fixed decisions refers to undefined machines', [])]
+	if m != pfd.shape[0]:
+		return False, [('Positive fixed decisions refers to undefined machines', [])]
+	if n != S.shape[1]:
+		return False, [('Schedule refers to undefined processing times', [])]
+	if n != nfd.shape[1]:
+		return False, [('Negative fixed decisions refers to undefined processing times', [])]
+	if n != pfd.shape[1]:
+		return False, [('Positive fixed decisions refers to undefined processing times', [])]
+
+	key_action, indices = action
+	if act.is_problem_action(key_action):
+		better_nfd, better_pfd = act.apply_problem_action(nfd, pfd, action)
+		nfd_text = format_schedule(better_nfd)
+		pfd_text = format_schedule(better_pfd)
+		better_S = None
+	else:
+		better_S = act.apply_schedule_action(S, action)
+		S_text = format_schedule(better_S)
+
+	# Draw schedule
+	if options['graphical'] and not better_S is None:
+		plt.gcf().clear()
+		visualiser.draw_schedule(p, better_S, S)
+
 	return nfd_text, pfd_text, S_text
 
 def vectorise(text):

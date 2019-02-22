@@ -95,10 +95,7 @@ def draw_framework(f, m, n, filename):
 	graph.render(filename)
 
 # Generates a column chart of jobs against machines
-def draw_schedule(p, S, S_old=None, filename=None):
-	if not filename is None:
-		plt.clf()
-
+def draw_schedule(p, S, S_old=None):
 	(m, n) = S.shape
 	if S_old is None:
 		S_old = S
@@ -108,9 +105,6 @@ def draw_schedule(p, S, S_old=None, filename=None):
 		draw_schedule_undetailed(p, S)
 	else:
 		draw_schedule_detailed(p, S, S_old)
-
-	if not filename is None:
-		plt.savefig(filename, bbox_inches='tight', pad_inches=0, transparent=True)
 
 def draw_schedule_undetailed(p, S):
 	(m, _) = S.shape
@@ -124,6 +118,7 @@ def draw_schedule_undetailed(p, S):
 
 	plt.gca().invert_yaxis()
 
+# Draw cascade chart in detail, but may take long time for large charts
 def draw_schedule_detailed(p, S, S_old):
 	(m, n) = S.shape
 
@@ -142,11 +137,6 @@ def draw_schedule_detailed(p, S, S_old):
 		bars = plt.barh(M, widths, left=accum, facecolor='lightgrey',
 			edgecolor='grey', linewidth=S[:, j].astype(int))
 
-		plt.barh(M, widths, left=accum, facecolor='none',
-			edgecolor='black', linewidth=thicklinewidth*
-			np.logical_and(S[:, j], np.logical_not(S_old[:, j])).astype(int),
-			linestyle='--')
-
 		# Next jobs
 		accum += widths
 
@@ -160,6 +150,19 @@ def draw_schedule_detailed(p, S, S_old):
 					ha='center',
 					va='center')
 
+	# Draw newly assigned jobs
+	accum = np.zeros(m)
+	for j in N:
+		widths = S[:, j].astype(float) * p[j]
+
+		plt.barh(M, widths, left=accum, facecolor='none',
+			edgecolor='black', linewidth=thicklinewidth*
+			np.logical_and(S[:, j], np.logical_not(S_old[:, j])).astype(int),
+			linestyle=':')
+
+		# Next jobs
+		accum += widths
+
 	# Draw previously assigned jobs
 	for j in N:
 		draw = np.logical_and(np.logical_not(S[:, j]), S_old[:, j])
@@ -167,7 +170,7 @@ def draw_schedule_detailed(p, S, S_old):
 
 		# Thicker dashes for removed jobs
 		bars = plt.barh(M, widths, left=accum, facecolor='none', edgecolor='black',
-			linewidth=thicklinewidth*draw.astype(int), linestyle='--')
+			linewidth=thicklinewidth*draw.astype(int), linestyle=':')
 		accum += widths
 
 		for bar in bars:
