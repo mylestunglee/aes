@@ -25,16 +25,10 @@ def get_arguments():
 		'--graphical',
 		help='displays graphical user interface',
 		action='store_true')
-	E_parser = parser.add_mutually_exclusive_group()
-	E_parser.add_argument(
+	parser.add_argument(
 		'-e',
 		'--explain',
 		help='generate explanation',
-		action='store_true')
-	E_parser.add_argument(
-		'-E',
-		'--report',
-		help='generate a PDF of an efficient schedule by recursively apply and explain suggested improvements',
 		action='store_true')
 	P_parser = parser.add_mutually_exclusive_group()
 	P_parser.add_argument(
@@ -146,12 +140,6 @@ def run_arguments(args):
 				eprint(output_text)
 				return
 			try_output(args.output, output_text)
-		elif args.report:
-			success, output_text = interface.gen_improvement_report(m_text, p_text, nfd_text,
-				pfd_text, S_text, args.output)
-			if not success:
-				eprint(output_text)
-				return
 		else:
 			try_output(args.output, S_text)
 		return

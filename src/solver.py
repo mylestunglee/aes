@@ -1,3 +1,5 @@
+import pyomo.opt as opt
+import pyomo.environ as en
 import numpy as np
 
 default_solver = 'glpk'
@@ -5,7 +7,6 @@ default_time_limit = -1
 
 # Model the problem using the pyomo interface library
 def create_model(m, p, nfd, pfd):
-	import pyomo.environ as en
 
 	N = range(len(p))
 	M = range(m)
@@ -47,7 +48,6 @@ def create_model(m, p, nfd, pfd):
 
 # Calculate the optimal schedule given a problem and a solver such as 'cplex' or 'glpk'
 def optimal_schedule(m, p, nfd, pfd, solver_name, time_limit):
-	import pyomo.opt as opt
 
 	solver = opt.SolverFactory(solver_name)
 	model = create_model(m, p, nfd, pfd)

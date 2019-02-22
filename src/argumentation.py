@@ -1,8 +1,7 @@
 import numpy as np
 import schedule
-
-bullet = ' -  '
-highlighted = '>-< '
+import action
+from explainer import *
 
 # Creates an argumentation framework representing feasibility as an adjacency matrix
 def construct_feasibility_framework(m, n):
@@ -327,93 +326,32 @@ def explain_schedule_satisfaction(nfd, pfd, unattacked, conflicts, precompute=Tr
 		reasons = [('satisfies', [])]
 		return True, reasons
 
-# Format nested lists into set notation
-def format_list(x):
-	if type(x) is list:
-		# Wrap multiple indices into sets
-		return '{{{}}}'.format(', '.join(format_list(i) for i in x))
-
-	# Return already formatted string
-	if type(x) is str:
-		return x
-
-	# Assume integer
-	return str(x + 1)
-
-# Format low-level, unformatted reasons into understandable reasons
-def format_reason(reason):
-	key_reason, indices = reason
-	positions = [format_list(i) for i in indices]
-
-	reason_templates = {
-		'nomachinejob': 'There are no machines or jobs',
-		'nomachine': 'There are no machines to allocate to jobs',
-		'unallocated': 'Job {} is not allocated by any machine',
-		'overallocated': 'Job {} is allocated to multiple machines {}',
-		'feasible': 'All jobs are allocated by exactly one machine',
-		'move': 'Job {} can be allocated from machine {} to {} to reduce by {}',
-		'swap': 'Jobs {} and {} can be swapped with machines {} and {} to reduce by {}',
-		'efficient': 'All jobs satisfy single and pairwise exchange properties',
-		'allnfd': 'Job {} cannot be allocated to any machine',
-		'conflictfd': 'Job {} cannot be allocated and not be allocated to machines {}',
-		'manypfd': 'Job {} cannot be allocated to multiple machines {}',
-		'nfd': 'Job {} must not be allocated to machine {}',
-		'pfd': 'Job {} must be allocated to machine {}',
-		'satisfies': 'All jobs satisfy all fixed decisions'
-	}
-
-	return reason_templates[key_reason].format(*positions)
-
-# Use templates to construct natural language argument to explain property of schedule
-def format_argument(property_template, explained_property, selected=None):
-	satisfied, reasons = explained_property
-
-	if satisfied:
-		claim = property_template.format('')
-	else:
-		claim = property_template.format('not ')
-
-	if reasons:
-		# Construct claim with listed reasons
-		argument = '{} because:\n'.format(claim)
-		for k, reason in enumerate(reasons):
-			# Highlight reason for potential action
-			if k == selected:
-				prefix = '>-<'
-			else:
-				prefix = ' - '
-			argument += '{} {}\n'.format(prefix, format_reason(reason))
-	else:
-		argument = '{}\n'.format(claim)
-
-	return argument
-
 # Generate explanations using naive implementation
 def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
-	explanations = []
+	reasons = []
 
 	ff = construct_feasibility_framework(m, n)
 	feasibility_unattacked, feasibility_conflicts = explain_stability(S, ff)
-	explanations.append(format_argument('Schedule is {}feasible',
-		explain_feasibility(feasibility_unattacked, feasibility_conflicts)))
+	reasons += format_argument('Schedule is {}feasible',
+		explain_feasibility(feasibility_unattacked, feasibility_conflicts))
 
 	df = construct_satisfaction_framework(nfd, pfd, ff)
 	decisions_unattacked, decisions_conflicts = explain_stability(S, df,
 		feasibility_unattacked, feasibility_conflicts)
-	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
-		explain_schedule_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts)))
+	reasons += format_argument('Schedule does {}satisfies user fixed decisions',
+		explain_schedule_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts))
 
 	ef, C, C_max = construct_efficiency_framework(m, p, nfd, pfd, S, ff, False)
 	efficiency_unattacked, efficiency_conflicts = explain_stability(S, ef,
 		feasibility_unattacked, feasibility_conflicts)
-	explanations.append(format_argument('Schedule is {}efficient',
-		explain_efficiency(p, S, C, C_max, efficiency_unattacked, efficiency_conflicts)))
+	reasons += format_argument('Schedule is {}efficient',
+		explain_efficiency(p, S, C, C_max, efficiency_unattacked, efficiency_conflicts))
 
-	return '\n'.join(explanations)
+	return reasons
 
 # Favour memory over CPU resource consumption
 def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
-	explanations = []
+	reasons = []
 	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C) if m > 0 else 0
 
@@ -436,27 +374,37 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
 
 	feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
-	explanations.append(format_argument('Schedule is {}feasible',
-		explain_feasibility(feasibility_unattacked, fc_partial, False)))
+	reasons += format_argument('Schedule is {}feasible',
+		explain_feasibility(feasibility_unattacked, fc_partial, False))
 
 	satisfaction_unattacked = compute_unattacked(S, df_partial,
 		feasibility_unattacked, False)
-	explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
-		explain_schedule_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False)))
+	reasons += format_argument('Schedule does {}satisfies user fixed decisions',
+		explain_schedule_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False))
 
 	efficiency_unattacked = compute_unattacked(S, ef_partial,
 		feasibility_unattacked, False)
-	explanations.append(format_argument('Schedule is {}efficient',
-		explain_efficiency(p, S, C, C_max, efficiency_unattacked, ec_partial, False)))
+	reasons += format_argument('Schedule is {}efficient',
+		explain_efficiency(p, S, C, C_max, efficiency_unattacked, ec_partial, False))
 
-	return '\n'.join(explanations)
+	return reasons
 
 # Switch between different explanation methods
 def explain(m, n, p, nfd, pfd, S, options):
 	if options['partial']:
 		# Saves a lot of memory but a bit slower
-		return partial_precomputation_explain(m, n, p, nfd, pfd, S, options)
+		reasons = partial_precomputation_explain(m, n, p, nfd, pfd, S, options)
 	else:
 		# Faster but naive implementation is easier to debug
-		return full_precomputation_explain(m, n, p, nfd, pfd, S, options)
+		reasons = full_precomputation_explain(m, n, p, nfd, pfd, S, options)
 
+	# Converts reasons into [(readable reason, [(readable action, internal action)])]
+	lines = []
+	for reason in reasons:
+		readable_reason = format_reason(reason)
+		actions = action.reason_to_actions(m, nfd, pfd, S, reason)
+		readable_actions = [(format_action(action), action) for action in actions]
+
+		lines.append((readable_reason, readable_actions))
+
+	return lines

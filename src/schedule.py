@@ -35,3 +35,4 @@ def random_schedule(m, n, nfd, pfd):
 # Calculates completion time vector [C_i for i in M]
 def calc_completion_times(p, S):
 	return S.astype(int).dot(p)
+

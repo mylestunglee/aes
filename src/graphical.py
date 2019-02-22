@@ -26,10 +26,10 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		m_text, p_text, nfd_text, pfd_text = interface.random_problem()
 
 		# Set textboxes
-		spinbox_replace(m_spinbox, m_text)
-		textbox_replace(p_textbox, p_text)
-		textbox_replace(nfd_textbox, nfd_text)
-		textbox_replace(pfd_textbox, pfd_text)
+		spinbox_set(m_spinbox, m_text)
+		textbox_set(p_textbox, p_text)
+		textbox_set(nfd_textbox, nfd_text)
+		textbox_set(pfd_textbox, pfd_text)
 
 	def load_problem():
 		# Locate file
@@ -46,12 +46,12 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		if success:
 			[m_text, p_text, nfd_text, pfd_text] = texts
 
-			spinbox_replace(m_spinbox, m_text)
-			textbox_replace(p_textbox, p_text)
-			textbox_replace(nfd_textbox, nfd_text)
-			textbox_replace(pfd_textbox, pfd_text)
+			spinbox_set(m_spinbox, m_text)
+			textbox_set(p_textbox, p_text)
+			textbox_set(nfd_textbox, nfd_text)
+			textbox_set(pfd_textbox, pfd_text)
 		else:
-			textbox_replace(output_textbox, texts)
+			listbox_set(E_listbox, texts)
 
 	def save_problem():
 		# Locate file
@@ -71,7 +71,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(pfd_textbox))
 
 		if not success:
-			textbox_replace(output_textbox, error)
+			listbox_set(E_listbox, error)
 
 	def optimal_schedule():
 		# Generate schedule
@@ -84,9 +84,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			time_limit)
 
 		if success:
-			textbox_replace(S_textbox, text)
+			textbox_set(S_textbox, text)
 		else:
-			textbox_replace(output_textbox, text)
+			listbox_set(E_listbox, text)
 
 	def random_schedule():
 		# Generate schedule
@@ -97,9 +97,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(pfd_textbox, True))
 
 		if success:
-			textbox_replace(S_textbox, text)
+			textbox_set(S_textbox, text)
 		else:
-			textbox_replace(output_textbox, text)
+			listbox_set(E_listbox, text)
 
 	def load_schedule():
 		# Locate file
@@ -114,9 +114,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		success, text = interface.load_text(filename)
 
 		if success:
-			textbox_replace(S_textbox, text)
+			textbox_set(S_textbox, text)
 		else:
-			textbox_replace(output_textbox, text)
+			listbox_set(E_listbox, text)
 
 	def save_file(textbox, title, filetypes):
 		# Locate file
@@ -133,14 +133,14 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(textbox))
 
 		if not success:
-			textbox_replace(output_textbox, error)
+			listbox_set(E_listbox, error)
 
 	def save_schedule():
 		save_file(S_textbox, 'Save schedule as',
 			[('Schedule files', '*.schedule'), ('Any files', '*')])
 
 	def explain():
-		_, text = interface.explain(
+		_, lines = interface.explain(
 			m_spinbox.get(),
 			textbox_get(p_textbox, True),
 			textbox_get(nfd_textbox, True),
@@ -148,12 +148,14 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(S_textbox, True),
 			options)
 
-		textbox_replace(output_textbox, text)
+		for line in lines:
+			reason, actions = line
+			E_listbox.insert(tk.END, reason)
 
 		fig.canvas.draw()
 
 	def save_output():
-		save_file(output_textbox, 'Save output as',
+		save_file(E_listbox, 'Save output as',
 			[('Text files', '*.txt'), ('Any files', '*')])
 
 	root.protocol("WM_DELETE_WINDOW", quit)
@@ -193,8 +195,8 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	right_frame = tk.Frame(root)
 	fig = plt.figure(0)
 	S_figure = FigureCanvasTkAgg(fig, master=right_frame).get_tk_widget()
-	output_textbox = tk.Text(right_frame, state='disabled')
-	output_scrollbar = attach_scrollbar(right_frame, output_textbox)
+	E_listbox = tk.Listbox(right_frame)
+	output_scrollbar = attach_scrollbar(right_frame, E_listbox)
 	save_output_button = tk.Button(right_frame, text='Save output', command=save_output)
 
 	# Geometry
@@ -254,16 +256,16 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	right_frame.rowconfigure(1, weight=1)
 	right_frame.columnconfigure(0, weight=1)
 	S_figure.grid(row=0, column=0, columnspan=2, sticky=tk.N+tk.S+tk.W+tk.E)
-	output_textbox.grid(row=1, column=0, sticky=tk.N+tk.S+tk.W+tk.E)
+	E_listbox.grid(row=1, column=0, sticky=tk.N+tk.S+tk.W+tk.E)
 	output_scrollbar.grid(row=1, column=1, sticky=tk.N+tk.S)
 	save_output_button.grid(row=2, column=0, columnspan=2, pady=padding, sticky=tk.W+tk.E)
 
 	# Initial state from command line
-	spinbox_replace(m_spinbox, m_text_initial)
-	textbox_replace(p_textbox, p_text_initial)
-	textbox_replace(nfd_textbox, nfd_text_initial)
-	textbox_replace(pfd_textbox, pfd_text_initial)
-	textbox_replace(S_textbox, S_text_initial)
+	spinbox_set(m_spinbox, m_text_initial)
+	textbox_set(p_textbox, p_text_initial)
+	textbox_set(nfd_textbox, nfd_text_initial)
+	textbox_set(pfd_textbox, pfd_text_initial)
+	textbox_set(S_textbox, S_text_initial)
 
 	if explain_initial:
 		explain()
@@ -278,14 +280,9 @@ def attach_scrollbar(root, text):
 
 	return scrollbar
 
-def textbox_replace(textbox, text):
-	disabled = textbox.cget('state') == 'disabled'
-	if disabled:
-		textbox.config(state='normal')
+def textbox_set(textbox, text):
 	textbox.delete('1.0', tk.END)
 	textbox.insert(tk.END, text)
-	if disabled:
-		textbox.config(state='disabled')
 
 # Get textbox's value, endline appends '\n'
 def textbox_get(textbox, endline=False):
@@ -294,6 +291,14 @@ def textbox_get(textbox, endline=False):
 	else:
 		return textbox.get('1.0', tk.END + '-1c')
 
-def spinbox_replace(spinbox, text):
+def spinbox_set(spinbox, text):
 	spinbox.delete(0, tk.END)
 	spinbox.insert(tk.END, text)
+
+def listbox_set(listbox, lines):
+	listbox.delete(0, tk.END)
+	if type(lines) == str:
+		listbox.insert(tk.END, lines)
+	else:
+		for line in lines:
+			listbox.insert(tk.END, line)

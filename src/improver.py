@@ -115,21 +115,6 @@ def apply_schedule_action(S, action):
 
 	return better_S
 
-def format_action(action):
-	key_action, indices, _ = action
-	positions = [format_list(i) for i in indices]
-
-	action_templates = {
-		'allnfd': 'Removing all negative fixed decisions for job {}',
-		'conflictfd': 'Removing conflicting fixed decisions for job {}',
-		'manypfd': 'Translating conflicting positive to negative fixed decisions for job {}',
-		'unallocated': 'Assigning job {} to machine {}',
-		'overallocated': 'Unassigning job {} with machine {}',
-		'move': 'Moving job {} from machine {} to {}',
-		'swap': 'Swapping jobs {} and {} with machines {} and {}'
-	}
-
-	return action_templates[key_action].format(*positions)
 
 # One-step improvement of D and S
 def improve_once(m, n, p, nfd, pfd, S, all_actions=False):
