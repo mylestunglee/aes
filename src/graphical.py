@@ -118,7 +118,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		else:
 			listbox_set(E_listbox, text)
 
-	def save_file(textbox, title, filetypes):
+	def save_file(text, title, filetypes):
 		# Locate file
 		filename = tk.filedialog.asksaveasfilename(title=title,
 			filetypes=filetypes)
@@ -128,15 +128,13 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			return
 
 		# Write file
-		success, error = interface.save_text(
-			filename,
-			textbox_get(textbox))
+		success, error = interface.save_text(filename, text)
 
 		if not success:
 			listbox_set(E_listbox, error)
 
 	def save_schedule():
-		save_file(S_textbox, 'Save schedule as',
+		save_file(textbox_get(S_textbox), 'Save schedule as',
 			[('Schedule files', '*.schedule'), ('Any files', '*')])
 
 	def explain():
@@ -151,8 +149,8 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		listbox_set(E_listbox, [reason for reason, _ in lines])
 		fig.canvas.draw()
 
-	def save_output():
-		save_file(E_listbox, 'Save output as',
+	def save_explanation():
+		save_file(listbox_get(E_listbox), 'Save output as',
 			[('Text files', '*.txt'), ('Any files', '*')])
 
 	root.protocol("WM_DELETE_WINDOW", quit)
@@ -198,7 +196,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	E_frame = tk.LabelFrame(right_frame, text='Explanation')
 	E_listbox = tk.Listbox(E_frame)
 	E_scrollbar = attach_scrollbar(E_frame, E_listbox)
-	save_E_button = tk.Button(E_frame, text='Save', command=save_output)
+	save_E_button = tk.Button(E_frame, text='Save', command=save_explanation)
 	action_frame = tk.LabelFrame(right_frame, text='Actions')
 	action_listbox = tk.Listbox(action_frame)
 	action_scrollbar = attach_scrollbar(action_frame, action_listbox)
@@ -320,3 +318,6 @@ def listbox_set(listbox, lines):
 	else:
 		for line in lines:
 			listbox.insert(tk.END, line)
+
+def listbox_get(listbox):
+	return '\n'.join(list(listbox.get(0, tk.END)))
