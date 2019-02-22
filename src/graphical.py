@@ -15,6 +15,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	matplotlib.use("TkAgg")
 
 	root = tk.Tk()
+	actions_lookup = []
 
 	def quit():
 		# Close matplotlib figure so program is not left hanging
@@ -51,7 +52,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_set(nfd_textbox, nfd_text)
 			textbox_set(pfd_textbox, pfd_text)
 		else:
-			listbox_set(E_listbox, texts)
+			E_listbox_set(texts)
 
 	def save_problem():
 		# Locate file
@@ -71,7 +72,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(pfd_textbox))
 
 		if not success:
-			listbox_set(E_listbox, error)
+			E_listbox_set(error)
 
 	def optimal_schedule():
 		# Generate schedule
@@ -86,7 +87,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		if success:
 			textbox_set(S_textbox, text)
 		else:
-			listbox_set(E_listbox, text)
+			E_listbox_set(text)
 
 	def random_schedule():
 		# Generate schedule
@@ -99,7 +100,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		if success:
 			textbox_set(S_textbox, text)
 		else:
-			listbox_set(E_listbox, text)
+			E_listbox_set(text)
 
 	def load_schedule():
 		# Locate file
@@ -116,7 +117,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		if success:
 			textbox_set(S_textbox, text)
 		else:
-			listbox_set(E_listbox, text)
+			E_listbox_set(text)
 
 	def save_file(text, title, filetypes):
 		# Locate file
@@ -131,7 +132,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		success, error = interface.save_text(filename, text)
 
 		if not success:
-			listbox_set(E_listbox, error)
+			E_listbox_set(error)
 
 	def save_schedule():
 		save_file(textbox_get(S_textbox), 'Save schedule as',
@@ -146,12 +147,33 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(S_textbox, True),
 			options)
 
-		listbox_set(E_listbox, [reason for reason, _ in lines])
+		E_listbox_set([reason for reason, _ in lines])
+		nonlocal actions_lookup
+		actions_lookup = [actions for _, actions in lines]
 		fig.canvas.draw()
 
 	def save_explanation():
 		save_file(listbox_get(E_listbox), 'Save output as',
 			[('Text files', '*.txt'), ('Any files', '*')])
+
+	# Set E_listbox's items while clearing actions
+	def E_listbox_set(lines):
+		actions_lookup = []
+		listbox_set(E_listbox, lines)
+		listbox_set(action_listbox, [])
+
+	# Shows suggested actions for a selected reason
+	def on_select_reason(_):
+		# Show suggested actions
+		readable_actions = actions_lookup[E_listbox.curselection()[0]]
+		actions = [action for action, _ in readable_actions]
+		listbox_set(action_listbox, actions)
+		# Select if possible
+		if actions:
+			action_listbox.select_set(0)
+
+	def apply():
+		pass
 
 	root.protocol("WM_DELETE_WINDOW", quit)
 	root.title('Argumentative Explainable Scheduler')
@@ -187,20 +209,18 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	S_scrollbar = attach_scrollbar(S_frame, S_textbox)
 	explain_button = tk.Button(S_frame, text='Explain', command=explain)
 
-	def dummy():
-		pass
-
 	right_frame = tk.Frame(root)
 	fig = plt.figure(0)
 	S_figure = FigureCanvasTkAgg(fig, master=right_frame).get_tk_widget()
 	E_frame = tk.LabelFrame(right_frame, text='Explanation')
-	E_listbox = tk.Listbox(E_frame)
+	E_listbox = tk.Listbox(E_frame, exportselection=False)
+	E_listbox.bind('<<ListboxSelect>>', on_select_reason)
 	E_scrollbar = attach_scrollbar(E_frame, E_listbox)
 	save_E_button = tk.Button(E_frame, text='Save', command=save_explanation)
 	action_frame = tk.LabelFrame(right_frame, text='Actions')
 	action_listbox = tk.Listbox(action_frame)
 	action_scrollbar = attach_scrollbar(action_frame, action_listbox)
-	apply_action_button = tk.Button(action_frame, text='Apply', command=dummy)
+	apply_action_button = tk.Button(action_frame, text='Apply', command=apply)
 
 	# Geometry
 	padding = 8
