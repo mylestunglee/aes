@@ -78,9 +78,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		# Generate schedule
 		success, text = interface.optimal_schedule(
 			m_spinbox.get(),
-			textbox_get(p_textbox, True),
-			textbox_get(nfd_textbox, True),
-			textbox_get(pfd_textbox, True),
+			textbox_get(p_textbox),
+			textbox_get(nfd_textbox),
+			textbox_get(pfd_textbox),
 			solver_name,
 			time_limit)
 
@@ -93,9 +93,9 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		# Generate schedule
 		success, text = interface.random_schedule(
 			m_spinbox.get(),
-			textbox_get(p_textbox, True),
-			textbox_get(nfd_textbox, True),
-			textbox_get(pfd_textbox, True))
+			textbox_get(p_textbox),
+			textbox_get(nfd_textbox),
+			textbox_get(pfd_textbox))
 
 		if success:
 			textbox_set(S_textbox, text)
@@ -141,15 +141,25 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	def explain():
 		_, lines = interface.explain(
 			m_spinbox.get(),
-			textbox_get(p_textbox, True),
-			textbox_get(nfd_textbox, True),
-			textbox_get(pfd_textbox, True),
-			textbox_get(S_textbox, True),
+			textbox_get(p_textbox),
+			textbox_get(nfd_textbox),
+			textbox_get(pfd_textbox),
+			textbox_get(S_textbox),
 			options)
 
+		# Setup reasons
 		E_listbox_set([reason for reason, _ in lines])
+		# Updates actions
 		nonlocal actions_lookup
 		actions_lookup = [actions for _, actions in lines]
+		# Select first appliable reason
+		for index, (_, actions) in enumerate(lines):
+			if actions:
+				E_listbox.select_set(index)
+				on_select_reason()
+				break
+
+		# Update nice picture
 		fig.canvas.draw()
 
 	def save_explanation():
@@ -163,7 +173,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		listbox_set(action_listbox, [])
 
 	# Shows suggested actions for a selected reason
-	def on_select_reason(_):
+	def on_select_reason(_=None):
 		# Show suggested actions
 		readable_actions = actions_lookup[E_listbox.curselection()[0]]
 		actions = [action for action, _ in readable_actions]
@@ -172,8 +182,33 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 		if actions:
 			action_listbox.select_set(0)
 
+	# Apply selected action to schedule
 	def apply():
-		pass
+		# If action is selected
+		indices = list(action_listbox.curselection())
+		if indices:
+			# Find internal representation of action
+			action_index = indices[0]
+			reason_index = E_listbox.curselection()[0]
+			action = actions_lookup[reason_index][action_index]
+
+			# Apply action
+			nfd_text, pfd_text, S_text = interface.apply(
+				m_spinbox.get(),
+				textbox_get(p_textbox),
+				textbox_get(nfd_textbox, False),
+				textbox_get(pfd_textbox, False),
+				textbox_get(S_textbox, False),
+				action,
+				options)
+
+			# Update textboxes
+			textbox_set(nfd_textbox, nfd_text)
+			textbox_set(pfd_textbox, pfd_text)
+			textbox_set(S_textbox, S_text)
+
+			# Automate next step
+			explain()
 
 	root.protocol("WM_DELETE_WINDOW", quit)
 	root.title('Argumentative Explainable Scheduler')
@@ -321,11 +356,8 @@ def textbox_set(textbox, text):
 	textbox.insert(tk.END, text)
 
 # Get textbox's value, endline appends '\n'
-def textbox_get(textbox, endline=False):
-	if endline:
-		return textbox.get('1.0', tk.END)
-	else:
-		return textbox.get('1.0', tk.END + '-1c')
+def textbox_get(textbox):
+	return textbox.get('1.0', tk.END + '-1c')
 
 def spinbox_set(spinbox, text):
 	spinbox.delete(0, tk.END)

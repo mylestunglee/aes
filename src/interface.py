@@ -160,6 +160,9 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 
 	return True, argumentation.explain(m, n, p, nfd, pfd, S, options)
 
+def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
+	return nfd_text, pfd_text, S_text
+
 def vectorise(text):
 	lines = list(filter(None, text.split('\n')))
 
