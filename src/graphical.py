@@ -338,15 +338,15 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	E_frame.grid(row=1, column=0, sticky=fill, padx=padding, pady=(0, padding))
 	E_frame.rowconfigure(0, weight=1)
 	E_frame.columnconfigure(0, weight=1)
-	E_listbox.grid(row=0, column=0, sticky=fill, padx=(padding, 0))
-	E_scrollbar.grid(row=0, column=1, sticky=v_fill, padx=(0, padding))
+	E_listbox.grid(row=0, column=0, sticky=fill, padx=(padding, 0), pady=(padding, 0))
+	E_scrollbar.grid(row=0, column=1, sticky=v_fill, padx=(0, padding), pady=(padding, 0))
 	save_E_button.grid(row=1, column=0, columnspan=2, padx=padding, pady=padding, sticky=h_fill)
 	action_frame.grid(row=1, column=1, sticky=fill, padx=padding, pady=(0, padding))
 	action_frame.rowconfigure(0, weight=1)
 	action_frame.columnconfigure(0, weight=1)
 	action_frame.rowconfigure(0, weight=1)
 	action_listbox.grid(row=0, column=0, sticky=fill, padx=(padding, 0), pady=(padding, 0))
-	action_scrollbar.grid(row=0, column=1, sticky=v_fill, padx=(0, padding))
+	action_scrollbar.grid(row=0, column=1, sticky=v_fill, padx=(0, padding), pady=(padding, 0))
 	apply_action_button.grid(row=1, column=0, columnspan=2, padx=padding, pady=padding, sticky=h_fill)
 
 	# Initial state from command line
