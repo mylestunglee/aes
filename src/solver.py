@@ -48,7 +48,6 @@ def create_model(m, p, nfd, pfd):
 
 # Calculate the optimal schedule given a problem and a solver such as 'cplex' or 'glpk'
 def optimal_schedule(m, p, nfd, pfd, solver_name, time_limit):
-
 	solver = opt.SolverFactory(solver_name)
 	model = create_model(m, p, nfd, pfd)
 
@@ -58,12 +57,16 @@ def optimal_schedule(m, p, nfd, pfd, solver_name, time_limit):
 		elif solver_name == 'glpk':
 			solver.options['tmlim'] = time_limit
 
-	result = solver.solve(model)
+	try:
+		result = solver.solve(model)
+	except Exception as error:
+		return False, str(error)
+
 	C_max = model.C_max.value
 
 	# No solution
 	if C_max == None:
-		return None
+		return False, 'No feasible solution found'
 
 	# Construct schedule
 	n = len(p)
@@ -72,4 +75,4 @@ def optimal_schedule(m, p, nfd, pfd, solver_name, time_limit):
 		for j in range(n):
 			S[i, j] = model.x[i, j].value != 0
 
-	return S
+	return True, S

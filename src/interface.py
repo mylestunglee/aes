@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import schedule
 import visualiser
-import solver
 import argumentation
 import action as act
 
@@ -107,18 +106,23 @@ def parse_problem_schedule(m_text, p_text, nfd_text, pfd_text, S_text):
 	return True, (m, n, p, nfd, pfd, S)
 
 def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit):
+	try:
+		import solver
+	except ImportError as error:
+		return False, 'Pyomo is not installed'
+
 	success, result = parse_problem(m_text, p_text, nfd_text, pfd_text)
 	if not success:
 		return success, result
 
 	(m, n, p, nfd, pfd) = result
 
-	S = solver.optimal_schedule(m, p, nfd, pfd, solver_name, time_limit)
+	success, result = solver.optimal_schedule(m, p, nfd, pfd, solver_name, time_limit)
 
-	if S is None:
-		return False, 'Solver failed to find feasible schedule'
+	if success:
+		return success, format_schedule(result)
 	else:
-		return True, format_schedule(S)
+		return success, result
 
 def random_schedule(m_text, p_text, nfd_text, pfd_text):
 	success, result = parse_problem(m_text, p_text, nfd_text, pfd_text)

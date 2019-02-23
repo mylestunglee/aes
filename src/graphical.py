@@ -173,13 +173,15 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 
 	# Shows suggested actions for a selected reason
 	def on_select_reason(_=None):
-		# Show suggested actions
-		readable_actions = actions_lookup[E_listbox.curselection()[0]]
-		actions = [action for action, _ in readable_actions]
-		listbox_set(action_listbox, actions)
-		# Select if possible
-		if actions:
-			action_listbox.select_set(0)
+		# If anything has been explained
+		if actions_lookup:
+			# Show suggested actions
+			readable_actions = actions_lookup[E_listbox.curselection()[0]]
+			actions = [action for action, _ in readable_actions]
+			listbox_set(action_listbox, actions)
+			# Select if possible
+			if actions:
+				action_listbox.select_set(0)
 
 	# Apply selected action to schedule
 	def apply(_=None):
