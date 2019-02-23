@@ -1,4 +1,79 @@
-\chapter{Interval Scheduling}
+\chapter{Schedule Properties and Argumentation}
 
-\section{Time-indexed Interval Scheduling}
+Schedule properties such as efficiency are modelled using frameworks to explain the satisfaction of properties. In particular, the definitions of efficiency and fixed decision frameworks extend from the definition of the feasibility framework. This is generalised to reason about arbitrary number of properties, using a commonly-extended framework. Using this extended reasoning, we apply argumentation to a variant interval scheduling to illustrate extensions of argumentation with scheduling.
+ 
+\section{Extensions}
 
+We use stability over other notions of good extensions to accurately model schedule constraints.
+
+\section{Frameworks}
+
+In order to reason about arbitrary number of properties, we inductively grow the property space over a commonly-extended framework, denoted by $\rightsquigarrow_0$. A property $P$ is modelled by the framework $\rightsquigarrow_P$, such that $\rightsquigarrow_P=\rightsquigarrow_0\cup\rightsquigarrow_P^+$. In other words, $P$ may require adding edges in $\rightsquigarrow_0$ for $\rightsquigarrow_P$ to be modelled correctly. To be correct, we must preserve the stability of some extension $E$ on $\pair{Args}{\rightsquigarrow_P}$ if $E$ is also stable on $\pair{Args}{\rightsquigarrow_0}$ and $P(S)$ is true. Let $\rightsquigarrow_1\in Args^2$ and $\rightsquigarrow_2\in Args^2$ be arbitrary frameworks.
+
+\begin{lemma}
+	$E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$ and on $\pair{Args}{\rightsquigarrow_2}$ iff $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.	
+
+	\begin{proof}
+		To prove the forward implication, assume $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$ and on $\pair{Args}{\rightsquigarrow_2}$. To aim for a contradiction, assume $E$ is not conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$. Then there exists $e_1,e_2\in E$ such that $e_1(\rightsquigarrow_1\cup\rightsquigarrow_2)e_2$. Then $e_1\rightsquigarrow_1 e_2$ or $e_1\rightsquigarrow_2 e_2$. Both cases lead to a contradiction, so $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.
+		\\
+		To prove the backward implication, assume $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$. To aim for a contradiction, assume $E$ is not conflict-free on $\pair{Args}{\rightsquigarrow_1}$. Then there exists $e_1,e_2\in E$ such that $e_1\rightsquigarrow_1 e_2$. Then $e_1(\rightsquigarrow_1\cup\rightsquigarrow_2)e_2$, which contradicts the most recent assumption. Therefore, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$, and also conflict-free on $\pair{Args}{\rightsquigarrow_2}$ by similar argument.
+	\end{proof}
+\end{lemma}
+
+\begin{lemma}
+	If $E$ is stable on $\rightsquigarrow_1$ and $E$ is conflict-free on $\rightsquigarrow_2$, then $E$ is stable on $(\rightsquigarrow_1\cup\rightsquigarrow_2)$.
+	
+	\begin{proof}
+		Assume $E$ is stable on $\rightsquigarrow_1$ and $E$ is conflict-free on $\rightsquigarrow_2$. By definition of stability, $\forall a\in Args\setminus E\ \exists e\in E\ e\rightsquigarrow_1 a$. Then $\forall a\in Args\setminus E\ \exists e\in E\ e(\rightsquigarrow_1\cup\rightsquigarrow_2)a$. So every argument not in $E$ is attacked by some argument in $E$. $E$ is conflict-free on $\rightsquigarrow_1$ because $E$ is stable on $\rightsquigarrow_1$. Since $E$ is conflict-free on $\rightsquigarrow_1$ and on $\rightsquigarrow_2$, we use Lemma 1 to show that $E$ is also conflict-free on $(\rightsquigarrow_1\cup\rightsquigarrow_2)$. Therefore $E$ is stable on $\rightsquigarrow_1\cup\rightsquigarrow_2)$.
+	\end{proof}
+\end{lemma}
+
+\begin{lemma}
+	If $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$, then $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$.
+	
+	\begin{proof}
+		Assume $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$. By definition of stability, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.  By Lemma 1, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$.
+	\end{proof}
+\end{lemma}
+
+\begin{lemma}
+	If $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$ and $\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)$, then $E$ is stable on $\pair{Args}{\rightsquigarrow_1}$.
+	
+	\begin{proof}
+		\begin{flalign*}
+			&E\text{ is stable on }\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}&\\
+			&\land\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)\\
+			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}\\
+			&\land\forall a\in Args\setminus E\ \exists e\in E\ e(\rightsquigarrow_1\cup\rightsquigarrow_2)a\\
+			&\land\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)\\
+			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1}\\
+			&\land\forall a\in Args\setminus E\ \exists e\in E\ (e\rightsquigarrow_1 a\lor e\rightsquigarrow_2 a)\\
+			&\land\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)\\
+			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1}\\
+			&\land\forall a\in Args\setminus E\ ((\exists e\in E\ e\rightsquigarrow_1 a)\lor(\exists e\in E\ e\rightsquigarrow_2 a))\\
+			&\land\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)\\
+			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1}\\
+			&\land\forall a\in Args\setminus E\ ((\exists e\in E\ e\rightsquigarrow_1 a)\lor(\exists e\in E\ e\rightsquigarrow_1 a))\\
+			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1}\\
+			&\land\forall a\in Args\setminus E\ \exists e\in E\ e\rightsquigarrow_1 a\\
+			\implies&E\text{ is stable on }\pair{Args}{\rightsquigarrow_1}\\
+		\end{flalign*}
+		
+	\end{proof}
+\end{lemma}
+
+\section{Interval Scheduling}
+
+Makespan schedules are extended to discrete time-indexed interval scheduling. Let $T$ be the exclusive upper-bound of indexed time where $\mathcal{T}=\{0,...,T-1\}$. The assignment matrix $\mathbf{x}\in\mathcal{M}\times\mathcal{J}\times\mathcal{T}$ is extended such that $x_{i,j,t}=1$ iff job $j$ is starts work on machine $i$ at time $t$. Each job $j$ has a start time $s_j\in\mathcal{T}$ and finish time $f_j\in\{0,...,T\}$, where $j$ must be completed within the $[s_j,f_j)$ interval. The objective is to minimise the total completion time.
+
+\begin{align*}
+	\min_{\mathbf{x}}\ &C_{\max}\text{ subject to:}\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\mathcal{T}\ &C_{\max}\geq x_{i,j,t}(t+p_j)\\
+	\forall j\in\mathcal{J}\ &\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}=1&(\alpha)\\
+	\forall i\in\mathcal{M}\ \forall t\in\mathcal{T}\ &\sum_{j\in\mathcal{J}}\sum_{t'=\max\{t-p_j+1,0\}}^t x_{i,j,t'}\leq 1&(\beta)\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{0,...,s_j-1\}\ &x_{i,j,t}=0&(\gamma)\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{f_j-p_j+1,...,T-1\}\ &x_{i,j,t}=0&(\delta)\\
+	\forall\pair{i}{j}\in D^-\ \forall t\in\mathcal{T}\ &x_{i,j,t}=0&(\varepsilon)\\
+\end{align*}
+
+$(\alpha)$ models feasibility, that all jobs must be allocated. $(\beta)$ models that machines cannot process multiple jobs at the same time. $(\gamma)$ and $(\delta)$ model the restriction of start and end times respectively. $(\varepsilon)$ model negative fixed decisions. Positive fixed decisions are not modelled because for each $D^+$, there exists an $D^-$ that equivalently restricts the allocation space of $\mathbf{x}$. For instance, $\forall\pair{i}{j}\in D^+\ \forall i'\in\mathcal{M}\ \forall j'\in\mathcal{J}\ i\neq i'\land j\neq j'\implies\pair{i'}{j'}\in D^-$ captures all satisfiable instances of $D$.

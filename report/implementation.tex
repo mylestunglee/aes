@@ -295,7 +295,7 @@ The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. Th
 \end{definition}
 
 \begin{definition}
-	The fixed user decision framework $\rightsquigarrow_D$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{DP}^+(i_1,i_2,j_1,j_2)\lor\text{DP}^-(i_1,i_2,j_1,j_2)$ where:
+	The user fixed decision framework $\rightsquigarrow_D$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{DP}^+(i_1,i_2,j_1,j_2)\lor\text{DP}^-(i_1,i_2,j_1,j_2)$ where:
 	\begin{itemize}
 		\item Positive decision property: $\text{DP}^+(i_1,i_2,j_1,j_2)$ iff $\langle i_2, j_2\rangle\in D^+$
 		\item Negative decision property: $\text{DP}^-(i_1,i_2,j_1,j_2)$ iff $\langle i_1, j_1\rangle\in D^-\land i_1=i_2\land j_1=j_2$.
@@ -527,7 +527,7 @@ An alternative solution is to restrict the explanation space by giving local exp
 					\State\emph{Job $j$ cannot be allocated to any machine.}
 				\EndIf
 				\If{$D^-$ and $D^+$ are not disjoint}
-					\State\emph{Job $j$ subject to conflicting negative and positive fixed user decisions.}
+					\State\emph{Job $j$ subject to conflicting negative and positive fixed decisions.}
 				\EndIf
 				\If{$|i\in\mathcal{M},\pair{i}{j}\in D^+|>1$}
 					\State\emph{Job $j$ cannot be allocated to multiple machines.}	
