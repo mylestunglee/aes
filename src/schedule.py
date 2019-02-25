@@ -6,7 +6,7 @@ def random_problem(m=default_m, n=None):
 	if n is None:
 		n = np.random.poisson(m * 2)
 
-	p = np.random.lognormal(0, 0.25, n)
+	p = np.round(np.random.lognormal(1, 0.5, n), 3)
 
 	pr = 1 / n if n > 0 else 0
 	nfd = np.random.choice(a=[True, False], size=(m, n), p=[pr, 1 - pr])

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import schedule
+import common
 
 # Generates a column chart of jobs against machines
 def draw_schedule(p, S, S_old=None):
@@ -57,7 +58,7 @@ def draw_schedule_detailed(p, S, S_old):
 				plt.text(
 					bar.get_x() + bar.get_width() / 2,
 					bar.get_y() + bar.get_height() / 2,
-					j + 1,
+					common.number_to_letters(j),
 					ha='center',
 					va='center')
 
@@ -90,7 +91,7 @@ def draw_schedule_detailed(p, S, S_old):
 				plt.text(
 					bar.get_x() + bar.get_width() / 2,
 					bar.get_y() + bar.get_height() / 2,
-					j + 1,
+					common.number_to_letters(j),
 					ha='center',
 					va='center')
 

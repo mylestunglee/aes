@@ -6,11 +6,12 @@ import visualiser
 import argumentation
 import action as act
 import solver
+import common
 
 delimiter = ';\n'
 integer_pattern = re.compile(r'^[0-9]+$')
-float_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[0-9]+(\.[0-9]+)?)*[ \t]*\n)*\n*$')
-schedule_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[1-9][0-9]*)*[ \t]*\n)*\n*$')
+float_pattern = re.compile(r'^([ \t]*[A-Z]+[ \t]*:([ \t]+[0-9]+(\.[0-9]+)?)*[ \t]*\n)*\n*$')
+schedule_pattern = re.compile(r'^([ \t]*[1-9][0-9]*[ \t]*:([ \t]+[A-Z]+)*[ \t]*\n)*\n*$')
 
 def random_problem():
 	m, p, nfd, pfd = schedule.random_problem()
@@ -175,14 +176,14 @@ def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
 	return True, (nfd_text, pfd_text, S_text)
 
 # Parse colon space-delimited integer structure
-def vectorise(text):
-	lines = list(filter(None, text.split('\n')))
+def vectorise(text, parse_key):
+	lines = text.splitlines()
 
 	if not lines:
 		return []
 
 	columns = [line.split(':') for line in lines]
-	positions = [int(row[0]) for row in columns]
+	positions = [parse_key(row[0]) for row in columns]
 
 	max_position = max(positions)
 	cells = [[] for _ in range(max_position)]
@@ -192,11 +193,17 @@ def vectorise(text):
 
 	return cells
 
+# Convert text format of processing times into list of floats
 def parse_processing(text):
-	return np.array([float(row[0]) if row else 1 for row in vectorise(text)])
+	return np.array([float(row[0]) if row else 1
+		for row in vectorise(text,
+			lambda letters: common.letters_to_number(letters) + 1
+		)])
 
+# Convert text format for a schedule into assignment matrix
 def parse_schedule(text, m, n):
-	indices = [[int(cell) - 1 for cell in row] for row in vectorise(text)]
+	indices = [[common.letters_to_number(cell) for cell in row]
+		for row in vectorise(text, int)]
 
 	m_sparse = len(indices)
 	m = max(m, m_sparse)
@@ -214,10 +221,10 @@ def format_problem(m_text, p_text, nfd_text, pfd_text):
 
 def format_processing_times(p):
 	n = p.shape[0]
-	return ''.join('{}: {}\n'.format(j + 1, p[j]) for j in range(n))
+	return ''.join('{}: {}\n'.format(common.number_to_letters(j), p[j]) for j in range(n))
 
 def format_schedule(S):
 	m, n = S.shape
 	return ''.join('{}: {}\n'.format(i + 1,' '.join(
-		[str(j + 1) for j in range(n) if S[i, j]]
+		[common.number_to_letters(j) for j in range(n) if S[i, j]]
 		)) for i in range(m))

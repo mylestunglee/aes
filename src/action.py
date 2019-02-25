@@ -36,18 +36,20 @@ def reason_to_actions(m, nfd, pfd, S, reason):
 		# Failed pfd does not say where it is currently allocated
 		if key_reason == 'pfd':
 			[_, j] = indices
-			[i1] = np.flatnonzero(S[:, j])
+			is_ = np.flatnonzero(S[:, j])
 		else:
 			[j, i1] = indices
+			is_ = [i1]
 
-		if np.any(pfd[:, j]):
-			for i2 in range(m):
-				if pfd[i2, j]:
-					actions.append(('move', [i1, i2, j]))
-		else:
-			for i2 in range(m):
-				if not nfd[i2, j]:
-					actions.append(('move', [i1, i2, j]))
+		for i1 in is_:
+			if np.any(pfd[:, j]):
+				for i2 in range(m):
+					if pfd[i2, j]:
+						actions.append(('move', [i1, i2, j]))
+			else:
+				for i2 in range(m):
+					if not nfd[i2, j]:
+						actions.append(('move', [i1, i2, j]))
 	# Efficiency
 	elif key_reason == 'move':
 		[i1, i2, j, _] = indices
