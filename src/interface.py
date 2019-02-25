@@ -5,6 +5,7 @@ import schedule
 import visualiser
 import argumentation
 import action as act
+import solver
 
 delimiter = ';\n'
 integer_pattern = re.compile(r'^[0-9]+$')
@@ -107,7 +108,7 @@ def parse_problem_schedule(m_text, p_text, nfd_text, pfd_text, S_text):
 
 def optimal_schedule(m_text, p_text, nfd_text, pfd_text, solver_name, time_limit):
 	try:
-		import solver
+		import pyomo
 	except ImportError as error:
 		return False, 'Pyomo is not installed'
 
