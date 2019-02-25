@@ -1,0 +1,6 @@
+Schedule is feasible
+ -  There are no machines or jobs
+Schedule does satisfies user fixed decisions
+ -  All jobs satisfy all fixed decisions
+Schedule is efficient
+ -  All jobs satisfy single and pairwise exchange properties

@@ -134,12 +134,12 @@ def run_arguments(args):
 	# Do something with a schedule
 	if not args.graphical:
 		if args.explain:
-			success, lines = interface.explain(m_text, p_text, nfd_text,
+			success, result = interface.explain(m_text, p_text, nfd_text,
 				pfd_text, S_text, options)
-			output_text = '\n'.join(reason for reason, _ in lines) + '\n'
 			if not success:
-				eprint(output_text)
+				eprint(result)
 				return
+			output_text = '\n'.join(reason for reason, _ in result) + '\n'
 			try_output(args.output, output_text)
 		else:
 			try_output(args.output, S_text)

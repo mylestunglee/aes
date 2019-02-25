@@ -1,0 +1,6 @@
+Schedule is not feasible
+ -  There are no machines to allocate to jobs
+Schedule does not satisfies user fixed decisions because:
+ -  Job A cannot be allocated to any machine
+Schedule is efficient
+ -  All jobs satisfy single and pairwise exchange properties

@@ -27,6 +27,7 @@ def format_reason(reason):
 	reason_templates = {
 		'nomachinejob': 'There are no machines or jobs',
 		'nomachine': 'There are no machines to allocate to jobs',
+		'nojob': 'There are no jobs',
 		'unallocated': 'Job {1} is not allocated by any machine',
 		'overallocated': 'Job {3} is allocated to multiple machines {0}',
 		'feasible': 'All jobs are allocated by exactly one machine',

@@ -170,6 +170,8 @@ def explain_feasibility(unattacked, conflicts, precomputed=True):
 			return True, [('nomachinejob', [])]
 		else:
 			return False, [('nomachine', [])]
+	elif n == 0:
+		return True, [('nojob', [])]
 
 	# Summarise unallocated jobs
 	unallocated = unattacked[0]

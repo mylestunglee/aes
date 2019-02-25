@@ -179,7 +179,7 @@ def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
 def vectorise(text, parse_key):
 	lines = text.splitlines()
 
-	if not lines:
+	if not lines or text.isspace():
 		return []
 
 	columns = [line.split(':') for line in lines]
