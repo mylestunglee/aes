@@ -139,7 +139,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			[('Schedule files', '*.schedule'), ('Any files', '*')])
 
 	def explain(options=options):
-		_, lines = interface.explain(
+		success, result = interface.explain(
 			m_spinbox.get(),
 			textbox_get(p_textbox),
 			textbox_get(nfd_textbox),
@@ -147,19 +147,22 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 			textbox_get(S_textbox),
 			options)
 
-		# Setup reasons
-		E_listbox_set([reason for reason, _ in lines])
-		# Updates actions
-		nonlocal actions_lookup
-		actions_lookup = [actions for _, actions in lines]
-		# Select first appliable reason
-		for index, (_, actions) in enumerate(lines):
-			if actions:
-				E_listbox.select_set(index)
-				on_select_reason()
-				break
+		if success:
+			# Setup reasons
+			E_listbox_set([reason for reason, _ in result])
+			# Updates actions
+			nonlocal actions_lookup
+			actions_lookup = [actions for _, actions in result]
+			# Select first appliable reason
+			for index, (_, actions) in enumerate(result):
+				if actions:
+					E_listbox.select_set(index)
+					on_select_reason()
+					break
 
-		fig.canvas.draw()
+			fig.canvas.draw()
+		else:
+			E_listbox_set(result)
 
 	def save_explanation():
 		save_file(listbox_get(E_listbox), 'Save output as',

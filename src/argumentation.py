@@ -196,7 +196,7 @@ def explain_feasibility(unattacked, conflicts, precomputed=True):
 		# Explain unallocated
 		reasons = [('unallocated', [j]) for j in range(n) if unallocated[j]]
 		# Explain overallocations
-		reasons += [('overallocated', [j, list(np.flatnonzero(job_conflicts[j]))])
+		reasons += [('overallocated', [list(np.flatnonzero(job_conflicts[j])), j])
 			for j in N if overallocated[j]]
 
 		return False, reasons
@@ -238,7 +238,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 					reduction = C_max - C_max_reduced
 					pairs.append((
 						(-reduction, j1, i2),
-						('move', [j1, i1, i2, format(reduction)])))
+						('move', [i1, i2, j1, format(reduction)])))
 					S_reduced[:, j1] = allocated
 
 				for j2 in N:
@@ -253,7 +253,7 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 						reduction = C_max - C_max_reduced
 						pairs.append((
 							(-reduction, j1, j2, i1, i2),
-							('swap', [j1, j2, i1, i2, format(reduction)])))
+							('swap', [i1, i2, j1, j2, format(reduction)])))
 						S_reduced[i1, j1] = True
 						S_reduced[i2, j2] = True
 						S_reduced[i1, j2] = False
@@ -283,12 +283,12 @@ def explain_problem_satisfaction(nfd, pfd):
 		incompatible = list(np.flatnonzero(np.logical_and(nfd[:, j], pfd[:, j])))
 		if incompatible:
 			satisfiable[j] = False
-			reasons.append(('conflictfd', [j, incompatible]))
+			reasons.append(('conflictfd', [incompatible, j]))
 
 		# Competition over one job
 		if np.count_nonzero(pfd[:, j]) > 1:
 			satisfiable[j] = False
-			reasons.append(('manypfd', [j, list(np.flatnonzero(pfd[:, j]))]))
+			reasons.append(('manypfd', [list(np.flatnonzero(pfd[:, j])), j]))
 
 	return satisfiable, reasons
 
@@ -318,9 +318,9 @@ def explain_schedule_satisfaction(nfd, pfd, unattacked, conflicts, precompute=Tr
 			if satisfiable[j]:
 				for i in M:
 					if nfd_conflicts[i, j]:
-						reasons.append(('nfd', [j, i]))
+						reasons.append(('nfd', [i, j]))
 					if pfd_conflicts[i, j]:
-						reasons.append(('pfd', [j, i]))
+						reasons.append(('pfd', [i, j]))
 		return False, reasons
 	else:
 		reasons = [('satisfies', [])]
