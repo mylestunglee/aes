@@ -225,7 +225,7 @@ def start(m_text_initial, p_text_initial, nfd_text_initial, pfd_text_initial,
 	    return('break')
 
 	root.protocol('WM_DELETE_WINDOW', quit)
-	root.title('Argumentative Explainable Scheduler')
+	root.title('Schedule Explainer')
 	input_textbox_width = 30
 
 	# Create widgets

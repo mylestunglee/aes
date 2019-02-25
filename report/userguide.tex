@@ -21,7 +21,7 @@ Tkinter is the default GUI package for Python and Matplotlib depends on NumPy so
 	\item An optimiser, either CPLEX or GLPK
 \end{itemize}
 
-The optional dependencies are used to optimise schedules, these are not strictly required as users can input their own schedules. GLPK is recommended because of its licence and open-source development. The source code is found at \texttt{gitlab.doc.ic.ac.uk/mtl115/aes}. Please refer to the package's websites for troubleshooting. Alternatively, contact the author for assistance.
+The optional dependencies are used to optimise schedules, these are not strictly required as users can input their own schedules. GLPK is recommended because of its licence and open-source development. The repository is found at \texttt{gitlab.doc.ic.ac.uk/mtl115/aes}. Please refer to the package's websites for troubleshooting. Alternatively, contact the author for assistance.
 
 \subsection{Linux Installation}
 
@@ -37,7 +37,7 @@ pip3 install pyomo
 
 \subsection{Windows Installation}
 
-The tool was tested on Windows 10. First, download Python from the official website, then setup the path environment variable so \texttt{python} can be executed on the command prompt. Afterwards, install the basic dependencies as below: 
+The tool was tested on Windows 10. First, download Python from the official website, then setup the path environment variable so \texttt{python} can be executed on the command prompt. Afterwards, install the required dependencies as below: 
 
 \begin{verbatim}
 python -m pip install matplotlib
@@ -47,16 +47,156 @@ python -m pip install pyomo
 
 \section{Usage}
 
+\subsection{Getting Started}
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{figures/tool_gui.png}
 	\caption{Tool GUI}
 \end{figure}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat quam eu quam suscipit pharetra. Curabitur mattis nibh id metus feugiat, at blandit velit hendrerit. Quisque venenatis suscipit elit at euismod. Vestibulum ut metus vitae metus luctus tincidunt vitae eu felis. Vivamus eleifend, massa nec dignissim sagittis, eros lectus tempor neque, ac luctus magna purus ac massa. Donec fringilla arcu nec sapien varius, nec convallis justo posuere. Aenean fermentum libero erat, vitae ullamcorper diam commodo non. Nunc sodales accumsan nibh, et pellentesque sapien faucibus sed. Phasellus rhoncus dignissim orci. Aliquam maximus condimentum erat, ut porta augue euismod eu. Vestibulum ac quam ac mauris dignissim euismod vel at turpis. Curabitur nisi mauris, congue sed egestas sed, vulputate eu lorem. Donec sed semper libero. Integer diam lacus, facilisis non risus a, blandit dignissim ex. Nunc mi nulla, condimentum sit amet tellus nec, viverra gravida neque.
+To start the tool, run \texttt{python3 main.py -g} on Linux or \texttt{python main.py -g} on Windows in the \texttt{src} directory supplied in the repository.
+\linespace
+The makespan problem consists of the number of machines and job processing times. The tutorial will use a hospital setting, where nurses and patients are represented as machines and jobs respectively. Consider the following example where there are two nurses, Alice and Bob. and two patients, Charlie and Dave. Charlie's and Dave's appointment takes 15 and 10 minutes respectively. To enter the example in the tool, nurses and patients are indexed. Hence, 1 represents Alice, 2 represents Bob for nurses and 1 represents Charlie and 2 represents Dave for patients. Although index 1 represents both Alice and Charlie, they are used in different contexts, the problem is well-defined. The problem is to minimise the total completion time, which intuitively is the longest time any nurse has to work.
 
-\subsection{Startup}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/tool_problem.png}
+	\caption{Example problem input}
+\end{figure}
 
-\subsection{Data Input}
+Each line in the processing time textbox represents one job. The first line can be interpreted as: job 1 has processing time of 15 units, with following lines having similar interpretations. Negative fixed decisions represent jobs that cannot be assigned to machines. Positive fixed decisions represents jobs that much be assigned to a machine. Note that for all multi-line inputs, each line ends with a new line.
 
-\subsection{Explanations}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/tool_fd.png}
+	\caption{Example fixed decisions input}
+\end{figure}
+
+Each line in each fixed decisions textbox represents one decision. The first line of negative fixed decisions can be interpreted as: machine 1 cannot be allocated to job 2. The first line of positive fixed decisions can be interpreted as: machine 2 cannot be allocated to job 2. In context of the example, this means Alice cannot be with Dave and Bob must be with Dave.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/tool_schedule.png}
+	\caption{Example schedule input}
+\end{figure}
+
+After defining the makespan problem, enter the above schedule. The schedule can be interpreted as: machine 1 has no allocated jobs; machine 2 have two allocated jobs, 1 and 2. The \texttt{Optimise} button finds the optimal schedule using a solver, which is by default GLPK. To specify a solver, starting the tool with \texttt{python3 main.py -g -S SOLVER\_NAME} where \texttt{SOLVER\_NAME} is GLPK or CPLEX, for instance. Note that for large problems, optimisation may take a long time, so a solver time limit can be enforced by starting the tool with \texttt{python3 main.py -g -t TIME\_LIMIT} where \texttt{TIME\_LIMIT} is in seconds. The \texttt{Randomize} button generates some feasible schedule, which may violate fixed decisions. To explain the schedule, click the \texttt{Explain} button. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/tool_explain.png}
+	\caption{Example explanation output}
+\end{figure}
+
+The explanation reasons on three concepts: feasibility, satisfaction of fixed decisions and efficiency. Feasibility ensures that each job is allocated once. Satisfaction of fixed decisions ensures the schedule does not violate negative and positive fixed decisions specified in the problem. Efficiency regards suggestions to improve the total completion time. To improve the schedule, select a line in the explanation listbox to address, then select a line in the actions listbox. An line of explanation may have many different approaches to address the problem or schedule. Click on the \texttt{Apply} button to improve the schedule.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/tool_improve.png}
+	\caption{Example explanation output}
+\end{figure}
+
+The example schedule only required one action to make the schedule efficient. However, many iterative actions may be required to reach an efficiency schedule. No further actions show that the schedule is feasible, satisfies fixed decisions and is efficient. The dot-highlighted boxes in the cascade chart illustrate newly and removed allocations compared to before the applying the action.
+
+\subsection{Command Line Examples}
+
+\subsubsection{Help Command}
+
+\begin{verbatim}
+> python3 main.py -h
+usage: main.py [-h] [-g] [-e] [-p PROBLEM | -r [M]]
+    [-O | -s SCHEDULE | -R] [-o OUTPUT] [--partial]
+    [-t TIME_LIMIT] [-S SOLVER_NAME]
+
+Explains makespan schedules using abstract argumentation
+frameworks
+
+optional arguments:
+-h, --help            show this help message and exit
+-g, --graphical       displays graphical user interface
+-e, --explain         generate explanation
+-p PROBLEM, --problem PROBLEM
+-r [M], --random_problem [M]
+    creates random problem with jobs and fixed decisions
+    where M is the number of machines
+-O, --optimise        uses SOLVER_NAME to find most efficient
+schedule
+-s SCHEDULE, --schedule SCHEDULE
+-R, --random_schedule
+-o OUTPUT, --output OUTPUT
+    output filename for selected problem, schedule or
+    explanation
+--partial             use partial framework construction to
+favour memory over CPU
+-t TIME_LIMIT, --time_limit TIME_LIMIT
+    maximum time for optimisation in seconds, use negative
+    time_limit for infinite limit, default is unlimited
+time
+-S SOLVER_NAME, --solver SOLVER_NAME
+    optimisation solver for schedule, default is 'glpk'
+\end{verbatim}
+
+\subsubsection{Random problem}
+
+\begin{verbatim}
+> python3 main.py -r
+4;
+1: 1.0535984963443499
+2: 1.5450274194370683
+3: 1.0110591477247763
+4: 5.180887650551162
+5: 1.0613085418860866
+;
+1: 
+2: 2
+3: 
+4: 2 3 4 5
+;
+1: 1
+2: 
+3: 
+4: 
+\end{verbatim}
+
+Formally, this represents $m=4$, $\mathbf{p}=\begin{bmatrix}
+	1.05&1.54&1.01&5.18&1.06
+\end{bmatrix}^T$, $D^-=\{\pair{2}{2},\pair{4}{2},\pair{4}{3},\pair{4}{4},\pair{4}{5}\}$ and $D^+=\{\pair{1}{1}\}$.
+
+\subsubsection{Random schedule given previous problem}
+
+\begin{verbatim}
+> python3 main.py -p example.problem -R
+1: 2
+2: 4 5
+3: 
+4: 1 3
+\end{verbatim}
+
+Formally, this represents $\mathbf{x}=\begin{bmatrix}
+	0&1&0&0&0\\
+	0&0&0&1&1\\
+	0&0&0&0&0\\
+	1&0&1&0&0\\
+\end{bmatrix}$
+
+\subsubsection{Explantation given previous problem and schedule}
+
+\begin{verbatim}
+> python3 main.py -p example.problem -s example.schedule -e
+Schedule is feasible
+ -  All jobs are allocated by exactly one machine
+Schedule does not satisfies user fixed decisions because:
+ -  Job 1 must be allocated to machine 1
+ -  Job 3 must not be allocated to machine 4
+Schedule is not efficient because:
+ -  Job 4 can be allocated from machine 2 to 3 to reduce by 1.06
+ -  Job 5 can be allocated from machine 2 to 1 to reduce by 1.06
+ -  Job 5 can be allocated from machine 2 to 3 to reduce by 1.06
+\end{verbatim}
+
+\section{Known Limitations}
+
+\begin{itemize}
+	\item Holding down space for a button that requires significant computation results in permanent depressed visual of the button. This is a issue with Tkinter.
+\end{itemize}

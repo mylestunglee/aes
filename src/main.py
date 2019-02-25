@@ -19,7 +19,7 @@ def try_output(filename, text):
 # Construct command line interface
 def get_arguments():
 	parser = argparse.ArgumentParser(
-		description='Explains make-shift schedules using abstract argumentation frameworks')
+		description='Explains makespan schedules using abstract argumentation frameworks')
 	parser.add_argument(
 		'-g',
 		'--graphical',
@@ -41,7 +41,7 @@ def get_arguments():
 		type=int,
 		metavar='M',
 		const=schedule.default_m,
-		help='creates random problem with jobs and fixed decisions where m is the number of machines',
+		help='creates random problem with jobs and fixed decisions where M is the number of machines',
 		dest='m')
 	S_parser = parser.add_mutually_exclusive_group()
 	S_parser.add_argument(
