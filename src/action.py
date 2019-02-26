@@ -38,7 +38,8 @@ def reason_to_actions(m, nfd, pfd, S, reason):
 			[_, j] = indices
 			is_ = np.flatnonzero(S[:, j])
 		else:
-			[j, i1] = indices
+			# Job is known to be allocated at i1
+			[i1, j] = indices
 			is_ = [i1]
 
 		for i1 in is_:
