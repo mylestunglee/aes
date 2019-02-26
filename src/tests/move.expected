@@ -1,0 +1,7 @@
+Schedule is feasible
+ -  All jobs are allocated by exactly one machine
+Schedule does satisfies user fixed decisions
+ -  All jobs satisfy all fixed decisions
+Schedule is not efficient because:
+ -  Job A can be allocated from machine 1 to 2 to reduce by 1.0
+ -  Job B can be allocated from machine 1 to 2 to reduce by 1.0

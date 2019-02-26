@@ -216,10 +216,10 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 		M = range(m)
 		N = range(n)
 
-		# format number to 3 decimal places
+		# Format number to 3 decimal places
 		def format(x):
 			if x == 0:
-				return 0
+				return '0'
 			return str(np.round(x, -int(np.floor(np.log10(abs(x)))) + 2))
 
 		S_reduced = np.copy(S)
@@ -242,7 +242,6 @@ def explain_efficiency(p, S, C, C_max, unattacked, conflicts, precomputed=True):
 						(-reduction, j1, i2),
 						('move', [i1, i2, j1, format(reduction)])))
 					S_reduced[:, j1] = allocated
-
 				for j2 in N:
 					# Pairwise exchange
 					if conflicts_partial[i2, j2]:
