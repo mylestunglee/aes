@@ -5,7 +5,7 @@ __pycache__
 src/*.problem
 src/*.schedule
 src/*.txt
-src/report*
+src/*.pyc
 src/scripts/log
 report/*.aux
 report/*.log
@@ -16,3 +16,4 @@ report/*.bbl
 report/*.toc
 report/*.blg
 report/*.dvi
+unit_tests/.cache*
