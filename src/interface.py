@@ -182,14 +182,15 @@ def vectorise(text, parse_key):
 	if not lines or text.isspace():
 		return []
 
-	columns = [line.split(':') for line in lines]
-	positions = [parse_key(row[0]) for row in columns]
+	# Split on colon but exclude empty lines
+	rows = [line.split(':') for line in lines if line]
+	positions = [parse_key(row[0]) for row in rows]
 
 	max_position = max(positions)
 	cells = [[] for _ in range(max_position)]
-	for i in range(len(lines)):
-		if not columns[i][1].isspace():
-			cells[positions[i] - 1] = columns[i][1].split()
+	for i, row in enumerate(rows):
+		if not row[1].isspace():
+			cells[positions[i] - 1] = row[1].split()
 
 	return cells
 

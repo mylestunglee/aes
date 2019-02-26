@@ -1,5 +1,5 @@
-Schedule is feasible
- -  There are no jobs
+Schedule is not feasible because:
+ -  Job A is allocated to multiple machines {1, 2}
 Schedule does satisfies user fixed decisions
  -  All jobs satisfy all fixed decisions
 Schedule is efficient
