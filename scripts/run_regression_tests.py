@@ -2,9 +2,9 @@ import os
 import subprocess
 import filecmp
 
-test_dir = '../tests/'
+test_dir = '../regression_cases/'
 
-for filename in os.listdir('../tests/'):
+for filename in os.listdir(test_dir):
 	if filename.endswith('.expected'):
 		casename = os.path.splitext(filename)[0]
 		subprocess.run([
