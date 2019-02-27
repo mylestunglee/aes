@@ -36,22 +36,22 @@ def construct_efficiency_framework(m, p, nfd, pfd, S, ff, copy=True):
 	J = [np.flatnonzero(S[i,:]) for i in M]
 
 	# If feasible assignment (i1, j1)
-	for i1 in M:
-		if C[i1] == C_max:
-			for j1 in J[i1]:
-				for i2 in M:
-					# Single exchange property
-					if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
-						ef[i1, j1, i2, j1] = False
-					# If feasible assignment (i2, j2)
-					for j2 in J[i2]:
-						#  Pairwise exchange property
-						if (i1 != i2 and j1 != j2 and
-							p[j1] > p[j2] and
-							C[i1] + p[j2] > C[i2] + p[j1] and
-							not pfd[i1, j1] and not pfd[i2, j2] and
-							not nfd[i2, j1] and not nfd[i1, j2]):
-							ef[i1, j1, i2, j2] = True
+	i1 = np.argmax(C)
+	for j1 in J[i1]:
+		for i2 in M:
+			# Single exchange property
+			if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
+				ef[i1, j1, i2, j1] = False
+			# If feasible assignment (i2, j2)
+			for j2 in J[i2]:
+				#  Pairwise exchange property
+				if (i1 != i2 and j1 != j2 and
+					p[j1] > p[j2] and
+					C[i1] + p[j2] > C[i2] + p[j1] and
+					not pfd[i1, j1] and not pfd[i2, j2] and
+					not nfd[i2, j1] and not nfd[i1, j2]):
+					ef[i1, j1, i2, j2] = True
+
 	return ef, C, C_max
 
 def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1):
@@ -59,7 +59,8 @@ def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1):
 	ef = construct_partial_feasibility_framework(m, n, i1, j1)
 	J = [np.flatnonzero(S[i,:]) for i in range(m)]
 
-	if C[i1] == C_max:
+	# Assume i1 < m
+	if i1 == np.argmax(C):
 		for i2 in range(m):
 			# Single exchange property
 			if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
@@ -327,8 +328,114 @@ def explain_schedule_satisfaction(nfd, pfd, unattacked, conflicts, precompute=Tr
 		reasons = [('satisfies', [])]
 		return True, reasons
 
+# Without arugmentation explain properties
+def explain_naive_feasibility(m, n, S):
+	if m == 0:
+		if n == 0:
+			return True, [('nomachinejob', [])]
+		else:
+			return False, [('nomachine', [])]
+	elif n == 0:
+		return True, [('nojob', [])]
+
+	reasons = []
+
+	for j in range(n):
+		is_ = np.flatnonzero(S[:, j])
+		allocated_count = is_.shape[0]
+		if allocated_count == 0:
+			reasons.append(('unallocated', [j]))
+		elif allocated_count > 1:
+			reasons += [('overallocated', [list(is_), j])]
+
+	if reasons:
+		return False, reasons
+	else:
+		return True, [('feasible', [])]
+
+def explain_naive_efficiency(m, n, p, nfd, pfd, S):
+	C = schedule.calc_completion_times(p, S)
+	C_max = np.max(C) if m > 0 else 0
+	pairs = []
+
+	if m > 0:
+		M = range(m)
+		N = range(n)
+
+		# Format number to 3 decimal places
+		def format(x):
+			if x == 0:
+				return '0'
+			return str(np.round(x, -int(np.floor(np.log10(abs(x)))) + 2))
+
+		S_reduced = np.copy(S)
+		i1 = np.argmax(C)
+		for j1 in N:
+			for i2 in M:
+				if not S[i1, j1] or i1 == i2:
+					continue
+
+				# Single exchange
+				if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
+					allocated = S_reduced[:, j1].copy()
+					S_reduced[:, j1] = False
+					S_reduced[i2, j1] = True
+					C_max_reduced = np.max(schedule.calc_completion_times(p, S_reduced))
+					reduction = C_max - C_max_reduced
+					pairs.append((
+						(-reduction, j1, i2),
+						('move', [i1, i2, j1, format(reduction)])))
+					S_reduced[:, j1] = allocated
+				for j2 in N:
+					# Pairwise exchange
+					if (j1 != j2 and S[i2, j2] and
+						p[j1] > p[j2] and C[i1] + p[j2] > C[i2] + p[j1] and
+						not pfd[i1, j1] and not pfd[i2, j2] and
+						not nfd[i2, j1] and not nfd[i1, j2]):
+						S_reduced[i1, j1] = False
+						S_reduced[i2, j2] = False
+						S_reduced[i1, j2] = True
+						S_reduced[i2, j1] = True
+						C_max_reduced = np.max(schedule.calc_completion_times(
+							p, S_reduced))
+						reduction = C_max - C_max_reduced
+						pairs.append((
+							(-reduction, j1, j2, i1, i2),
+							('swap', [i1, i2, j1, j2, format(reduction)])))
+						S_reduced[i1, j1] = True
+						S_reduced[i2, j2] = True
+						S_reduced[i1, j2] = False
+						S_reduced[i2, j1] = False
+
+		# Order by most reducible first
+		pairs.sort()
+	if pairs:
+		_, reasons = zip(*pairs)
+		return False, reasons
+	else:
+		reasons = [('efficient', [])]
+	return True, reasons
+
+def explain_naive_satisfaction(m, n, nfd, pfd, S):
+	M = range(m)
+	N = range(n)
+	satisfiable, reasons = explain_problem_satisfaction(nfd, pfd)
+
+	for i in M:
+		for j in N:
+			if satisfiable[j]:
+				if nfd[i, j] and S[i, j]:
+						reasons.append(('nfd', [i, j]))
+				elif pfd[i, j] and not S[i, j]:
+						reasons.append(('pfd', [i, j]))
+
+	if reasons:
+		return False, reasons
+	else:
+		return True, [('satisfies', [])]
+
 # Generate explanations using naive implementation
-def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
+def full_precomputation_explain(m, n, p, nfd, pfd, S):
 	reasons = []
 
 	ff = construct_feasibility_framework(m, n)
@@ -351,7 +458,7 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	return reasons
 
 # Favour memory over CPU resource consumption
-def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
+def partial_precomputation_explain(m, n, p, nfd, pfd, S):
 	reasons = []
 	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C) if m > 0 else 0
@@ -390,14 +497,26 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 
 	return reasons
 
+def naive_explain(m, n, p, nfd, pfd, S):
+	return (
+		format_argument('Schedule is {}feasible',
+			explain_naive_feasibility(m, n, S)) +
+		format_argument('Schedule does {}satisfies user fixed decisions',
+			explain_naive_satisfaction(m, n, nfd, pfd, S)) +
+		format_argument('Schedule is {}efficient',
+			explain_naive_efficiency(m, n, p, nfd, pfd, S)))
+
 # Switch between different explanation methods
 def explain(m, n, p, nfd, pfd, S, options):
-	if options['partial']:
+	if options['naive']:
+		# Just do explaining without all this complicated stuff
+		reasons = naive_explain(m, n, p, nfd, pfd, S)
+	elif options['partial']:
 		# Saves a lot of memory but a bit slower
-		reasons = partial_precomputation_explain(m, n, p, nfd, pfd, S, options)
+		reasons = partial_precomputation_explain(m, n, p, nfd, pfd, S)
 	else:
 		# Faster but naive implementation is easier to debug
-		reasons = full_precomputation_explain(m, n, p, nfd, pfd, S, options)
+		reasons = full_precomputation_explain(m, n, p, nfd, pfd, S)
 
 	# Converts reasons into [(readable reason, [(readable action, internal action)])]
 	lines = []

@@ -5,5 +5,3 @@ Schedule does satisfies user fixed decisions
 Schedule is not efficient because:
  -  Job A can be allocated from machine 1 to 3 to reduce by 0
  -  Job B can be allocated from machine 1 to 3 to reduce by 0
- -  Job C can be allocated from machine 1 to 3 to reduce by 0
- -  Job D can be allocated from machine 1 to 3 to reduce by 0

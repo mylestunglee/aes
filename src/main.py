@@ -60,9 +60,14 @@ def get_arguments():
 		'-o',
 		'--output',
 		help='output filename for selected problem, schedule or explanation')
-	parser.add_argument(
+	E_parser = parser.add_mutually_exclusive_group()
+	E_parser.add_argument(
 		'--partial',
 		help='use partial framework construction to favour memory over CPU',
+		action='store_true')
+	E_parser.add_argument(
+		'--naive',
+		help='do not use argumentation',
 		action='store_true')
 	parser.add_argument(
 		'-t',
@@ -128,7 +133,8 @@ def run_arguments(args):
 
 	options = {
 		'graphical': args.graphical,
-		'partial': args.partial
+		'partial': args.partial,
+		'naive': args.naive
 	}
 
 	# Do something with a schedule
