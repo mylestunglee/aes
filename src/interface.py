@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import schedule
 import visualiser
-import argumentation
+import explainer
 import action as act
 import solver
-import common
+import formatter
 
 delimiter = ';\n'
 integer_pattern = re.compile(r'^[0-9]+$')
@@ -147,7 +147,7 @@ def explain(m_text, p_text, nfd_text, pfd_text, S_text, options):
 		plt.gcf().clear()
 		visualiser.draw_schedule(p, S)
 
-	return True, argumentation.explain(m, n, p, nfd, pfd, S, options)
+	return True, explainer.explain(m, n, p, nfd, pfd, S, options)
 
 def apply(m_text, p_text, nfd_text, pfd_text, S_text, action, options):
 	success, result = parse_problem_schedule(m_text, p_text, nfd_text,
@@ -198,12 +198,12 @@ def vectorise(text, parse_key):
 def parse_processing(text):
 	return np.array([float(row[0]) if row else 1
 		for row in vectorise(text,
-			lambda letters: common.letters_to_number(letters) + 1
+			lambda letters: formatter.letters_to_number(letters) + 1
 		)])
 
 # Convert text format for a schedule into assignment matrix
 def parse_schedule(text, m, n):
-	indices = [[common.letters_to_number(cell) for cell in row]
+	indices = [[formatter.letters_to_number(cell) for cell in row]
 		for row in vectorise(text, int)]
 
 	m_sparse = len(indices)
@@ -222,10 +222,10 @@ def format_problem(m_text, p_text, nfd_text, pfd_text):
 
 def format_processing_times(p):
 	n = p.shape[0]
-	return ''.join('{}: {}\n'.format(common.number_to_letters(j), p[j]) for j in range(n))
+	return ''.join('{}: {}\n'.format(formatter.number_to_letters(j), p[j]) for j in range(n))
 
 def format_schedule(S):
 	m, n = S.shape
 	return ''.join('{}: {}\n'.format(i + 1,' '.join(
-		[common.number_to_letters(j) for j in range(n) if S[i, j]]
+		[formatter.number_to_letters(j) for j in range(n) if S[i, j]]
 		)) for i in range(m))
