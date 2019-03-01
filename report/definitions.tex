@@ -30,6 +30,7 @@
 \newcommand{\toolname}{Schedule Explainer}
 \newcommand{\linespace}{\vspace*{\baselineskip}\\}
 \newcommand{\pair}[2]{\langle{#1},{#2}\rangle}
+\newcommand{\intset}[1]{[\![{#1}]\!]}
 \tikzstyle{file} = [draw, inner sep=10pt]
 \tikzstyle{node} = [draw, circle, inner sep=5pt]
 \tikzstyle{arrow} = [-{Stealth[scale=2]}]
@@ -37,3 +38,7 @@
 \makeatletter
 \newcommand{\incircbin}{\mathpalette\@incircbin}
 \newcommand\@incircbin[2]{\mathbin{\ooalign{\hidewidth$#1#2$\hidewidth\crcr$#1\bigcirc$}}}
+
+\newenvironment{level}%
+{\addtolength{\itemindent}{2em}}%
+{\addtolength{\itemindent}{-2em}}

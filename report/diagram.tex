@@ -1,5 +1,3 @@
-\chapter{Diagrams}
-
 \tikzstyle{box} = [draw, inner sep=5pt, align=center]
 
 \begin{tikzpicture}
@@ -98,3 +96,10 @@
 		}
 	};
 \end{tikzpicture}
+
+\begin{align*}
+&\rightsquigarrow_0\text{ fully-models }P_0\\
+\land&\ \forall k\in\intset{1,K}\ \rightsquigarrow_k\text{ models }P_k\\
+\land&\ \forall E\in\mathcal{M}\times\mathcal{J}\ \forall a\in Arg\setminus E\ \forall k\in\intset{1,k}\bigg((\exists e\in E\ e\rightsquigarrow_k a)(\exists e\in E\ e\rightsquigarrow_0 a)\bigg)\\
+\implies&\bigg(\bigcup_{k=0}^K\rightsquigarrow_k\bigg)\text{ fully-models }P_{\intset{0,K}}
+\end{align*}

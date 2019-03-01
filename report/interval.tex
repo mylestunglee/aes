@@ -10,6 +10,14 @@ We use stability over other notions of good extensions to accurately model sched
 
 In order to reason about arbitrary number of properties, we inductively grow the property space over a commonly-extended framework, denoted by $\rightsquigarrow_0$. A property $P$ is modelled by the framework $\rightsquigarrow_P$, such that $\rightsquigarrow_P=\rightsquigarrow_0\cup\rightsquigarrow_P^+$. In other words, $P$ may require adding edges in $\rightsquigarrow_0$ for $\rightsquigarrow_P$ to be modelled correctly. To be correct, we must preserve the stability of some extension $E$ on $\pair{Args}{\rightsquigarrow_P}$ if $E$ is also stable on $\pair{Args}{\rightsquigarrow_0}$ and $P(S)$ is true. Let $\rightsquigarrow_1\in Args^2$ and $\rightsquigarrow_2\in Args^2$ be arbitrary frameworks.
 
+\begin{definition}
+	A framework $\rightsquigarrow$ fully-models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is stable on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
+\end{definition}
+
+\begin{definition}
+	A framework $\rightsquigarrow$ models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
+\end{definition}
+
 \begin{lemma}
 	$E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$ and on $\pair{Args}{\rightsquigarrow_2}$ iff $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.	
 
@@ -44,7 +52,7 @@ In order to reason about arbitrary number of properties, we inductively grow the
 			&E\text{ is stable on }\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}&\\
 			&\land\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)\\
 			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}\\
-			&\land\forall a\in Args\setminus E\ \exists e\in E\ e(\rightsquigarrow_1\cup\rightsquigarrow_2)a\\
+			&\land\forall a\in Args\setminus E\ \exists e\in E\ e(\rightsquigarrow_1\cup\rightsquigarrow_2)\\
 			&\land\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)\\
 			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1}\\
 			&\land\forall a\in Args\setminus E\ \exists e\in E\ (e\rightsquigarrow_1 a\lor e\rightsquigarrow_2 a)\\
@@ -56,11 +64,50 @@ In order to reason about arbitrary number of properties, we inductively grow the
 			&\land\forall a\in Args\setminus E\ ((\exists e\in E\ e\rightsquigarrow_1 a)\lor(\exists e\in E\ e\rightsquigarrow_1 a))\\
 			\implies&E\text{ is conflict-free on }\pair{Args}{\rightsquigarrow_1}\\
 			&\land\forall a\in Args\setminus E\ \exists e\in E\ e\rightsquigarrow_1 a\\
-			\implies&E\text{ is stable on }\pair{Args}{\rightsquigarrow_1}\\
+			\implies&E\text{ is stable on }\pair{Args}{\rightsquigarrow_1}
 		\end{flalign*}
-		
 	\end{proof}
 \end{lemma}
+
+\begin{theorem}
+	Let $P_0,...,P_K$ be schedule properties with $K$ properties. If $\rightsquigarrow_0$ fully-models $P_0$, and $\forall k\in\intset{1,K}\ \rightsquigarrow_k$ models $P_k$, and for all extensions $E$, $\forall a\in Arg\setminus E\ \forall k\in\intset{1,k}\ \big((\exists e\in E\ e\rightsquigarrow_k a)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\big)$, then $\left(\bigcup_{k=0}^K\rightsquigarrow_k\right)$ fully-models $P_{\intset{0,K}}$. $P_{\intset{i,j}}$ is defined as an aggregate schedule property where for all schedules $S$, $P_{\intset{i, k}}(S)\Leftrightarrow\forall k\in\intset{i,j}\ P_k(S)$.
+	
+	\begin{proof}
+		Take arbitrary $K\in\mathbb{N}$. To prove forward implication:
+		\begin{enumerate}
+			\item$\rightsquigarrow_0$ fully-models $P_0$\hfill given
+			\item$\forall k\in\intset{1,K}\ \rightsquigarrow_k$ models $P_k$\hfill given
+			\item$\forall a\in Arg\setminus E\ \forall k\in\intset{1,K}\ \big((\exists e\in E\ e\rightsquigarrow_k a)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\big)$\\\null\hfill given
+			\item$E$ is stable on $\pair{Args}{\bigcup_{k=0}^K\rightsquigarrow_k}$\hfill assumption
+			\item$\forall a\in Arg\setminus E\ \left(\left(\exists e\in E\ e\left(\bigcup_{k=0}^K\rightsquigarrow_k\right) a\right)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\right)$\\\null\hfill by equivalence of 3
+			\item$E$ is stable on $\pair{Args}{\rightsquigarrow_0}$\hfill lemma 4, 4, 5
+			\item$P_0(S)$\hfill 1, 6
+			\item Take arbitrary $k\in\intset{1,K}$
+			\begin{level}
+				\item$E$ is conflict-free on $\pair{Args}{\rightsquigarrow_k}$\hfill lemma 3, 4
+				\item$P_k$(S)\hfill 2, 9
+			\end{level}
+			\item$\forall k\in\intset{1,K}\ P_k(S)$\hfill 8, 10
+			\item$P_{\intset{0,K}}(S)$ \hfill 7, 11
+		\end{enumerate}
+	
+		To prove backward implication:
+		\begin{enumerate}
+			\item$\rightsquigarrow_0$ fully-models $P_0$\hfill given
+			\item$\forall k\in\intset{1,K}\ \rightsquigarrow_k$ models $P_k$\hfill given
+			\item$P_{\intset{0,K}}(S)$\hfill assumption
+			\item$P_0(S)$\hfill 3
+			\item$E$ is stable on $\pair{Args}{\rightsquigarrow_0}$\hfill 1, 4
+			\item Recursively over $k\in\intset{1,K}$
+			\begin{level}
+				\item $P_k(S)$\hfill 3
+				\item $E$ is conflict-free on $\pair{Arg}{\rightsquigarrow_k}$\hfill 2, 7
+				\item $E$ is stable on $\pair{Arg}{\bigcup_{k'=0}^k\rightsquigarrow_{k'}}$\hfill lemma 2, 5, 8
+			\end{level}
+			\item $E$ is stable on $\pair{Arg}{\bigcup_{k=0}^K\rightsquigarrow_k}$\hfill 6, 9
+		\end{enumerate}
+	\end{proof}
+\end{theorem}
 
 \section{Interval Scheduling}
 
