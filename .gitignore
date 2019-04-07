@@ -9,7 +9,6 @@ src/*.pyc
 scripts/log
 report/*.aux
 report/*.log
-report/*.pdf
 report/*.synctex.gz
 report/*.out
 report/*.bbl
