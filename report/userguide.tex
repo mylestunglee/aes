@@ -57,7 +57,7 @@ python -m pip install pyomo
 
 To start the tool, run \texttt{python3 main.py -g} on Linux or \texttt{python main.py -g} on Windows in the \texttt{src} directory supplied in the repository.
 \linespace
-The makespan problem consists of the number of machines and job processing times. The tutorial will use a hospital setting, where nurses and patients are represented as machines and jobs respectively. Consider the following example where there are two nurses, Alice and Bob. and two patients, Charlie and Dave. Charlie's and Dave's appointment takes 15 and 10 minutes respectively. To enter the example in the tool, nurses and patients are indexed. Hence, 1 represents Alice, 2 represents Bob for nurses and 1 represents Charlie and 2 represents Dave for patients. Although index 1 represents both Alice and Charlie, they are used in different contexts, the problem is well-defined. The problem is to minimise the total completion time, which intuitively is the longest time any nurse has to work.
+The makespan problem consists of the number of machines and job processing times. The tutorial will use a hospital setting, where nurses and patients are represented as machines and jobs respectively. Consider the following example where there are two nurses, Alice and Bob. and two patients, Charlie and Dave. Charlie's and Dave's appointment takes 15 and 10 minutes respectively. To enter the example in the tool, nurses and patients are indexed. Hence, A represents Alice, B represents Bob for nurses and 1 represents Charlie and 2 represents Dave for patients. Numbers are used to index machines and letters are used to index jobs. The problem is to minimise the total completion time, which intuitively is the longest time any nurse has to work.
 
 \begin{figure}[H]
 	\centering
@@ -65,7 +65,7 @@ The makespan problem consists of the number of machines and job processing times
 	\caption{Example problem input}
 \end{figure}
 
-Each line in the processing time textbox represents one job. The first line can be interpreted as: job 1 has processing time of 15 units, with following lines having similar interpretations. Negative fixed decisions represent jobs that cannot be assigned to machines. Positive fixed decisions represents jobs that much be assigned to a machine. Note that for all multi-line inputs, each line ends with a new line.
+Each line in the processing time textbox represents one job. The first line can be interpreted as: job A has processing time of 15 units, with following lines having similar interpretations. Negative fixed decisions represent jobs that cannot be assigned to machines. Positive fixed decisions represents jobs that much be assigned to a machine. Note that for all multi-line inputs, each line ends with a new line character.
 
 \begin{figure}[H]
 	\centering
@@ -73,7 +73,7 @@ Each line in the processing time textbox represents one job. The first line can 
 	\caption{Example fixed decisions input}
 \end{figure}
 
-Each line in each fixed decisions textbox represents one decision. The first line of negative fixed decisions can be interpreted as: machine 1 cannot be allocated to job 2. The first line of positive fixed decisions can be interpreted as: machine 2 cannot be allocated to job 2. In context of the example, this means Alice cannot be with Dave and Bob must be with Dave.
+Each line in each fixed decisions textbox represents one decision. The first line of negative fixed decisions can be interpreted as: machine 1 cannot be allocated to job B. The first line of positive fixed decisions can be interpreted as: machine 2 cannot be allocated to job B. In context of the example, this means Alice cannot be with Dave and Bob must be with Dave.
 
 \begin{figure}[H]
 	\centering
@@ -81,7 +81,7 @@ Each line in each fixed decisions textbox represents one decision. The first lin
 	\caption{Example schedule input}
 \end{figure}
 
-After defining the makespan problem, enter the above schedule. The schedule can be interpreted as: machine 1 has no allocated jobs; machine 2 have two allocated jobs, 1 and 2. The \texttt{Optimise} button finds the optimal schedule using a solver, which is by default GLPK. To specify a solver, starting the tool with \texttt{python3 main.py -g -S SOLVER\_NAME} where \texttt{SOLVER\_NAME} is GLPK or CPLEX, for instance. Note that for large problems, optimisation may take a long time, so a solver time limit can be enforced by starting the tool with \texttt{python3 main.py -g -t TIME\_LIMIT} where \texttt{TIME\_LIMIT} is in seconds. The \texttt{Randomize} button generates some feasible schedule, which may violate fixed decisions. To explain the schedule, click the \texttt{Explain} button. 
+After defining the makespan problem, enter the above schedule. The schedule can be interpreted as: machine 1 has no allocated jobs; machine 2 have two allocated jobs, A and B. The \texttt{Optimise} button finds the optimal schedule using a solver, which is by default GLPK. To specify a solver, starting the tool with \texttt{python3 main.py -g -S SOLVER\_NAME} where \texttt{SOLVER\_NAME} is GLPK or CPLEX, for instance. Note that for large problems, optimisation may take a long time, so a solver time limit can be enforced by starting the tool with \texttt{python3 main.py -g -t TIME\_LIMIT} where \texttt{TIME\_LIMIT} is in seconds. The \texttt{Randomize} button generates some feasible schedule, which may violate fixed decisions. To explain the schedule, click the \texttt{Explain} button. 
 
 \begin{figure}[H]
 	\centering
@@ -142,42 +142,42 @@ time
 \begin{verbatim}
 > python3 main.py -r
 4;
-1: 1.0535984963443499
-2: 1.5450274194370683
-3: 1.0110591477247763
-4: 5.180887650551162
-5: 1.0613085418860866
+A: 1.822
+B: 2.994
+C: 6.444
+D: 2.578
+E: 2.386
+;
+1: B
+2: A
+3: D
+4: B
 ;
 1: 
-2: 2
-3: 
-4: 2 3 4 5
-;
-1: 1
-2: 
-3: 
-4: 
+2: B
+3: C
+4:
 \end{verbatim}
 
-Formally, this represents $m=4$, $\mathbf{p}=\begin{bmatrix}
-	1.05&1.54&1.01&5.18&1.06
-\end{bmatrix}^T$, $D^-=\{\pair{2}{2},\pair{4}{2},\pair{4}{3},\pair{4}{4},\pair{4}{5}\}$ and $D^+=\{\pair{1}{1}\}$.
+Formally, this represents $m=4$, $n=5$, $\mathbf{p}=\begin{bmatrix}
+	1.822&2.994&6.444&2.578&2.386
+\end{bmatrix}^T$, $D^-=\{\pair{1}{2},\pair{2}{1},\pair{3}{4},\pair{4}{2}\}$ and $D^+=\{\pair{2}{2}, \pair{3}{3}\}$.
 
 \subsubsection{Random schedule given previous problem}
 
 \begin{verbatim}
 > python3 main.py -p example.problem -R
-1: 2
-2: 4 5
-3: 
-4: 1 3
+1: A
+2: B C E
+3: D
+4: 
 \end{verbatim}
 
 Formally, this represents $\mathbf{x}=\begin{bmatrix}
-	0&1&0&0&0\\
-	0&0&0&1&1\\
+	1&0&0&0&0\\
+	0&1&1&0&1\\
+	0&0&0&1&0\\
 	0&0&0&0&0\\
-	1&0&1&0&0\\
 \end{bmatrix}$
 
 \subsubsection{Explantation given previous problem and schedule}
@@ -185,14 +185,18 @@ Formally, this represents $\mathbf{x}=\begin{bmatrix}
 \begin{verbatim}
 > python3 main.py -p example.problem -s example.schedule -e
 Schedule is feasible
- -  All jobs are allocated by exactly one machine
+-  All jobs are allocated by exactly one machine
 Schedule does not satisfies user fixed decisions because:
- -  Job 1 must be allocated to machine 1
- -  Job 3 must not be allocated to machine 4
+-  Job C must be allocated to machine 3
+-  Job D must not be allocated to machine 3
 Schedule is not efficient because:
- -  Job 4 can be allocated from machine 2 to 3 to reduce by 1.06
- -  Job 5 can be allocated from machine 2 to 1 to reduce by 1.06
- -  Job 5 can be allocated from machine 2 to 3 to reduce by 1.06
+-  Job C can be allocated from machine 2 to 4 to reduce by 5.38
+-  Jobs C and D can be swapped with machines 2 and 3 to reduce by 3.87
+-  Job C can be allocated from machine 2 to 1 to reduce by 3.56
+-  Job C can be allocated from machine 2 to 3 to reduce by 2.8
+-  Job E can be allocated from machine 2 to 1 to reduce by 2.39
+-  Job E can be allocated from machine 2 to 3 to reduce by 2.39
+-  Job E can be allocated from machine 2 to 4 to reduce by 2.39
 \end{verbatim}
 
 \section{Known Limitations}

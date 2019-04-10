@@ -2,7 +2,7 @@
 
 \section{Optimisation}
 
-Optimisation is the process to finding the optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to either find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimal decisions. The wide range of applications of optimisation result in  many fields of optimisation, where in this project we look at MILP.
+Optimisation is the process to finding the optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to either find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimal decisions. There are a wide range of applications for optimisation, but in this project we focus with mixed-integer linear programming.
 
 \begin{figure}[H]
 	\begin{center}
@@ -32,9 +32,9 @@ The problem is sufficiently small to be solved by inspection, but may also be so
 \linespace
 In non-linear optimisation problems, finding global optimums is not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity for arbitrary dimensional problems. In context of the project, it is unfeasible to compute a complete explanation of optimality in polynomial time.
 
-\subsection{Makeshift Scheduling}
+\subsection{Makespan Scheduling}
 
-The simplistic definition of makeshift scheduling gives a good foundation for experimenting with argumentation. Makeshift schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $j\in\mathcal{J}$, has an associated processing time $p_j\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makeshift schedules are modelled as an optimisation problem:
+The simplistic definition of makespan scheduling gives a good foundation for experimenting with argumentation. Makespan schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $j\in\mathcal{J}$, has an associated processing time $p_j\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makespan schedules are modelled as an optimisation problem:
 \begin{align*}
 	\min_{C_{\max},\mathbf{C},\mathbf{x}}\ &C_{\max}&\text{ subject to:}\\
 	\forall i\in\mathcal{M}.\ &C_{\max}\geq C_i\\
@@ -69,32 +69,32 @@ The simplistic definition of makeshift scheduling gives a good foundation for ex
 \end{definition}
 
 \begin{definition}
-	A schedule $S$ is efficient iff $S$ satisfies SEP and PEP.
+	A schedule $S$ is efficient iff $S$ satisfies SEP and PEP. Note this definition of efficiency succinctly captures necessary optimally conditions, which differs from the property efficiency defined in the paper \cite{aes}.
 \end{definition}
 
 \begin{theorem}
 	Schedule efficiency is a necessary condition for optimality.
 \end{theorem}
 
-Makeshift schedules are often represented using cascade charts. The charts shows graphically the difference in total completion time of schedules where the problem has the parameters $m=4$ and $n=13$.
+Makespan schedules are often represented using cascade charts. The charts shows graphically the difference in total completion time of schedules where the problem has the parameters $m=4$ and $n=13$.
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=.6\linewidth]{figures/makeshift_inefficient.pdf}
+		\includegraphics[width=.8\linewidth]{figures/makespan_inefficient.pdf}
 	\end{center}
 	\caption{An inefficent schedule}
 \end{figure}
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=.6\linewidth]{figures/makeshift_efficient.pdf}	
+		\includegraphics[width=.8\linewidth]{figures/makespan_efficient.pdf}	
 	\end{center}
 	\caption{An efficient schedule}
 \end{figure}
 
 \subsection{User Fixed Decisions}
 
-To accommodate practical applications of makeshift schedules, user positive and negative fixed decisions are introduced as an extension to makeshift problems. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
+To accommodate practical applications of makespan schedules, user positive and negative fixed decisions are introduced as an extension to makespan problems. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
 
 \begin{definition}
 	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall \pair{i}{j}\in D^+.\ x_{i,j}=1$.
@@ -104,20 +104,18 @@ To accommodate practical applications of makeshift schedules, user positive and 
 	A fixed decision $D$ is satisfiable iff there exists a schedule $S$ such that $S$ satisfies $D$. 
 \end{definition}
 
-\begin{theorem}
-	A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
-	\begin{itemize}
-		\item$D^+$ and $D^-$ are disjoint.
-		\item$\forall\pair{i}{j},\pair{i'}{j'}\in D^+.\ i=i'\lor j\neq j'$
-		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$
-	\end{itemize}
-\end{theorem}
+A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
+\begin{itemize}
+	\item$D^+$ and $D^-$ are disjoint.
+	\item$\forall\pair{i}{j},\pair{i'}{j'}\in D^+.\ i=i'\lor j\neq j'$
+	\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$
+\end{itemize}
 
-The relaxed definition of $D$ allows $D$ to be unsatisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations over validation of user input, which is more useful to users in a practical setting.
+The relaxed definition of $D$ allows $D$ to be not satisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations over validation of user input, which is more useful to users in a practical setting.
 
 \subsection{Interval Scheduling}
 
-Interval scheduling is a natural extension to makeshift scheduling. Makeshift scheduling has freedom in determining the starting times of its jobs. In practice, rearranging critical jobs may effect the feasibility of a schedule. Interval scheduling is a widely researched area, with many literature proposing algorithms for variants of interval scheduling \cite{is}.
+Interval scheduling is a natural extension to makespan scheduling. This has freedom in determining the starting times of its jobs. In practice, rearranging critical jobs may effect the feasibility of a schedule. Interval scheduling is a widely researched area, with many literature proposing algorithms for variants of interval scheduling \cite{is}.
 \linespace
 Interval scheduling is defined over $m\in\mathbb{N}$ and $n\in\mathbb{N}$ jobs where they are collectively denoted by the sets $\mathcal{M}$ and $\mathcal{J}$ such that $\mathcal{M}=\{1,...,m\}$ and $\mathcal{J}=\{1,...,n\}$ respectively. Each job $j\in\mathcal{J}$ must be allocated a machine $i\in\mathcal{M}$ preemptively. In addition, each job must be allocated between the interval $[s_j,f_j)$ such that $s_j<f_j$ where $s_j,f_j\in\mathbb{R}_{\geq 0}$ without loss of generality. Finally, each job is associated with a processing time $p_j\in\mathbb{R}_{\geq 0}$. No jobs are allowed to overlap. Note that $p_j>f_j-s_j$ is possible, meaning that interval schedules can be constructed to be infeasible.
 
@@ -230,7 +228,7 @@ We will look at two scheduling software, Setmore and LEKIN, in terms of explaina
 	\caption{Setmore interactive interface \cite{setmore}}
 \end{figure}
 
-Setmore is a commercial online application that records appointments, schedules and employees. The application is designed for small business such as in healthcare \cite{setmore}, where managers can organise appointments on a calender. Makeshift schedules are formulae where employees are machines and appointments are jobs. The intuitive interface enables users to quickly glance at appointments and their times, it is graphically clear when two appointments overlap. However, under the condition that one employee is able to attend at most one appointment, the user is presented with an error message. Messages also occur when resources are fully-booked or unavailable. Scheduling error messages alert the user during data input, which may prove problematic when a user wishes to input a large number of appointments. Appointments cannot be over-allocated because each appointment has at most assignment one by interface restrictions.
+Setmore is a commercial online application that records appointments, schedules and employees. The application is designed for small business such as in healthcare \cite{setmore}, where managers can organise appointments on a calender. Makespan schedules are formulae where employees are machines and appointments are jobs. The intuitive interface enables users to quickly glance at appointments and their times, it is graphically clear when two appointments overlap. However, under the condition that one employee is able to attend at most one appointment, the user is presented with an error message. Messages also occur when resources are fully-booked or unavailable. Scheduling error messages alert the user during data input, which may prove problematic when a user wishes to input a large number of appointments. Appointments cannot be over-allocated because each appointment has at most assignment one by interface restrictions.
 
 \begin{figure}[H]
 	\begin{center}
@@ -273,7 +271,7 @@ LEKIN is a academic-oriented scheduling application to teach students scheduling
 	\caption{A job is not allocated to any machine}
 \end{figure}
 
-The application validates a schedule's feasibility at data input. Infeasible schedule results in error messages. The application computes optimal schedules, but has no functionality to verify its optimality. While our approach is to weaken optimality with efficiency, LEKIN takes the approach to compute common scheduling performance metrics such as makeshift completion time, tardiness and weighted metrics over machines. The advantage is that these metrics can be easily and quickly be computed and are intuitive to non-technical users given some background reading. However, these metrics are global across all machines, and give no indication to improving schedules. Non-technical users may run one of the provided optimisers to improve metrics, but no explanation is offered between the assignments of the pre-optimised and the post-optimised schedules.
+The application validates a schedule's feasibility at data input. Infeasible schedule results in error messages. The application computes optimal schedules, but has no functionality to verify its optimality. While our approach is to weaken optimality with efficiency, LEKIN takes the approach to compute common scheduling performance metrics such as makespan completion time, tardiness and weighted metrics over machines. The advantage is that these metrics can be easily and quickly be computed and are intuitive to non-technical users given some background reading. However, these metrics are global across all machines, and give no indication to improving schedules. Non-technical users may run one of the provided optimisers to improve metrics, but no explanation is offered between the assignments of the pre-optimised and the post-optimised schedules.
 
 \begin{figure}[H]
 	\begin{center}
