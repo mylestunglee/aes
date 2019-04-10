@@ -12,9 +12,7 @@ We can also use the survey to ask how well our tool performs with respect to app
 
 \section{Theoretical Results}
 
-At the end of the project, we aim to present extensions of argumentation with scheduling We will explain the practicability of using argumentation Such details are open-ended.
-
-\begin{figure}
+\begin{figure}[H]
 	\begin{tabular}{lccc}
 		\hline
 		Algorithm & Computational & Memory & Tractability\\
@@ -26,14 +24,31 @@ At the end of the project, we aim to present extensions of argumentation with sc
 		\textsc{Compute-Partial-Conflicts} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ &\\
 		\textsc{Explain-Stability} & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(m^2n^2)$ &\\
 		\textsc{Explain-Feasibility} & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
-		\textsc{Explain-Efficiency} & $\mathcal{O}(mn^2\log(mn))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
+		\textsc{Explain-Efficiency} & $\mathcal{O}(mn^2\log(mn^2))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
 		\textsc{Explain-Satisfaction} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
-		\textsc{Full-Precomputation-Explain} & $\mathcal{O}(m^2n^2\log n)$ & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(mn^2)$\\
-		\textsc{Partial-Precomputation-Explain} & $\mathcal{O}(m^2n^2\log n)$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
+		\textsc{Full-Precomputation-Explain} & $\mathcal{O}(m^2n^2\log(mn^2))$ & $\mathcal{O}(m^2n^2)$ & $\mathcal{O}(mn^2)$\\
+		\textsc{Partial-Precomputation-Explain} & $\mathcal{O}(m^2n^2\log(mn^2))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
 		\hline
 	\end{tabular}
-	\caption{Computational, memory and tractability complexity of algorithms}
+	\caption{Computational, memory and tractability complexity of algorithms using argumentation}
 \end{figure}
+
+\begin{figure}[H]
+	\begin{tabular}{lccc}
+	\hline
+	Algorithm & Computational & Memory & Tractability\\
+	\hline
+	\textsc{Naive-Explain-Feasibility} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
+	\textsc{Naive-Explain-Efficiency} & $\mathcal{O}(mn^2\log(mn^2))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
+	\textsc{Naive-Explain-Satisfaction} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
+	\textsc{Naive-Explain} & $\mathcal{O}(mn^2\log(mn^2))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
+	\hline
+	\end{tabular}
+	\caption{Computational, memory and tractability complexity of algorithms without using argumentation}
+
+\end{figure}
+
+Using an naive explanation approach only improves the computational complexity of verifying the feasibility property. 
 
 \section{Practical Results} 
 
@@ -41,22 +56,24 @@ I will be able to demonstrate the tool, and its functionality. This will be refl
 
 \subsection{Full versus Partial Precomputation}
 
-We will compare two algorithmic approaches to AAF construction. The algorithms are implemented, then profiled for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of 2 core CPU at 2GHz with 2GB RAM.
+We will compare two algorithmic approaches to AAF construction with the naive approach without argumentation. The algorithms are implemented, then profiled for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of dual-core CPU at 2GHz with 2GiB RAM.
 \linespace
 Time comparison:
 \begin{itemize}
 	\item Elapsed time measurements are noisy.
-	\item For less than 100 jobs, both approaches have approximately equal timings.
-	\item From profiling, the tool takes 0.7 seconds to startup.
-	\item Partial precomputation is 26\% slower than full precomputation on average from the samples illustrated on the graph, excluding startup time.
+	\item For less than 100 jobs, all approaches have approximately equal timings.
+	\item From profiling, the tool takes 0.4 seconds on average to startup.
+	\item Partial precomputation is 3\% faster than full precomputation on average, excluding startup time.
+	\item Naive is 18\% faster than partial precomputation on average, excluding startup time.
 	\item Both graphs hints at quadratic complexity.
 \end{itemize}
 
 Memory comparison:
 \begin{itemize}
-	\item For less than 40 jobs, both approaches have approximately equal memory usage.
-	\item From profiling, the tool uses 72MiB to startup.
-	\item For a large number of jobs, partial-precomputation is 18 times more efficient than full precomputation excluding startup memory.
+	\item For less than 40 jobs, all approaches have approximately equal memory usage.
+	\item From profiling, the tool uses 52MiB on average to startup.
+	\item For a large number of jobs, partial-precomputation is 7 times more efficient than full precomputation excluding startup memory.
+	\item Naive and partial-precomputation have less than 1\% memory usage difference.
 	\item Both graphs hints at quadratic complexity.
 \end{itemize}
 
