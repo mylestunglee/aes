@@ -1,6 +1,6 @@
 \chapter{Schedule Properties and Argumentation}
 
-Schedule properties such as efficiency are modelled using frameworks to explain the satisfaction of properties. In particular, the definitions of efficiency and fixed decision frameworks extend from the definition of the feasibility framework. This is generalised to reason about arbitrary number of properties, using a commonly-extended framework. Using this extended reasoning, we apply argumentation to a variant interval scheduling to illustrate extensions of argumentation with scheduling.
+Schedule properties such as efficiency are modelled using frameworks to explain the satisfaction of properties. In particular, the definitions of efficiency and fixed decision frameworks extend from the definition of the feasibility framework. This is generalised to reason about arbitrary number of properties, using a commonly-extended framework. Using this extended reasoning, we apply argumentation to a variant interval scheduling to illustrate extensions of argumentation.
  
 \section{Extensions}
 
@@ -8,14 +8,14 @@ We use stability over other notions of good extensions to accurately model sched
 
 \section{Frameworks}
 
-In order to reason about arbitrary number of properties, we inductively grow the property space over a commonly-extended framework, denoted by $\rightsquigarrow_0$. A property $P$ is modelled by the framework $\rightsquigarrow_P$, such that $\rightsquigarrow_P=\rightsquigarrow_0\cup\rightsquigarrow_P^+$. In other words, $P$ may require adding edges in $\rightsquigarrow_0$ for $\rightsquigarrow_P$ to be modelled correctly. To be correct, we must preserve the stability of some extension $E$ on $\pair{Args}{\rightsquigarrow_P}$ if $E$ is also stable on $\pair{Args}{\rightsquigarrow_0}$ and $P(S)$ is true. Let $\rightsquigarrow_1\in Args^2$ and $\rightsquigarrow_2\in Args^2$ be arbitrary frameworks.
+In order to reason about arbitrary number of properties, we inductively build the expressible properties over a commonly-extended framework, denoted by $\rightsquigarrow_0$. A property $P$ is modelled by the framework $\rightsquigarrow_P$. To be correct, we must preserve the stability of some extension $E$ on $\pair{Args}{\rightsquigarrow_0\cup\rightsquigarrow_P}$ if $E$ is also stable on $\pair{Args}{\rightsquigarrow_0}$ and $P(S)$ is true. Let $\rightsquigarrow_1\subseteq Args^2$ and $\rightsquigarrow_2\subseteq Args^2$ be arbitrary frameworks.
 
 \begin{definition}
-	A framework $\rightsquigarrow$ fully-models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is stable on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
+	A framework $\rightsquigarrow$ stability-models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is stable on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
 \end{definition}
 
 \begin{definition}
-	A framework $\rightsquigarrow$ models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
+	A framework $\rightsquigarrow$ conflict-models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
 \end{definition}
 
 \begin{lemma}
@@ -23,18 +23,88 @@ In order to reason about arbitrary number of properties, we inductively grow the
 
 	\begin{proof}
 		To prove the forward implication, assume $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$ and on $\pair{Args}{\rightsquigarrow_2}$. To aim for a contradiction, assume $E$ is not conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$. Then there exists $e_1,e_2\in E$ such that $e_1(\rightsquigarrow_1\cup\rightsquigarrow_2)e_2$. Then $e_1\rightsquigarrow_1 e_2$ or $e_1\rightsquigarrow_2 e_2$. Both cases lead to a contradiction, so $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.
-		\\
+		\linespace
 		To prove the backward implication, assume $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$. To aim for a contradiction, assume $E$ is not conflict-free on $\pair{Args}{\rightsquigarrow_1}$. Then there exists $e_1,e_2\in E$ such that $e_1\rightsquigarrow_1 e_2$. Then $e_1(\rightsquigarrow_1\cup\rightsquigarrow_2)e_2$, which contradicts the most recent assumption. Therefore, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$, and also conflict-free on $\pair{Args}{\rightsquigarrow_2}$ by similar argument.
 	\end{proof}
 \end{lemma}
 
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+			\node[node](a) at (0, 2){a};
+			\node[node, shaded](b) at (2, 2){b};
+			\node[node](c) at (2, 0){c};
+			\node[node, shaded](d) at (0, 0){d};
+			\draw[arrow](a) -- (c);
+			\draw[arrow](c) -- (b);
+			\draw[arrow](d) -- (a);
+		\end{tikzpicture}\hspace{1cm}
+		\begin{tikzpicture}
+			\node[node](a) at (0, 2){a};
+			\node[node, shaded](b) at (2, 2){b};
+			\node[node](c) at (2, 0){c};
+			\node[node, shaded](d) at (0, 0){d};
+			\draw[arrow, dashed](b) -- (a);
+			\draw[arrow, dashed](c) -- (b);
+			\draw[arrow, dashed](c) -- (d);
+		\end{tikzpicture}\hspace{1cm}
+		\begin{tikzpicture}
+			\node[node](a) at (0, 2){a};
+			\node[node, shaded](b) at (2, 2){b};
+			\node[node](c) at (2, 0){c};
+			\node[node, shaded](d) at (0, 0){d};
+			\draw[arrow](a) -- (c);
+			\draw[arrow](c) -- (b);
+			\draw[arrow](d) -- (a);
+			\draw[arrow, dashed](b) -- (a);
+			\draw[arrow, dashed](c) -- (b);
+			\draw[arrow, dashed](c) -- (d);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Lemma 1 states that given a conflict-free extension over two attack sets on the same arguments, the extension is conflict-free on the merged framework. The figure illustrates this by merging the left and middle frameworks to produce the right framework.}
+\end{figure}
+
 \begin{lemma}
-	If $E$ is stable on $\rightsquigarrow_1$ and $E$ is conflict-free on $\rightsquigarrow_2$, then $E$ is stable on $(\rightsquigarrow_1\cup\rightsquigarrow_2)$.
+	If $E$ is stable on $\pair{Args}{\rightsquigarrow_1}$ and $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_2}$, then $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.
 	
 	\begin{proof}
-		Assume $E$ is stable on $\rightsquigarrow_1$ and $E$ is conflict-free on $\rightsquigarrow_2$. By definition of stability, $\forall a\in Args\setminus E\ \exists e\in E\ e\rightsquigarrow_1 a$. Then $\forall a\in Args\setminus E\ \exists e\in E\ e(\rightsquigarrow_1\cup\rightsquigarrow_2)a$. So every argument not in $E$ is attacked by some argument in $E$. $E$ is conflict-free on $\rightsquigarrow_1$ because $E$ is stable on $\rightsquigarrow_1$. Since $E$ is conflict-free on $\rightsquigarrow_1$ and on $\rightsquigarrow_2$, we use Lemma 1 to show that $E$ is also conflict-free on $(\rightsquigarrow_1\cup\rightsquigarrow_2)$. Therefore $E$ is stable on $\rightsquigarrow_1\cup\rightsquigarrow_2)$.
+		Assume $E$ is stable on $\rightsquigarrow_1$ and $E$ is conflict-free on $\rightsquigarrow_2$. By definition of stability, $\forall a\in Args\setminus E\ \exists e\in E\ e\rightsquigarrow_1 a$. Then $\forall a\in Args\setminus E\ \exists e\in E\ e(\rightsquigarrow_1\cup\rightsquigarrow_2)a$. So every argument not in $E$ is attacked by some argument in $E$. $E$ is conflict-free on $\rightsquigarrow_1$ because $E$ is stable on $\rightsquigarrow_1$. Since $E$ is conflict-free on $\rightsquigarrow_1$ and on $\rightsquigarrow_2$, we use Lemma 1 to show that $E$ is also conflict-free on $(\rightsquigarrow_1\cup\rightsquigarrow_2)$. Therefore $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.
 	\end{proof}
 \end{lemma}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\node[node](a) at (0, 2){a};
+		\node[node](b) at (2, 2){b};
+		\node[node, shaded](c) at (2, 0){c};
+		\node[node, shaded](d) at (0, 0){d};
+		\draw[arrow](a) -- (c);
+		\draw[arrow](c) -- (b);
+		\draw[arrow](d) -- (a);
+		\end{tikzpicture}\hspace{1cm}
+		\begin{tikzpicture}
+		\node[node](a) at (0, 2){a};
+		\node[node](b) at (2, 2){b};
+		\node[node, shaded](c) at (2, 0){c};
+		\node[node, shaded](d) at (0, 0){d};
+		\draw[arrow, dashed](b) -- (a);
+		\draw[arrow, dashed](b) -- (d);
+		\end{tikzpicture}\hspace{1cm}
+		\begin{tikzpicture}
+		\node[node](a) at (0, 2){a};
+		\node[node](b) at (2, 2){b};
+		\node[node, shaded](c) at (2, 0){c};
+		\node[node, shaded](d) at (0, 0){d};
+		\draw[arrow](a) -- (c);
+		\draw[arrow](c) -- (b);
+		\draw[arrow](d) -- (a);
+		\draw[arrow, dashed](b) -- (a);
+		\draw[arrow, dashed](b) -- (d);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Lemma 2 allows stable extensions of attacks to grow with conflict-free attacks. Note that the right, merged framework is stable while the left, base framework is stable.}
+\end{figure}
 
 \begin{lemma}
 	If $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$, then $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$.
@@ -43,6 +113,30 @@ In order to reason about arbitrary number of properties, we inductively grow the
 		Assume $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$. By definition of stability, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$.  By Lemma 1, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow_1}$.
 	\end{proof}
 \end{lemma}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+			\node[node](a) at (0, 2){a};
+			\node[node](b) at (2, 2){b};
+			\node[node, shaded](c) at (2, 0){c};
+			\node[node, shaded](d) at (0, 0){d};
+			\draw[arrow](a) -- (c);
+			\draw[arrow](b) -- (a);
+			\draw[arrow](c) -- (b);
+			\draw[arrow](d) -- (a);
+		\end{tikzpicture}\hspace{3cm}
+		\begin{tikzpicture}
+			\node[node](a) at (0, 2){a};
+			\node[node](b) at (2, 2){b};
+			\node[node, shaded](c) at (2, 0){c};
+			\node[node, shaded](d) at (0, 0){d};
+			\draw[arrow](a) -- (c);
+			\draw[arrow](c) -- (b);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Lemma 3 states that given a stable extension, removing attacks preserves the extension's conflict-freeness, as shown from left to right.}
+\end{figure}
 
 \begin{lemma}
 	If $E$ is stable on $\pair{Args}{\rightsquigarrow_1\cup\rightsquigarrow_2}$ and $\forall a\in Args\setminus E\ (\exists e\in E\ e\rightsquigarrow_2 a)\implies(\exists e\in E\ e\rightsquigarrow_1 a)$, then $E$ is stable on $\pair{Args}{\rightsquigarrow_1}$.
@@ -66,20 +160,48 @@ In order to reason about arbitrary number of properties, we inductively grow the
 			&\land\forall a\in Args\setminus E\ \exists e\in E\ e\rightsquigarrow_1 a\\
 			\implies&E\text{ is stable on }\pair{Args}{\rightsquigarrow_1}
 		\end{flalign*}
+		% Keep proof on the same page
+		\vspace*{-\baselineskip}
 	\end{proof}
 \end{lemma}
 
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+		\node[node](a) at (0, 2){a};
+		\node[node](b) at (2, 2){b};
+		\node[node, shaded](c) at (2, 0){c};
+		\node[node, shaded](d) at (0, 0){d};
+		\draw[arrow, dashed](c) -- (a);
+		\draw[arrow](c) -- (b);
+		\draw[arrow](d) -- (a);
+		\draw[arrow, dashed](d) -- (b);
+		\end{tikzpicture}\hspace{3cm}
+		\begin{tikzpicture}
+		\node[node](a) at (0, 2){a};
+		\node[node](b) at (2, 2){b};
+		\node[node, shaded](c) at (2, 0){c};
+		\node[node, shaded](d) at (0, 0){d};
+		\draw[arrow](c) -- (b);
+		\draw[arrow](d) -- (a);
+		\end{tikzpicture}
+	\end{center}
+	\caption{Lemma 4 states that given a stable extension, removing attacks on multi-attacked arguments preserves the extension's stability, as shown from left to right.}
+\end{figure}
+
 \begin{theorem}
-	Let $P_0,...,P_K$ be schedule properties with $K$ properties. If $\rightsquigarrow_0$ fully-models $P_0$, and $\forall k\in\intset{1,K}\ \rightsquigarrow_k$ models $P_k$, and for all extensions $E$, $\forall a\in Arg\setminus E\ \forall k\in\intset{1,k}\ \big((\exists e\in E\ e\rightsquigarrow_k a)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\big)$, then $\left(\bigcup_{k=0}^K\rightsquigarrow_k\right)$ fully-models $P_{\intset{0,K}}$. $P_{\intset{i,j}}$ is defined as an aggregate schedule property where for all schedules $S$, $P_{\intset{i, k}}(S)\Leftrightarrow\forall k\in\intset{i,j}\ P_k(S)$.
+	Let $P_0,...,P_K$ be schedule properties with $K$ properties. Let $P_{\intset{i,j}}$ be an aggregate schedule property where for all schedules $S$, $P_{\intset{i, j}}(S)\Leftrightarrow\forall k\in\intset{i,j}\ P_k(S)$.
+	\linespace
+	If $\rightsquigarrow_0$ stability-models $P_0$, and $\forall k\in\intset{1,K}\ \rightsquigarrow_k$ conflict-models $P_k$, and for all extensions $E$, $\forall a\in Arg\setminus E\ \forall k\in\intset{1,K}\ \big((\exists e\in E\ e\rightsquigarrow_k a)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\big)$, then $\left(\bigcup_{k=0}^K\rightsquigarrow_k\right)$ stability-models $P_{\intset{0,K}}$.
 	
 	\begin{proof}
 		Take arbitrary $K\in\mathbb{N}$. To prove forward implication:
 		\begin{enumerate}
-			\item$\rightsquigarrow_0$ fully-models $P_0$\hfill given
-			\item$\forall k\in\intset{1,K}\ \rightsquigarrow_k$ models $P_k$\hfill given
+			\item$\rightsquigarrow_0$ stability-models $P_0$\hfill given
+			\item$\forall k\in\intset{1,K}\ \rightsquigarrow_k$ conflict-models $P_k$\hfill given
 			\item$\forall a\in Arg\setminus E\ \forall k\in\intset{1,K}\ \big((\exists e\in E\ e\rightsquigarrow_k a)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\big)$\\\null\hfill given
 			\item$E$ is stable on $\pair{Args}{\bigcup_{k=0}^K\rightsquigarrow_k}$\hfill assumption
-			\item$\forall a\in Arg\setminus E\ \left(\left(\exists e\in E\ e\left(\bigcup_{k=0}^K\rightsquigarrow_k\right) a\right)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\right)$\\\null\hfill by equivalence of 3
+			\item$\forall a\in Arg\setminus E\ \left(\left(\exists e\in E\ e\left(\bigcup_{k=0}^K\rightsquigarrow_k\right) a\right)\implies(\exists e\in E\ e\rightsquigarrow_0 a)\right)$\\\null\hfill 3
 			\item$E$ is stable on $\pair{Args}{\rightsquigarrow_0}$\hfill lemma 4, 4, 5
 			\item$P_0(S)$\hfill 1, 6
 			\item Take arbitrary $k\in\intset{1,K}$
@@ -93,8 +215,8 @@ In order to reason about arbitrary number of properties, we inductively grow the
 	
 		To prove backward implication:
 		\begin{enumerate}
-			\item$\rightsquigarrow_0$ fully-models $P_0$\hfill given
-			\item$\forall k\in\intset{1,K}\ \rightsquigarrow_k$ models $P_k$\hfill given
+			\item$\rightsquigarrow_0$ stability-models $P_0$\hfill given
+			\item$\forall k\in\intset{1,K}\ \rightsquigarrow_k$ conflict-models $P_k$\hfill given
 			\item$P_{\intset{0,K}}(S)$\hfill assumption
 			\item$P_0(S)$\hfill 3
 			\item$E$ is stable on $\pair{Args}{\rightsquigarrow_0}$\hfill 1, 4
@@ -108,6 +230,61 @@ In order to reason about arbitrary number of properties, we inductively grow the
 		\end{enumerate}
 	\end{proof}
 \end{theorem}
+
+This theorem is a key statement in framing argumentation semantics for arbitrary scheduling problems.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}
+			\node[node, shaded](a) at (0, 1.5){a};
+			\node[node](b) at (1.5, 1.5){b};
+			\node[node, shaded](c) at (1.5, 0){c};
+			\node[node](d) at (0, 0){d};
+			\draw[arrow](a) -- (b);
+			\draw[arrow](b) -- (a);
+			\draw[arrow](c) -- (d);
+			\draw[arrow](d) -- (c);
+			\draw(-0.5,-0.5) rectangle (2,2);
+			\node at (0.8, -0.8){stability-models $P_0$};
+		\end{tikzpicture}\raisebox{1.4cm}{\huge{$\land$}}
+		\begin{tikzpicture}
+			\node[node, shaded](a) at (0, 1.5){a};
+			\node[node](b) at (1.5, 1.5){b};
+			\node[node, shaded](c) at (1.5, 0){c};
+			\node[node](d) at (0, 0){d};
+			\draw[arrow](b) -- (c);
+			\draw(-0.5,-0.5) rectangle (2,2);
+			\node at (0.8, -0.8){conflict-models $P_1$};
+		\end{tikzpicture}\raisebox{1.4cm}{\huge{$\land$ ... $\land$}}
+		\begin{tikzpicture}
+			\node[node, shaded](a) at (0, 1.5){a};
+			\node[node](b) at (1.5, 1.5){b};
+			\node[node, shaded](c) at (1.5, 0){c};
+			\node[node](d) at (0, 0){d};
+			\draw[arrow](b) -- (d);
+			\draw(-0.5,-0.5) rectangle (2,2);
+			\node at (0.8, -0.8){conflict-models $P_K$};
+		\end{tikzpicture}\linespace
+		{\huge{$\Updownarrow$}}
+		\linespace
+		\begin{tikzpicture}
+			\node[node, shaded](a) at (0, 2){a};
+			\node[node](b) at (2, 2){b};
+			\node[node, shaded](c) at (2, 0){c};
+			\node[node](d) at (0, 0){d};
+			\draw[arrow](a) -- (b);
+			\draw[arrow](b) -- (a);
+			\draw[arrow](b) -- (c);
+			\draw[arrow](b) -- (d);
+			\draw[arrow](c) -- (d);
+			\draw[arrow](d) -- (c);
+			\draw(-0.5,-0.5) rectangle (2.5, 2.5);
+			\node at (1, -0.8){stability-models $P_{\intset{0,K}}$};
+		\end{tikzpicture}
+		\vspace{-\baselineskip}
+	\end{center}
+	\caption{Theorem 1 construction and deconstruction of an aggregate property, $P_{\intset{0,K}}$ from carefully overlaying frameworks, while preserving stability.}
+\end{figure}
 
 \section{Interval Scheduling}
 
@@ -123,4 +300,18 @@ Makespan schedules are extended to discrete time-indexed interval scheduling. Le
 	\forall\pair{i}{j}\in D^-\ \forall t\in\mathcal{T}\ &x_{i,j,t}=0&(\varepsilon)\\
 \end{align*}
 
-$(\alpha)$ models feasibility, that all jobs must be allocated. $(\beta)$ models that machines cannot process multiple jobs at the same time. $(\gamma)$ and $(\delta)$ model the restriction of start and end times respectively. $(\varepsilon)$ model negative fixed decisions. Positive fixed decisions are not modelled because for each $D^+$, there exists an $D^-$ that equivalently restricts the allocation space of $\mathbf{x}$. For instance, $\forall\pair{i}{j}\in D^+\ \forall i'\in\mathcal{M}\ \forall j'\in\mathcal{J}\ i\neq i'\land j\neq j'\implies\pair{i'}{j'}\in D^-$ captures all satisfiable instances of $D$.
+$(\alpha)$ conflict-models feasibility, that all jobs must be allocated. $(\beta)$ conflict-models that machines cannot process multiple jobs at the same time. $(\gamma)$ and $(\delta)$ model the restriction of start and end times respectively. $(\varepsilon)$ model negative fixed decisions. Positive fixed decisions are not modelled because for each $D^+$, there exists an $D^-$ that equivalently restricts the allocation space of $\mathbf{x}$. For instance, $\forall\pair{i}{j}\in D^+\ \forall i'\in\mathcal{M}\ \forall j'\in\mathcal{J}\ i\neq i'\land j\neq j'\implies\pair{i'}{j'}\in D^-$ captures all satisfiable instances of $D$.
+
+\begin{definition}
+	Let $\rightsquigarrow_\alpha$ be the base feasibility framework such that $\triple{i}{j}{t}\rightsquigarrow_\alpha\triple{i'}{j'}{t'}\Leftrightarrow i\neq i'\land j=j'\land t\neq t'$ 
+\end{definition}
+
+\begin{lemma}
+	$\rightsquigarrow_\alpha$ stability-models $(\alpha)$.
+	
+	\begin{proof}
+		To prove forward implication: $E$ is stable on $\pair{Args}{\rightsquigarrow_\alpha}$. Take arbitrary $j\in\mathcal{J}$. To aim to contradict, assume $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}>1$. Then $\exists\triple{i}{j}{t},\triple{i'}{j}{t'}\in E$ where $x_{i,j,t}=1$ and $x_{i',j,t'}=1$ such that $i\neq i'$ or $t\neq t'$. By definition of $\rightsquigarrow_\alpha$, $\triple{i}{j}{t}\rightsquigarrow_\alpha\triple{i'}{j}{t'}$. Hence $E$ is not conflict-free, then $E$ is not stable. By contradiction, $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}\leq 1$. To aim to contradict, assume $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}=0$. Then $\forall i\in\mathcal{M}\ \forall t\in\mathcal{T}\ x_{i,j,t}=0$. Then $\forall i\in\mathcal{M}\ \forall t\in\mathcal{T}\ \triple{i}{j}{t}\not\in E$. Then $E$ is not stable. By contradiction, $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}>0$. Therefore $\alpha$ holds.
+		\linespace
+		To prove backward implication: From $\alpha$, there is exactly one $i\in\mathcal{M}$ and $t\in\mathcal{T}$ such that $x_{i,j,t}=1$. So $E$ is conflict free. Also, for all $j$, $\triple{i}{j}{t}\in E$ attacks every other $\pair{i}{t}$, so $E$ is stable.
+	\end{proof}
+\end{lemma}

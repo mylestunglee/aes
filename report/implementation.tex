@@ -15,7 +15,7 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 \begin{figure}[H]
 	\resizebox{\textwidth}{!}{
 	\begin{tikzpicture}
-		\fill[fill=black!10](-1.7, -0.8) rectangle (11.2, 3);
+		\fill[shaded](-1.7, -0.8) rectangle (11.2, 3);
 		\node at (3, 0){External libraries};
 		
 		\node[file](numpy) at (0, 0){NumPy};
@@ -529,7 +529,7 @@ An alternative solution is to restrict the explanation space by giving local exp
 				\If{$D^-$ and $D^+$ are not disjoint}
 					\State\emph{Job $j$ subject to conflicting negative and positive fixed decisions.}
 				\EndIf
-				\If{$|i\in\mathcal{M},\pair{i}{j}\in D^+|>1$}
+				\If{$|\{i\in\mathcal{M}\ |\ \pair{i}{j}\in D^+\}|>1$}
 					\State\emph{Job $j$ cannot be allocated to multiple machines.}	
 				\EndIf
 			\EndFor
