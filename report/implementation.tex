@@ -420,19 +420,19 @@ The function \textsc{Explain-Stability} returns two tensors, $\mathbf{u}$ encode
 \linespace
 The auxiliary functions \textsc{Compute-Unattacked} and \textsc{Compute-Partial-Conflicts} are defined such that at most $\mathcal{O}(mn)$ memory is allocated. This will be discussed in the following subsections.
 
-\begin{theorem}
+\begin{proposition}
 	\textsc{Compute-Conflicts} is correct where $\mathbf{x}\approx E$ under $S$:
 	\begin{align*}
 	\textsc{Compute-Conflicts}(\mathbf{x},\rightsquigarrow,\mathbf{0})=\mathbf{0}\Leftrightarrow E\text{ is conflict-free on }\langle Args, \rightsquigarrow\rangle
 	\end{align*}
-\end{theorem}
+\end{proposition}
 
-\begin{theorem}
+\begin{proposition}
 	\textsc{Explain-Stability} is correct where $\mathbf{x}\approx E$ under $S$:
 	\begin{align*}
 		\textsc{Explain-Stability}(\mathbf{x},\rightsquigarrow,\mathbf{0},\mathbf{0})=\pair{\mathbf{0}}{\mathbf{0}}\Leftrightarrow E\text{ is stable on }\langle Args, \rightsquigarrow\rangle
 	\end{align*}
-\end{theorem}
+\end{proposition}
 	
 \subsection{Explanation}
 
@@ -480,7 +480,7 @@ Explanations are given in italics. Implementation of algorithms use Python's \ve
 \end{algorithm}
 
 The paper \cite{aes} does not state explanations for trivial cases when $m=0$ or $n=0$. The above algorithm handles these cases with additional explanations. A problem with the naive implementation of generating an explanation for each conflict in $\mathbf{c_F}$ results in $k^2$ explanations for $k$ conflicting machines for a job. This results in superfluous text for the user. To summarise these explanations, the algorithm constructs a pseudo-schedule $\mathbf{z}$ which can be interpreted as $\mathbf{x}$ transposed and rows filtered if $\sum_{i\in\mathcal{M}}x_{i,j}>1$ for all jobs $j$. Afterwards, the algorithm prints the non-zero indices of $\mathbf{c}'$, which refer to the machines that causes over-allocation.
-
+\linespace
 The algorithm features two optimisations. The variable $\mathbf{y}$ represent over-allocated jobs. $y_j=\mathbf{0}$ is faster to compute than its equivalent $z_j=\mathbf{0}$ because $y_j$ is an scalar aggregate over conflicting machines, unlike the vector $z_j$. Likewise, by the construction of $\mathbf{u_F}$, we can exploit $u^T_0=\mathbf{0}\iff\mathbf{u}=\mathbf{0}$ because $u^T_0=\frac{1}{m}\mathbf{u}^T\cdot\mathbf{1}^m$.
 
 \begin{algorithm}[H]
