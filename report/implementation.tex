@@ -28,7 +28,7 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 		\node[file](graphical) at (4, 4){\texttt{graphical.py}};
 		\node[file](solver) at (8, 4){\texttt{solver.py}};
 		\node[file](schedule) at (0, 6){\texttt{schedule.py}};
-		\node[file](argumentation) at (0, 8){\texttt{argumentation.py}};
+		\node[file](explainer) at (0, 8){\texttt{explainer.py}};
 		\node[file](interface) at (4, 8){\texttt{interface.py}};
 		\node[file](main) at (4, 10){\texttt{main.py}};
 		\draw[arrow, dashed](cplex) -- (pyomo);
@@ -41,9 +41,9 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 		\draw[arrow](visualise) -- (graphical);
 		\draw[arrow](graphical) -- (interface);
 		\draw[arrow](solver) -- (interface);
-		\draw[arrow](argumentation) -- (interface);
+		\draw[arrow](explainer) -- (interface);
 		\draw[arrow](schedule) -- (interface);
-		\draw[arrow](schedule) -- (argumentation);
+		\draw[arrow](schedule) -- (explainer);
 		\draw[arrow](interface) -- (main);
 	\end{tikzpicture}}
 
