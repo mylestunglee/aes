@@ -18,8 +18,22 @@ In order to reason about arbitrary number of properties, we inductively build th
 	A framework $\rightsquigarrow$ conflict-models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is conflict-free on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
 \end{definition}
 
+The definitions of stability-models and conflict-models allows construction of concise proofs by using lemmas the partially prove correctness.
+
+\begin{proposition}
+	$\rightsquigarrow_F$ stability-models feasibility.
+\end{proposition}
+
+\begin{proposition}
+	$\rightsquigarrow_S$ stability-models feasibility and efficiency.
+\end{proposition}
+
+\begin{proposition}
+	$\rightsquigarrow_D$ stability-models feasibility and satisfaction of fixed decisions.
+\end{proposition}
+
 \begin{definition}
-	A schedule property $P$ is stability-modelable iff there exists a framework that stability-models $P$.
+	A schedule property $P$ is stability-modellable iff there exists a framework that stability-models $P$.
 \end{definition}
 
 \begin{lemma}
@@ -291,6 +305,8 @@ In order to reason about arbitrary number of properties, we inductively build th
 	\caption{Theorem \ref{modelling} allows manipulation of an aggregate property, $P_{\intset{0,K}}$ from carefully overlaying frameworks, while preserving stability. This theorem is a key statement in framing argumentation semantics for arbitrary scheduling problems.}
 \end{figure}
 
+Theorem \ref{modelling} cannot be applied to $\rightsquigarrow_S$ or $\rightsquigarrow_D$ because they remove attacks from the $\rightsquigarrow_F$. The theorem does not capture removal of attacks from a commonly-extendable framework because there is ambiguity between the order of removal and insertion of attacks. Formally, $(\rightsquigarrow\cup \rightsquigarrow^+)\setminus \rightsquigarrow^-\neq (\rightsquigarrow\setminus\rightsquigarrow^-)\cup\rightsquigarrow^+$ for arbitrary frameworks $\rightsquigarrow,\rightsquigarrow^-,\rightsquigarrow^+$.
+
 \section{Interval Scheduling}
 
 Makespan schedules are extended to discrete time-indexed interval scheduling. Let $T$ be the exclusive upper-bound of indexed time where $\mathcal{T}=\{0,...,T-1\}$. The assignment matrix $\mathbf{x}\in\mathcal{M}\times\mathcal{J}\times\mathcal{T}$ is extended such that $x_{i,j,t}=1$ iff job $j$ is starts work on machine $i$ at time $t$. Each job $j$ has a start time $s_j\in\mathcal{T}$ and finish time $f_j\in\{0,...,T\}$, where $j$ must be completed within the $[s_j,f_j)$ interval. The objective is to minimise the total completion time.
@@ -372,6 +388,20 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 	\end{proof}
 \end{lemma}
 
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+	\node[node, shaded](a) at (0, 2){a};
+	\node[node](b) at (2, 2){b};
+	\node[node](c) at (2, 0){c};
+	\node[node](d) at (0, 0){d};
+	\draw[arrow](c) to [loop](c);
+	\draw[arrow](d) to [loop](d);
+	\draw(-1,-1) rectangle (3, 3);
+	\end{tikzpicture}\raisebox{2cm}{conflict-models $P_\mathcal{A}$ with $\mathcal{A}=\{c, d\}$}
+	\caption{Self-attacking arguments cannot be members of stable extensions. Lemma \ref{conflictfreenessset} exploits self-attacks to conflict-model negative fixed decisions.}
+\end{figure}
+
 \begin{lemma}
 	\label{intervalstabilitydependence}
 	For all extensions $E$, $\forall a\in Args\setminus E\ \forall\lambda\in\{\beta,\gamma,\delta,\varepsilon,\zeta\}\ \big((\exists e\in E\ e\rightsquigarrow_\lambda a)\implies(\exists e\in E\ e\rightsquigarrow_\alpha a)\big)$.
@@ -387,8 +417,8 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 	\end{proof}
 \end{lemma}
 
-\begin{theorem}[\textbf{Interval scheduling is stability-modelable}]
-	Let $\Lambda(S)$ iff $\forall\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta\}\ \lambda(S)$. $\Lambda$ is stability-modelable.
+\begin{theorem}[\textbf{Interval scheduling is stability-modellable}]
+	Let $\Lambda(S)$ iff $\forall\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta\}\ \lambda(S)$. $\Lambda$ is stability-modellable.
 	
 	\begin{proof}\ 
 		\begin{enumerate}
@@ -396,8 +426,8 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 			\item $\rightsquigarrow_\delta$ conflict-models $\delta$ \hfill definition of $\rightsquigarrow_\delta$, lemma \ref{conflictfreenessset}
 			\item $\rightsquigarrow_\varepsilon$ conflict-models $\varepsilon$ \hfill definition of $\rightsquigarrow_\varepsilon$, lemma \ref{conflictfreenessset}
 			\item $\rightsquigarrow_\zeta$ conflict-models $\zeta$ \hfill definition of $\rightsquigarrow_\zeta$, lemma \ref{conflictfreenessset}
-			\item $\bigcup_{\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta\}}\rightsquigarrow_\lambda$ stability-models $\Lambda$\\\indent\hfill lemma \ref{stabilityalpha}, lemma \ref{conflictfreenessbeta}, 1, 2, 3, lemma \ref{intervalstabilitydependence}, theorem \ref{modelling}
-			\item $\Lambda$ is stability-modelable \hfill 5
+			\item $\left(\bigcup_{\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta\}}\rightsquigarrow_\lambda\right)$ stability-models $\Lambda$\\\indent\hfill lemma \ref{stabilityalpha}, lemma \ref{conflictfreenessbeta}, 1, 2, 3, lemma \ref{intervalstabilitydependence}, theorem \ref{modelling}
+			\item $\Lambda$ is stability-modellable \hfill 5
 		\end{enumerate}
 	\end{proof}
 \end{theorem}
