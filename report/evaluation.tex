@@ -102,3 +102,12 @@ Memory comparison:
 	\includegraphics[scale=0.7]{figures/precomputation_memory_big}
 	\caption{Maximum allocated memory comparison where $m=10$ and $0\leq n\leq 800$ with 8000 samples.}
 \end{figure}
+
+\section{Feedback}
+
+During development of the tool, I asked my colleagues and friends for advice about the usability of my tool.
+
+\begin{itemize}
+	\item In early versions of the tool, the GUI did not arrange textboxes and buttons into groups such as problem, schedule and explanation. Instead, all buttons and their functionality were exposed as an menu. This was confusing to new users because it was not evident which textboxes were input or output.
+	\item The paper \cite{aes} represented machine job pair assignments as a pairs of integer indices. The tool internally uses indices to compute explanations, however exposing both machines and job as integer indices was confusing. Therefore, jobs are now represented alphabetically.
+\end{itemize}
