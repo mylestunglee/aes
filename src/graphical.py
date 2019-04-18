@@ -380,7 +380,7 @@ def textbox_set(textbox, text):
 
 # Get textbox's value, endline appends '\n'
 def textbox_get(textbox):
-	return textbox.get('1.0', tk.END + '-1c')
+	return textbox.get('1.0', tk.END).strip() + '\n'
 
 def spinbox_set(spinbox, text):
 	spinbox.delete(0, tk.END)
