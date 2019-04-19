@@ -6,7 +6,7 @@ To select a programming language suitable for developing the tool, languages wer
 \linespace
 There is a balance between program speed and development time. A tool written in C may be fast but time-consuming. The purpose is to demonstrate the concept of argumentation with schedules while allowing analysis of potential future directions and short-comings. Hence, the tool should be sufficiently fast to be responsive, but not necessarily fast as possible.
 \linespace
-There are many powerful and efficient solvers such as CPLEX [paper] and GLPK [paper]. To solver large problems, users use commercial over open-source solvers for their superior speed [paper]. However, users may not have access to a commercial solver. To accommodate users, Pyomo is used to interface to many popular solvers.
+There are many powerful and efficient solvers such as CPLEX and GLPK. To solver large problems, users use commercial over open-source solvers for their superior speed. However, users may not have access to a commercial solver. To accommodate users, Pyomo is used to interface to many popular solvers.
 \linespace
 The tool features a GUI to aid its accessibility. Users such as hospital managers can often use a suitably-designed GUI without training of the tool. In practice, a GUI is easier to demonstrate than a CLI.
 
@@ -618,18 +618,6 @@ The framework construction functions are trivially modified to compute a sub-gra
 	\end{algorithmic}
 \end{algorithm}
 
-%    feasibility_unattacked = compute_unattacked(S, ff_partial, None, False)
-%    explanations.append(format_argument('Schedule is {}feasible',
-%        explain_feasibility(feasibility_unattacked, fc_partial, False)))
+\section{Testability}
 
-%    efficiency_unattacked = compute_unattacked(S, ef_partial,
-%        feasibility_unattacked, False)
-%    explanations.append(format_argument('Schedule is {}efficient',
-%        explain_efficiency(p, S, C, C_max, efficiency_unattacked, ec_partial, False)))
-
-%    satisfaction_unattacked = compute_unattacked(S, df_partial,
-%        feasibility_unattacked, False)
-%    explanations.append(format_argument('Schedule does {}satisfies user fixed decisions',
-%        explain_satisfaction(nfd, pfd, satisfaction_unattacked, dc_partial, False)))
-
-
+To ensure the the tool is robust, we used unit tests and regression tests to verify code quality. The unit tests were implemented with \texttt{pytest}, a commonly used Python library. Although it would be ideal to automate testing of the GUI, this is beyond the scope of this academic project. We have setup typical problem and schedule data sets, including non-well defined and defined problems. Due to the nature of mathematical optimisation, it is impossible to test every schedule, so we select the data sets to be representative of the tool's explanation features. An advantage to using regression tests, is that we can automate the comparison of different approaches: full-precomputation, partial-computation and naive. This will allow us to prove that the non-argumentative and argumentative approaches are functionally equivalent.
