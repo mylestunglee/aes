@@ -15,4 +15,5 @@ report/*.bbl
 report/*.toc
 report/*.blg
 report/*.dvi
+report/dummy.pdf
 unit_tests/.cache*

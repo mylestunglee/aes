@@ -309,20 +309,29 @@ Theorem \ref{modelling} cannot be applied to $\rightsquigarrow_S$ or $\rightsqui
 
 \section{Interval Scheduling}
 
-Makespan schedules are extended to discrete time-indexed interval scheduling. Let $T$ be the exclusive upper-bound of indexed time where $\mathcal{T}=\{0,...,T-1\}$. The assignment matrix $\mathbf{x}\in\mathcal{M}\times\mathcal{J}\times\mathcal{T}$ is extended such that $x_{i,j,t}=1$ iff job $j$ is starts work on machine $i$ at time $t$. Each job $j$ has a start time $s_j\in\mathcal{T}$ and finish time $f_j\in\{0,...,T\}$, where $j$ must be completed within the $[s_j,f_j)$ interval. The objective is to minimise the total completion time.
+Makespan schedules are extended to discrete time-indexed interval scheduling. Let $T$ be the exclusive upper-bound of indexed time where $\mathcal{T}=\{0,...,T-1\}$. The assignment matrix $\mathbf{x}\in\mathcal{M}\times\mathcal{J}\times\mathcal{T}$ is extended such that $x_{i,j,t}=1$ iff job $j$ is starts work on machine $i$ at time $t$. Each machine job pair $\pair{i}{j}$ has a start time $s_{i,j}\in\mathcal{T}^{mn}$ and finish time $f_{i,j}\in\{0,...,T\}^{mn}$, where $j$ must be completed within the $[s_{i,j},f_{i,j})$ interval. The objective is to minimise the total completion time.
 
 \begin{align*}
 	\min_{\mathbf{x}}\ &C_{\max}\text{ subject to:}\\
 	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\mathcal{T}\ &C_{\max}\geq x_{i,j,t}(t+p_j)\\
 	\forall j\in\mathcal{J}\ &\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}=1&\alpha\\
 	\forall i\in\mathcal{M}\ \forall t\in\mathcal{T}\ &\sum_{j\in\mathcal{J}}\sum_{t'=\max\{t-p_j+1,0\}}^t x_{i,j,t'}\leq 1&\beta\\
-	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{0,...,s_j-1\}\ &x_{i,j,t}=0&\gamma\\
-	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{f_j-p_j+1,...,T-1\}\ &x_{i,j,t}=0&\delta\\
-	\forall\pair{i}{j}\in D^-\ \forall t\in\mathcal{T}\ &x_{i,j,t}=0&\varepsilon\\
-	\forall\pair{i'}{j}\in D^+\ \forall i\in\mathcal{M}\setminus\{i'\}\ \forall t\in\mathcal{T}\ &x_{i,j,t}=0&\zeta\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{0,...,s_{i,j}-1\}\ &x_{i,j,t}=0&\gamma\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ \forall t\in\{f_{i,j}-p_j+1,...,T-1\}\ &x_{i,j,t}=0&\delta\\
+	\forall\triple{i}{j}{t}\in D^-\ &x_{i,j,t}=0&\varepsilon\\
+	\forall\triple{i'}{j}{t'}\in D^+\ \forall i\in\mathcal{M}\setminus\{i'\}\ \forall t\in\mathcal{T}\ &x_{i,j,t}=0&\zeta\\
+	\forall\triple{i}{j}{t'}\in D^+\ \forall t\in\mathcal{T}\ &&\\
+	t\leq t'-p_j\lor t\geq t'+p_j\implies&x_{i,j,t}=0&\eta\\
 \end{align*}
 
-$\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models that machines cannot process multiple jobs at the same time. $\gamma$ and $\delta$ models the restriction of start and end times respectively. $\varepsilon$ and $\zeta$ models negative and positive fixed decisions respectively. Equivalently, $\zeta$ can be modelled by $\forall\pair{i}{j}\in D^+\ \exists t\in\mathcal{T}\ x_{i,j,t}=1$. $\zeta$ is defined as such to simplify the proof that the union of these properties is modelable. For interval scheduling, let $Args=\mathcal{M}\times\mathcal{J}\times\mathcal{T}$.
+$\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models that machines cannot process multiple jobs at the same time. $\gamma$ and $\delta$ models the restriction of start and end times respectively. $\varepsilon$ and $\zeta$ models negative and positive fixed decisions respectively. Equivalently, $\zeta$ can be modelled by $\forall\triple{i}{j}{t'}\in D^+\ \exists t\in\mathcal{T}\ x_{i,j,t}=1$. $\zeta$ is defined as such to simplify the proof that the union of these properties is modelable. $\eta$ models enforces that $j$ is working on $i$ at $t$, but does not specify the when $j$ starts. Note that $\gamma,\delta,\zeta$ and $\eta$ can be modelled using $\varepsilon$. We use overlapping constraints to give better explanations. For argumentation, let $Args=\mathcal{M}\times\mathcal{J}\times\mathcal{T}$.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.8\linewidth]{figures/interval.png}	
+	\end{center}
+	\caption{An interval schedule, where black areas are assignments and the grey areas show invalid slots because of negative fixed decisions or other job assignees.}
+\end{figure}
 
 \begin{definition}
 	Let $\rightsquigarrow_\alpha$ be the base-feasibility framework such that $\triple{i}{j}{t}\rightsquigarrow_\alpha\triple{i'}{j'}{t'}\Leftrightarrow i\neq i'\land j=j'\land t\neq t'$ 
@@ -357,13 +366,13 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 \begin{definition}
 	Let $\rightsquigarrow_\gamma$ be a start-feasibility framework such that
 	
-	$\rightsquigarrow_\gamma=\{\pair{\triple{i}{j}{t}}{\triple{i}{j}{t}}\ |\ i\in\mathcal{M},j\in\mathcal{J},0\leq t<s_j\}$.
+	$\rightsquigarrow_\gamma=\{\pair{\triple{i}{j}{t}}{\triple{i}{j}{t}}\ |\ i\in\mathcal{M},j\in\mathcal{J},0\leq t<s_{i,j}\}$.
 \end{definition}
 
 \begin{definition}
 	Let $\rightsquigarrow_\delta$ be a finish-feasibility framework such that
 	
-	$\rightsquigarrow_\delta=\{\pair{\triple{i}{j}{t}}{\triple{i}{j}{t}}\ |\ i\in\mathcal{M},j\in\mathcal{J},f_j-p_j<t<T\}$.
+	$\rightsquigarrow_\delta=\{\pair{\triple{i}{j}{t}}{\triple{i}{j}{t}}\ |\ i\in\mathcal{M},j\in\mathcal{J},f_{i,j}-p_j<t<T\}$.
 \end{definition}
 
 \begin{definition}
@@ -373,8 +382,13 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 \end{definition}
 
 \begin{definition}
-	Let $\rightsquigarrow_\zeta$ be the positive fixed decision feasibility framework such that
-	$\rightsquigarrow_\varepsilon=\{\pair{\triple{i}{j}{t}}{\triple{i}{j}{t}}\ |\ i\in\mathcal{M}, \pair{i'}{j}\in D^+, i\neq i', t\in\mathcal{T}\}$.
+	Let $\rightsquigarrow_\zeta$ be a positive fixed decision feasibility framework such that
+	$\rightsquigarrow_\varepsilon=\{\pair{\triple{i}{j}{t}}{\triple{i}{j}{t}}\ |\ i\in\mathcal{M}, \triple{i'}{j}{t'}\in D^+, i\neq i', t\in\mathcal{T}\}$.
+\end{definition}
+
+\begin{definition}
+	Let $\rightsquigarrow_\eta$ be a positive fixed decision feasibility framework such that
+	$\rightsquigarrow_\varepsilon=\{\pair{\triple{i}{j}{t}}{\triple{i}{j}{t}}\ |\triple{i}{j}{t'}\in D^+, t\in\mathcal{T}, t\leq t'-p_j\lor t\geq t'+p_j\}$.
 \end{definition}
 
 \begin{lemma}
@@ -404,7 +418,7 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 
 \begin{lemma}
 	\label{intervalstabilitydependence}
-	For all extensions $E$, $\forall a\in Args\setminus E\ \forall\lambda\in\{\beta,\gamma,\delta,\varepsilon,\zeta\}\ \big((\exists e\in E\ e\rightsquigarrow_\lambda a)\implies(\exists e\in E\ e\rightsquigarrow_\alpha a)\big)$.
+	For all extensions $E$, $\forall a\in Args\setminus E\ \forall\lambda\in\{\beta,\gamma,\delta,\varepsilon,\zeta,\eta\}\ \big((\exists e\in E\ e\rightsquigarrow_\lambda a)\implies(\exists e\in E\ e\rightsquigarrow_\alpha a)\big)$.
 	
 	\begin{proof}
 		Take arbitrary extension $E$ and arbitrary $a\in Args\setminus E$. If $\lambda\neq\beta$ and $\exists e\in E\ e\rightsquigarrow_\lambda a$, then $a=e$ from the definition of $\rightsquigarrow_\lambda$. But $e\not\in Args\setminus E$. By contradiction, $\lambda=\beta$.
@@ -418,7 +432,7 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 \end{lemma}
 
 \begin{theorem}[\textbf{Interval scheduling is stability-modellable}]
-	Let $\Lambda(S)$ iff $\forall\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta\}\ \lambda(S)$. $\Lambda$ is stability-modellable.
+	Let $\Lambda(S)$ iff $\forall\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta,\eta\}\ \lambda(S)$. $\Lambda$ is stability-modellable.
 	
 	\begin{proof}\ 
 		\begin{enumerate}
@@ -426,7 +440,8 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 			\item $\rightsquigarrow_\delta$ conflict-models $\delta$ \hfill definition of $\rightsquigarrow_\delta$, lemma \ref{conflictfreenessset}
 			\item $\rightsquigarrow_\varepsilon$ conflict-models $\varepsilon$ \hfill definition of $\rightsquigarrow_\varepsilon$, lemma \ref{conflictfreenessset}
 			\item $\rightsquigarrow_\zeta$ conflict-models $\zeta$ \hfill definition of $\rightsquigarrow_\zeta$, lemma \ref{conflictfreenessset}
-			\item $\left(\bigcup_{\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta\}}\rightsquigarrow_\lambda\right)$ stability-models $\Lambda$\\\indent\hfill lemma \ref{stabilityalpha}, lemma \ref{conflictfreenessbeta}, 1, 2, 3, 4, lemma \ref{intervalstabilitydependence}, theorem \ref{modelling}
+			\item $\rightsquigarrow_\eta$ conflict-models $\eta$ \hfill definition of $\rightsquigarrow_\eta$, lemma \ref{conflictfreenessset}
+			\item $\left(\bigcup_{\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta,\eta\}}\rightsquigarrow_\lambda\right)$ stability-models $\Lambda$\\\indent\hfill lemma \ref{stabilityalpha}, lemma \ref{conflictfreenessbeta}, 1, 2, 3, 4, 5, lemma \ref{intervalstabilitydependence}, theorem \ref{modelling}
 			\item $\Lambda$ is stability-modellable \hfill 5
 		\end{enumerate}
 	\end{proof}
