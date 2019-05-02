@@ -106,7 +106,7 @@ The example schedule only required one action to make the schedule efficient. Ho
 \begin{verbatim}
 > python3 main.py -h
 usage: main.py [-h] [-g] [-e] [-p PROBLEM | -r [M]]
-    [-O | -s SCHEDULE | -R] [-o OUTPUT] [--partial]
+    [-O | -s SCHEDULE | -R] [-o OUTPUT] [--partial | --naive]
     [-t TIME_LIMIT] [-S SOLVER_NAME]
 
 Explains makespan schedules using abstract argumentation
@@ -129,6 +129,7 @@ schedule
     explanation
 --partial             use partial framework construction to
 favour memory over CPU
+--naive               do not use argumentation
 -t TIME_LIMIT, --time_limit TIME_LIMIT
     maximum time for optimisation in seconds, use negative
     time_limit for infinite limit, default is unlimited

@@ -29,6 +29,10 @@ def new_framework(m, n, T, relation):
 def alpha_relation(i1, j1, t1, i2, j2, t2):
 	return i1 == i2 and j1 != j2 or t1 != t2
 
+def new_set_relation(S):
+	def relation(i1, j1, t1, i2, j2, t2):
+		return i1 == i2 and j1 == j2 and t1 == t2 and S[i1, j1, t1]
+
 def draw_schedule(m, n, T, p, s, f, nfd, pfd, S):
 	M = np.arange(m)
 	N = np.arange(n)

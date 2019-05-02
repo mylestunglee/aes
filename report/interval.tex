@@ -8,7 +8,7 @@ We use stability over other notions of good extensions to accurately model sched
 
 \section{Frameworks}
 
-In order to reason about arbitrary number of properties, we inductively build the expressible properties over a commonly-extended framework, denoted by $\rightsquigarrow_0$. A property $P$ is modelled by the framework $\rightsquigarrow_P$. To be correct, we must preserve the stability of some extension $E$ on $\pair{Args}{\rightsquigarrow_0\cup\rightsquigarrow_P}$ if $E$ is also stable on $\pair{Args}{\rightsquigarrow_0}$ and $P(S)$ is true. Let $\rightsquigarrow_1\subseteq Args^2$ and $\rightsquigarrow_2\subseteq Args^2$ be arbitrary frameworks.
+In order to reason about arbitrary number of properties, we inductively build the expressible properties over a commonly-extended framework, denoted by $\rightsquigarrow_0$. A property $P$ is modelled by the framework $\rightsquigarrow_P$. To be correct, we must preserve the stability of some extension $E$ on $\pair{Args}{\rightsquigarrow_0\cup\rightsquigarrow_P}$ if $E$ is also stable on $\pair{Args}{\rightsquigarrow_0}$ and $P(S)$ is true. Let $\rightsquigarrow_1,\rightsquigarrow_2\subseteq Args^2$ be arbitrary frameworks.
 
 \begin{definition}
 	A framework $\rightsquigarrow$ stability-models a schedule property $P$ iff for all extensions $E$ and corresponding schedules $S$, $E$ is stable on $\pair{Args}{\rightsquigarrow}$ $\Leftrightarrow$ $P(S)$
@@ -431,7 +431,7 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 	\end{proof}
 \end{lemma}
 
-\begin{theorem}[\textbf{Interval scheduling is stability-modellable}]
+\begin{theorem}[\textbf{Interval schedule feasibility is stability-modellable}]
 	Let $\Lambda(S)$ iff $\forall\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta,\eta\}\ \lambda(S)$. $\Lambda$ is stability-modellable.
 	
 	\begin{proof}\ 
@@ -442,7 +442,7 @@ $\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models tha
 			\item $\rightsquigarrow_\zeta$ conflict-models $\zeta$ \hfill definition of $\rightsquigarrow_\zeta$, lemma \ref{conflictfreenessset}
 			\item $\rightsquigarrow_\eta$ conflict-models $\eta$ \hfill definition of $\rightsquigarrow_\eta$, lemma \ref{conflictfreenessset}
 			\item $\left(\bigcup_{\lambda\in\{\alpha,\beta,\gamma,\delta,\varepsilon,\zeta,\eta\}}\rightsquigarrow_\lambda\right)$ stability-models $\Lambda$\\\indent\hfill lemma \ref{stabilityalpha}, lemma \ref{conflictfreenessbeta}, 1, 2, 3, 4, 5, lemma \ref{intervalstabilitydependence}, theorem \ref{modelling}
-			\item $\Lambda$ is stability-modellable \hfill 5
+			\item $\Lambda$ is stability-modellable \hfill 6
 		\end{enumerate}
 	\end{proof}
 \end{theorem}
