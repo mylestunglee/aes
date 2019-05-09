@@ -1,4 +1,4 @@
-\chapter{Implementation}
+\chapter{Design and Implementation}
 
 \section{Design Decisions}
 
@@ -11,6 +11,8 @@ There are many powerful and efficient solvers such as CPLEX and GLPK \cite{clp}.
 The tool features a GUI to aid its accessibility. Users such as hospital managers can often use a suitably-designed GUI without training of the tool. In practice, a GUI is easier to demonstrate than a CLI.
 
 \section{Structure}
+ 
+The tool is developed with many components, represents as individual Python files. 
 
 \begin{figure}[H]
 	\resizebox{\textwidth}{!}{
@@ -55,10 +57,9 @@ The tool features a GUI to aid its accessibility. Users such as hospital manager
 
 \subsection{Notation}
 
-The algorithm uses operators over Boolean tensors to generate frameworks and compute stability. The definitions below share notions with linear algebra over matrices.
-
+The tool uses Boolean tensors as data structures to store schedules and argumentation constructs. We will use the below operators in computing conflict-freeness, stability and aggregating explanations. The definitions below share notions with linear algebra over matrices.
 \begin{definition}
-	Let $\mathbf{0}^{d_1, ..., d_n}$ be the zero-valued tensor. The dimensions may be omitted if clear. Matrix subscripts are extended to $n$ dimensions.
+	Let $\mathbf{0}^{d_1, ..., d_n}$ be the zero-valued tensor. The dimensions may be omitted if clear.
 		
 	For example:
 	\begin{align*}
@@ -71,8 +72,8 @@ The algorithm uses operators over Boolean tensors to generate frameworks and com
 \end{definition}
 
 \begin{definition}
-	Let $\incircbin{\neg}$ be the element-wise logical negation operator over a tensor.
-	
+	Let $\incircbin{\neg}$ be the element-wise logical negation operator over a Boolean tensor. Formally, $\incircbin{\neg}$ is a prefix unary function such that $\incircbin{\neg}\mathbf{x}=\mathbf{y}$ iff $\forall i_1\in\intset{1,d_1}...\forall i_n\in\intset{1,d_n}\ x_{i_1,...,i_n}=1-y_{i_1,...,i_n}$ where $\mathbf{x}$ and $\mathbf{y}$ have the same dimensions $d_1,...d_n$.
+	\linespace
 	For example:
 	\begin{align*}
 		\incircbin{\neg}
@@ -88,8 +89,8 @@ The algorithm uses operators over Boolean tensors to generate frameworks and com
 \end{definition}
 
 \begin{definition}
-	Let $\incircbin{\land}$ be the element-wise logical and operator over tensors.
-	
+	Let $\incircbin{\land}$ be the element-wise logical and operator over Boolean tensors. Formally, $\incircbin{\land}$ is a infix binary function such that $\mathbf{x}\incircbin{\land}\mathbf{y}=\mathbf{z}$ iff $\forall i_1\in\intset{1,d_1}...\forall i_n\in\intset{1,d_n}\ x_{i_1,...,i_n}\times y_{i_1,...,i_n}=z_{i_1,...,i_n}$ where $\mathbf{x}$, $\mathbf{y}$ and $\mathbf{z}$ have the same dimensions $d_1,...,d_n$.
+	\linespace
 	For example:
 	\begin{align*}
 	\begin{bmatrix}
@@ -107,11 +108,13 @@ The algorithm uses operators over Boolean tensors to generate frameworks and com
 	0&1\\
 	\end{bmatrix}
 	\end{align*}
+	\linespace
+	$\incircbin{\land}$ can be interpreted as the Boolean tensor adaptation of the Hadamard product.
 \end{definition}
 
 \begin{definition}
-	Let $\incircbin{\lor}$ be the element-wise logical or operator over tensors.
-	
+	Let $\incircbin{\lor}$ be the element-wise logical or operator over Boolean tensors. Formally, $\incircbin{\lor}$ is a infix binary function such that $\mathbf{x}\incircbin{\lor}\mathbf{y}=\mathbf{z}$ iff $\forall i_1\in\intset{1,d_1}...\forall i_n\in\intset{1,d_n}\ x_{i_1,...,i_n}-x_{i_1,...,i_n}\times y_{i_1,...,i_n}+y_{i_1,...,i_n}=z_{i_1,...,i_n}$ where $\mathbf{x}$, $\mathbf{y}$ and $\mathbf{z}$ have the same dimensions $d_1,...,d_n$.
+	\linespace
 	For example:
 	\begin{align*}
 	\begin{bmatrix}
@@ -277,70 +280,109 @@ The algorithm uses operators over Boolean tensors to generate frameworks and com
 
 \subsection{Framework Construction}
 
-The AAFs are constructed using the definitions in paper \cite{aes}. The definitions are reprinted for feasibility and fixed decisions only. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$.
+The AAFs are constructed using similar definitions in paper \cite{aes}. The definitions are reprinted for feasibility and fixed decisions only. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$. For the following framework definitions, let $Args=\mathcal{M}\times\mathcal{J}$.
 
 \begin{definition}
-	The feasibility framework $\rightsquigarrow_F$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_F\langle i_2,j_2\rangle$ iff $i_1\neq i_2\land j_1=j_2$.
+	\label{feasibilityframework}
+	
+	The feasibility framework $\pair{Args}{\rightsquigarrow_F}$ is defined such that $\pair{i_1}{j_1}\rightsquigarrow_F\pair{i_2}{j_2}$ iff $i_1\neq i_2\land j_1=j_2$.
 \end{definition}
 
 \begin{definition}
-	The efficiency framework $\rightsquigarrow_S$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{SEP}(i_1,i_2,j_1)\lor\text{PEP}(i_1,i_2,j_1,j_2)$ where:
+	\label{exchangefficiencyframework}
+
+	The exchange-efficiency framework $\pair{Args}{\rightsquigarrow_S}$ is defined such that $\pair{i_1}{j_1}\rightsquigarrow_S\pair{ i_2}{j_2}$ iff $\pair{i_1}{j_1}\rightsquigarrow_F\pair{i_2}{j_2}\land\neg\text{FDASEP}(i_1,i_2,j_1)\lor\text{FDAPEP}(i_1,i_2,j_1,j_2)$ where:
 	\begin{itemize}
-		\item Single exchange property (SEP): $\text{SEP}(i_1,i_2,j_1, D)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land C_{i_1}>C_{i_2}+p_{j_1}\land\pair{i_1}{j_1}\not\in D^+\land\pair{i_2}{j_1}\not\in D^-$
-		\item Pair-wise exchange property (PEP): $\text{PEP}(i_1,i_2,j_1,j_2, D)$ iff $C_{i_1}=C_{\max}\land x_{i_1,j_1}=1\land x_{i_2,j_2}=1\land i_1\neq i_2\land j_1\neq j_2\land p_{j_1}>p_{j_2}\land C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}\land\pair{i_1}{j_1}\not\in D^+\land\pair{i_2}{j_2}\not\in D^+\land\pair{i_2}{j_1}\not\in D^-\land\pair{i_1}{j_2}\not\in D^-$.
+		\item Fixed decision aware single exchange property: $\text{FDASEP}(i_1,i_2,j_1, D)$ iff
+			\begin{align*}
+				&C_{i_1}=C_{\max}\\
+				\land\ &x_{i_1,j_1}=1\\
+				\land\ &C_{i_1}>C_{i_2}+p_{j_1}\\
+				\land\ &\pair{i_1}{j_1}\not\in D^+\\
+				\land\ &\pair{i_2}{j_1}\not\in D^-
+			\end{align*}
+		\item Fixed decision aware pair-wise exchange property: $\text{FDAPEP}(i_1,i_2,j_1,j_2, D)$ iff
+			\begin{align*}
+				&C_{i_1}=C_{\max}\\
+				\land\ &x_{i_1,j_1}=1\\
+				\land\ &x_{i_2,j_2}=1\\
+				\land\ &i_1\neq i_2\\
+				\land\ &j_1\neq j_2\\
+				\land\ &p_{j_1}>p_{j_2}\\
+				\land\ &C_{i_1}+p_{j_2}>C_{i_2}+p_{j_1}\\
+				\land\ &\pair{i_1}{j_1}\not\in D^+\\
+				\land\ &\pair{i_2}{j_2}\not\in D^+\\
+				\land\ &\pair{i_2}{j_1}\not\in D^-\\
+				\land\ &\pair{i_1}{j_2}\not\in D^-
+			\end{align*}
 	\end{itemize}
-
-The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This report refers to $\rightsquigarrow_S$ as an efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality. In addition, the paper does considers efficiency and satisfaction to fixed decisions independently, we extend the notion of efficiency to respect these decisions. With the paper's naive definition of efficiency, the tool would recommend exchanges which violate fixed decisions.
-
 \end{definition}
 
+The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. This report refers to $\rightsquigarrow_S$ as an exchange-efficiency framework, as its stability is determined by necessary but not sufficient conditions for optimality. In addition, the paper does considers efficiency and satisfaction to fixed decisions independently, we extend the notion of exchange-efficiency to respect these decisions. With the paper's naive definition of efficiency, the tool would recommend exchanges which violate fixed decisions. Definition \ref{exchangefficiencyframework} distinguishes FDASEP with SEP (definition \cite{sep}) and FDAPEP with PEP (definition \cite{pep}). Moreover, we will prove that $\rightsquigarrow_S$ is exchange-efficient.
+
 \begin{definition}
-	The user fixed decision framework $\rightsquigarrow_D$ is defined such that $\langle i_1,j_1\rangle\rightsquigarrow_S\langle i_2,j_2\rangle\land\neg\text{DP}^+(i_1,i_2,j_1,j_2)\lor\text{DP}^-(i_1,i_2,j_1,j_2)$ where:
+	\label{fixeddecisionframework}
+	
+	The user fixed decision framework $\pair{Args}{\rightsquigarrow_D}$ is defined such that $\pair{i_1}{j_1}\rightsquigarrow_S\pair{ i_2}{j_2}$ iff $\pair{i_1}{j_1}\rightsquigarrow_F\pair{i_2}{j_2}\land\neg\text{DP}^+(i_1,i_2,j_1,j_2)\lor\text{DP}^-(i_1,i_2,j_1,j_2)$ where:
 	\begin{itemize}
 		\item Positive decision property: $\text{DP}^+(i_1,i_2,j_1,j_2)$ iff $\langle i_2, j_2\rangle\in D^+$
 		\item Negative decision property: $\text{DP}^-(i_1,i_2,j_1,j_2)$ iff $\langle i_1, j_1\rangle\in D^-\land i_1=i_2\land j_1=j_2$.
 	\end{itemize}
 \end{definition}
 
+The attack relations $\rightsquigarrow_F$, $\rightsquigarrow_S$ and $\rightsquigarrow_D$ are defined on $Args^2$. In practice, the tool uses a Boolean tensor representation of these attacks.
+
+\begin{definition}
+	Let $\twoheadrightarrow_F$ be the data structure to store $\rightsquigarrow_F$ such iff $\pair{i_1}{j_1}\rightsquigarrow_F\pair{i_2}{j_2}\iff\twoheadrightarrow_{F\ i_1,j_1,i_2,j_2}=1$.
+\end{definition}
+
+\begin{definition}
+	Let $\twoheadrightarrow_S$ be the data structure to store $\rightsquigarrow_S$ such iff $\pair{i_1}{j_1}\rightsquigarrow_S\pair{i_2}{j_2}\iff\twoheadrightarrow_{S\ i_1,j_1,i_2,j_2}=1$.
+\end{definition}
+
+\begin{definition}
+	Let $\twoheadrightarrow_D$ be the data structure to store $\rightsquigarrow_D$ such iff $\pair{i_1}{j_1}\rightsquigarrow_D\pair{i_2}{j_2}\iff\twoheadrightarrow_{D\ i_1,j_1,i_2,j_2}=1$.
+\end{definition}
+
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Construct-Feasibility}{$m$, $n$}
-			\State $\rightsquigarrow_F$ $\gets$ $\mathbf{0}^{(m\times n)^2}$
+			\State $\twoheadrightarrow_F$ $\gets$ $\mathbf{0}^{(m\times n)^2}$
 			\For{$j\in\mathcal{J}$}
 				\For{$i_1\in\mathcal{M}$}
 					\For{$i_2\in\mathcal{M}$}
 						\If{$i_1\neq i_2$}
-							\State ${\rightsquigarrow_F}_{i_1,j,i_2,j}$ $\gets$ 1
+							\State ${\twoheadrightarrow_F}_{i_1,j,i_2,j}$ $\gets$ 1
 						\EndIf
 					\EndFor
 				\EndFor
 			\EndFor
-			\State \Return $\rightsquigarrow_F$
+			\State \Return $\twoheadrightarrow_F$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 
-$\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity, because of the complexity of zero-initialising $\rightsquigarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data structure, but results in greatly more complicated code.
+$\twoheadrightarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity, because of the complexity of zero-initialising $\twoheadrightarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data structure, but results in greatly more complicated code.
 
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\rightsquigarrow_F$}
+		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\twoheadrightarrow_F$}
 			\State $\mathbf{C}$ $\gets$ $\mathbf{x}\cdot\mathbf{p}$
 			\State $C_{\max}$ $\gets$ $\max(\mathbf{C})$
-			\State $\rightsquigarrow_S$ $\gets$ $\rightsquigarrow_F$
+			\State $\twoheadrightarrow_S$ $\gets$ $\twoheadrightarrow_F$
 			\For{$i_1\in\mathcal{M}$}
 				\If{$i_1=C_{\max}$}
 					\For{$j_1\in\mathcal{J}$}
 						\If{$x_{i_1,j_1}=1$}
 							\For{$i_2\in\mathcal{M}$}
-								\If{$\text{SEP}(i_1,j_1,i_2,D)$}
-									\State ${\rightsquigarrow_S}_{i_1,j_1,i_2,j_1}$ $\gets$ 0
+								\If{$\text{FDASEP}(i_1,j_1,i_2,D)$}
+									\State ${\twoheadrightarrow_S}_{i_1,j_1,i_2,j_1}$ $\gets$ 0
 								\EndIf
 								\For{$j_2\in\mathcal{J}$}
-									\If{$\text{PEP}(i_1,j_1,i_2,j_2,D)$}
-										\State ${\rightsquigarrow_S}_{i_1,j_2,i_2,j_2}$ $\gets$ 1
+									\If{$\text{FDAPEP}(i_1,j_1,i_2,j_2,D)$}
+										\State ${\twoheadrightarrow_S}_{i_1,j_2,i_2,j_2}$ $\gets$ 1
 									\EndIf
 								\EndFor
 							\EndFor
@@ -348,29 +390,29 @@ $\rightsquigarrow_F$ can be constructed trivially in a dense data structure in $
 					\EndFor
 				\EndIf
 			\EndFor
-			\State \Return $\pair{\rightsquigarrow_S}{\mathbf{C}}$
+			\State \Return $\pair{\twoheadrightarrow_S}{\mathbf{C}}$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 
-The construction of $\rightsquigarrow_S$ is expensive because of the explicit for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisfy PEP and to copy $\rightsquigarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$. We return the value of $\mathbf{C}$ because it will be used later, rather an recompute its value when necessary
+The construction of $\twoheadrightarrow_S$ is expensive because of the explicit for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisfy PEP and to copy $\twoheadrightarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$. We return the value of $\mathbf{C}$ because it will be used later, rather an recompute its value when necessary
 
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Construct-Satisfaction}{$m$, $n$, $D$, $\rightsquigarrow_F$}
-			\State $\rightsquigarrow_D$ $\gets$ $\rightsquigarrow_F$
+		\Function{Construct-Satisfaction}{$m$, $n$, $D$, $\twoheadrightarrow_F$}
+			\State $\twoheadrightarrow_D$ $\gets$ $\twoheadrightarrow_F$
 			\For{$\langle i,j\rangle\in D^-$}
-				\State ${\rightsquigarrow_S}_{i,j,i,j}$ $\gets$ 1
+				\State ${\twoheadrightarrow_S}_{i,j,i,j}$ $\gets$ 1
 			\EndFor
 			\For{$\langle i_1,j_1\rangle\in D^+$}
 				\For{$i_2\in\mathcal{M}$}
 					\For{$j_2\in\mathcal{J}$}
-						\State ${\rightsquigarrow_D}_{i_2,j_2,i_1,j_1}$ $\gets$ 0				
+						\State ${\twoheadrightarrow_D}_{i_2,j_2,i_1,j_1}$ $\gets$ 0				
 					\EndFor
 				\EndFor
 			\EndFor
-			\State \Return $\rightsquigarrow_D$
+			\State \Return $\twoheadrightarrow_D$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
@@ -379,36 +421,37 @@ If $D$ is assumed to be satisfiable, then $D^+$ has at most $n$ decisions while 
 
 \subsection{Stability}
 
-Stability can be computed by checking whether $E$ exists within a all possible stable extensions of some $\langle Args, \rightsquigarrow\rangle$. However, a schedule cannot be reasoned on without understanding whether $E$ may be stable on $\langle Args, \rightsquigarrow\rangle$. Existing solutions require a complication pipeline using answer set solvers. To make the implementation of the tool easier, we adapt the stability computation to schedules into a concise algorithm.
+Stability can be computed by checking whether $E$ exists within a all possible stable extensions of some $\langle Args, \twoheadrightarrow\rangle$. However, a schedule cannot be reasoned on without understanding whether $E$ may be stable on $\langle Args, \twoheadrightarrow\rangle$. Existing solutions require a complication pipeline using answer set solvers. To make the implementation of the tool easier, we adapt the stability computation to schedules into a concise algorithm.
 
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Explain-Stability}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
-			\State $\mathbf{u}$ $\gets$ \textsc{Compute-Unattacked}($\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$)
+		\Function{Explain-Stability}{$\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
+			\State $\mathbf{u}$ $\gets$ \textsc{Compute-Unattacked}($\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$)
+			\State $\mathbf{c}$ $\gets\mathbf{0}^{(m\times n)^2}$
 			\For{$i\in\mathcal{M}$}
 				\For{$j\in\mathcal{J}$}
-					\State $c_{i,j}$ $\gets$ \textsc{Compute-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow_{i,j}$, $\bar{c}_{i,j}$)
+					\State $c_{i,j}$ $\gets$ \textsc{Compute-Partial-Conflicts}($\mathbf{x}$, $\twoheadrightarrow_{i,j}$, $\bar{c}_{i,j}$)
 				\EndFor
 			\EndFor			
 			\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
 		\EndFunction
-		\Function{Compute-Unattacked}{$\mathbf{x}$, $\rightsquigarrow$, $\bar{\mathbf{u}}$}
+		\Function{Compute-Unattacked}{$\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$}
 			\State $\mathbf{u}$ $\gets\incircbin{\neg}$ $\mathbf{x}$
 			\For{$i\in\mathcal{M}$}
 				\For{$j\in\mathcal{J}$}
 					\If{$x_{i,j}=1$}
-						\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}\rightsquigarrow_{i,j}$
+						\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}\twoheadrightarrow_{i,j}$
 					\EndIf
 				\EndFor
 			\EndFor
 			\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{u}}$
 			\State \Return $\mathbf{u}$
 		\EndFunction
-		\Function{Compute-Partial-Conflicts}{$\mathbf{x}$, $\rightsquigarrow_{i, j}$, $\bar{c}_{i,j}$}
+		\Function{Compute-Partial-Conflicts}{$\mathbf{x}$, $\twoheadrightarrow_{i, j}$, $\bar{c}_{i,j}$}
 			\State $c_{i,j}$ $\gets\mathbf{0}^{m\times n}$
 			\If{$x_{i,j}=1$}
-				\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\rightsquigarrow_{i,j}$ 
+				\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\twoheadrightarrow_{i,j}$ 
 			\EndIf
 			\State $c_{i,j}$ $\gets$ $c_{i,j}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{c}_{i,j}$
 			\State \Return $c_{i,j}$
@@ -418,22 +461,108 @@ Stability can be computed by checking whether $E$ exists within a all possible s
 
 The function \textsc{Explain-Stability} returns two tensors, $\mathbf{u}$ encode the unattacked nodes and $\mathbf{c}$ encode the edges are not conflict-free. $\bar{\mathbf{u}}$ and $\bar{\mathbf{c}}$ represent node and edges to ignore from returned values respectively, which are useful in tailoring explanations to particular constraints. By default, $\bar{\mathbf{u}}$ $=\mathbf{0}$ and $\bar{\mathbf{c}}$ $=\mathbf{0}$. The function uses $\mathbf{x}$ rather than its equivalent representation $E$ because $\mathbf{x}$ can be manipulated directly from an optimiser in its tensor form unlike $E$. This results in improved performance. In addition, it is assumed that $E\subseteq Args$ so $Args$ does not need to be a parameter.
 \linespace
-The auxiliary functions \textsc{Compute-Unattacked} and \textsc{Compute-Partial-Conflicts} are defined such that at most $\mathcal{O}(mn)$ memory is allocated. This will be discussed in the following subsections.
+The auxiliary functions \textsc{Compute-Unattacked} and \textsc{Compute-Partial-Conflicts} are defined such that at most $\mathcal{O}(mn)$ memory is allocated. This will be discussed in the following subsections. We will now prove the above algorithm is correct.
+\linespace
+Before the proof, we define a lexicographical ordering $\prec$ on $Args$, such that $\pair{i_1}{j_1}\prec\pair{i_2}{j_2}$ iff $i_1<i_2\lor i_1=i_2\land j_1<j_2$. We will use logical variables $k$ and $\ell$ to differentiate from program variables $i$ and $j$.
 
-\begin{proposition}
-	\textsc{Compute-Conflicts} is correct where $\mathbf{x}\approx E$ under $S$:
-	\begin{align*}
-	\textsc{Compute-Conflicts}(\mathbf{x},\rightsquigarrow,\mathbf{0})=\mathbf{0}\Leftrightarrow E\text{ is conflict-free on }\langle Args, \rightsquigarrow\rangle
-	\end{align*}
-\end{proposition}
-
-\begin{proposition}
-	\textsc{Explain-Stability} is correct where $\mathbf{x}\approx E$ under $S$:
-	\begin{align*}
-		\textsc{Explain-Stability}(\mathbf{x},\rightsquigarrow,\mathbf{0},\mathbf{0})=\pair{\mathbf{0}}{\mathbf{0}}\Leftrightarrow E\text{ is stable on }\langle Args, \rightsquigarrow\rangle
-	\end{align*}
-\end{proposition}
+\begin{lemma}[\textsc{Compute-Unattacked} is correct]
+	\label{computeunattacked}
 	
+	If \textsc{Compute-Unattacked}$(\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$)$\ =\mathbf{u}$, then
+	\begin{align*}
+		\forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+		&x_{k,\ell}=0\\
+		\land\ &x_{k',\ell'}=1\\
+		\land\ &\twoheadrightarrow_{k',\ell',k,\ell}\ =1\\
+		\land\ &\bar{u}_{k,\ell}=0
+	\end{align*}
+	
+	\begin{proof}
+		Take arbitrary $\mathbf{x}$, $\twoheadrightarrow$ and $\bar{\mathbf{u}}$. After line 12, we know that
+		
+		$\alpha: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ u_{k,\ell}=1\iff x_{k,\ell}=0$ because of the $\incircbin{\neg}$ operator.
+		
+		We define the loop invariant $\beta$ that holds at each iteration of the $i$ and $j$ loops. 
+		\begin{align*}
+			\beta: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \pair{k}{\ell}\prec\pair{i}{j}\implies(u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+			&x_{k,\ell}=0\\
+			\land\ &x_{k',\ell'}=1\\
+			\land\ &\twoheadrightarrow_{k',\ell',k,\ell}\ =1\\
+			\pair{k}{\ell}\succeq\pair{i}{j}\implies(u_{k,\ell}=1\iff&x_{k,\ell}=0)
+		\end{align*}	
+		$\beta$ holds from $\alpha$ because initially, $i=1$ and $j=1$, so there are no $\pair{k}{\ell}\prec\pair{i}{j}$. Hence $\pair{k}{\ell}\succeq\pair{i}{j}\implies(u_{k,\ell}=1\iff x_{k,\ell}=0)$ holds trivially from $\alpha$.
+		\linespace
+		At line 15, if $x_{i,j}=1$, then we know $\gamma: \beta\land x_{i,j}=1$. At line 16, any argument $\pair{k}{\ell}$ that is attacked by $\pair{i}{j}$ is set to be attacked, so $u_{i,j}=0$. But at an arbitrary iteration, values $i$ and $j$ are overwritten so we retain $\exists k',\ell'\ \pair{k'}{\ell'}\twoheadrightarrow\pair{k}{\ell}$. Then after line 16 we know that 
+		\begin{align*}
+			\delta: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \pair{k}{\ell}\preceq\pair{i}{j}\implies(u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+			&x_{k,\ell}=0\\
+			\land\ &x_{k',\ell'}=1\\
+			\land\ &\twoheadrightarrow_{k',\ell',k,\ell}\ =1\\
+			\pair{k}{\ell}\succ\pair{i}{j}\implies(u_{k,\ell}=1\iff&x_{k,\ell}=0)
+		\end{align*}
+
+		The next iteration of $\pair{i}{j}$ means that $\beta$ will follow from $\delta$. At line 15, if $x_{i,j}=0$, then $\beta$ trivially holds as only $i$ or $j$ have changed values. At the end of the loop, we know that
+		\begin{align*}
+			\varepsilon: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+			&x_{k,\ell}=0\\
+			\land\ &x_{k',\ell'}=1\\
+			\land\ &\twoheadrightarrow_{k',\ell',k,\ell}\ =1\\
+		\end{align*}
+		After line 20, $\mathbf{u}$ will be filtered by $\bar{\mathbf{u}}$, so $\forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \bar{u}_{k,\ell}=1\implies u_{k,\ell}=0$. This with $\varepsilon$ means that the function is correct.
+
+	\end{proof}
+\end{lemma}
+	
+\begin{lemma}[\textsc{Compute-Partial-Conflicts} is correct]
+	\label{computepartialconflicts}
+	
+	If \textsc{Compute-Partial-Conflicts}$(\mathbf{x}$, $\twoheadrightarrow_{i,j}$, $\bar{\mathbf{c}}_{i,j}$)$\ =c_{i,j}$, then
+	\begin{align*}
+		\forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ c_{i,j,k,\ell}=1\iff&x_{i,j}=1\\
+		\land\ &x_{k,\ell}=1\\
+		\land\ &\twoheadrightarrow_{i,j,k,\ell}\ =1\\
+		\land\ &\bar{c}_{i,j,k,\ell}=0
+	\end{align*}
+	
+	\begin{proof}
+		At line 24, $c_{i,j,k,l}=0$ by default. At line 25, if $x_{i,j}=1$, then $\pair{i}{j}$ may be attacked. At line 26, $\pair{i}{j}\twoheadrightarrow\pair{k}{\ell}$ when $x_{k,\ell}=1$ and $\twoheadrightarrow_{i,j,k,\ell}=1$. At line 27, $\bar{c}_{i,j,k,\ell}=1\implies c_{i,j,k,\ell}=0$. Combining these statements, the function is correct.
+	\end{proof}
+\end{lemma}
+
+\begin{theorem}[\textsc{Compute-Stability} is correct]
+	\label{computestability}
+
+	Let $E$ be an extension on $Args$ that represents a schedule $S$ such that $E\approx S$, with an assignment matrix $\mathbf{x}$.
+	\linespace
+	If \textsc{Compute-Stability}$(\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}})=\pair{\mathbf{u}}{\mathbf{c}}$, then
+	\begin{align*}
+	\Big(&\forall\pair{k_1}{\ell_1}\in Args\setminus E\ \exists\pair{k_2}{\ell_2}\in E\ \bar{u}_{k_1,\ell_1}=0\implies\\
+	(&\pair{k_2}{\ell_2}\rightsquigarrow\pair{k_1}{\ell_1}\iff u_{k_1,\ell_1}=0)\Big)\\
+	\land\ \Big(&\forall\pair{k_1}{\ell_1},\pair{k_2}{\ell_2}\in E\ \bar{c}_{k_1,\ell_1,k_2,\ell_2}=0\implies\\
+	(&\pair{k_1}{\ell_1}\rightsquigarrow\pair{k_2}{\ell_2}\iff c_{k_1,\ell_1,k_2,\ell_2}=1)\Big)
+	\end{align*}
+	\begin{proof}
+		Assume \textsc{Compute-Stability}$(\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}})=\pair{\mathbf{u}}{\mathbf{c}}$. $\mathbf{u}$ and each sub-matrix of $\mathbf{c_{i,j}}$ is written once in \textsc{Compute-Stability}. By using lemma \ref{computeunattacked} and lemma \ref{computepartialconflicts}, we know that
+		\begin{align*}
+			\alpha: \forall k_1\in\mathcal{M}\ \forall\ell_1\in\mathcal{J}((u_{k_1,\ell_1}=0\iff&\neg\exists k_2\in\mathcal{M}\ \exists\ell_2\in\mathcal{J}\\
+			&x_{k_1,\ell_1}=0\\
+			\land\ &x_{k_2,\ell_2}=1\\
+			\land\ &\twoheadrightarrow_{k_2,\ell_2,k_1,\ell_1}=1\\
+			\land\ &\bar{u}_{k_1,\ell_1}=0)\\
+			\land\ (\forall k_2\in\mathcal{M}\ \forall\ell_2\ c_{k_1,\ell_1,k_2,\ell_2}=1\iff&x_{k_1,\ell_1}=1\\
+			\land\ &x_{k_2,\ell_2}=1\\
+			\land\ &\twoheadrightarrow_{k_1,\ell_1,k_2,\ell_2}=1\\
+			\land\ &\bar{c}_{k_1,\ell_1,k_2,\ell_2}=0))
+		\end{align*}
+		Take arbitrary $\pair{k_1}{\ell_1}\in Args\setminus E$. Because $\pair{k_1}{\ell_1}\not\in E$, then $x_{k_1,\ell_1}=0$. Take arbitrary $\pair{k_2,\ell_2}\in E$, so $x_{k_2,\ell_2}=1$. Assume $\bar{u}_{k_1}{\ell_2}=0$. If $u_{k_1}{\ell_1}=0$, then using the above statements, $\twoheadrightarrow_{k_2,\ell_2,k_1,\ell_1}$, then $\pair{k_2}{\ell_2}\rightsquigarrow\pair{k_1}{\ell_1}$. If $\pair{k_2}{\ell_2}\rightsquigarrow\pair{k_1}{\ell_1}$, then $\twoheadrightarrow_{k_2,\ell_2,k_1,\ell_2}$, so $u_{k_1,\ell_1}=0$. This proves the theorem's first conjunct.
+		\linespace
+		Take arbitrary $\pair{k_1}{\ell_1},\pair{k_2}{\ell_2}\in E$. Then $x_{k_1,\ell_1}=1$ and $x_{k_2,\ell_2}=1$. Assume $\bar{c}_{k_1,\ell_1,k_2,\ell_2}=0$. If $\pair{k_1}{\ell_1}\rightsquigarrow\pair{k_2}{\ell_2}$, then using the previous statements and $\alpha$, we know that $c_{k_1,\ell_1,k_2,\ell_2}=1$. If $c_{k_1,\ell_1,k_2,\ell_2}=1$, then we have $\twoheadrightarrow_{k_1,\ell_1,k_2,\ell_2}=1$, hence $\pair{k_1}{\ell_1}\rightsquigarrow\pair{k_2}{\ell_2}$, as required. This proves the theorem's second conjunct.
+	\end{proof}
+
+\end{theorem}
+
+From theorem \ref{computestability}, if \textsc{Compute-Stability}$(\mathbf{x}$, $\twoheadrightarrow$, $\mathbf{0}$, $\mathbf{0})=\pair{\mathbf{0}}{\mathbf{0}}$ iff $E$ is stable on $\pair{Args}{\rightsquigarrow}$.
+
 \subsection{Explanation}
 
 Explanations are given in italics. Implementation of algorithms use Python's \verb|print()| to collect explanations over all algorithms in the tool's output.
@@ -467,10 +596,10 @@ Explanations are given in italics. Implementation of algorithms use Python's \ve
 				\Else
 					\For{$j\in\mathcal{J}$}
 						\If{$u_{0,j}=1$}
-							\State \emph{Job $j$ is not allocated by any machine.}
+							\State \emph{Job $j$ is not allocated to any machine.}
 						\EndIf
 						\If{$y_j\neq\mathbf{0}$}
-							\State \emph{Job $j$ is over-allocated by machines $\{i\ |\ i\in\mathcal{M}, z_{j,i}=1\}$.}
+							\State \emph{Job $j$ is over-allocated to machines $\{i\ |\ i\in\mathcal{M}, z_{j,i}=1\}$.}
 						\EndIf
 					\EndFor
 				\EndIf
@@ -563,16 +692,16 @@ The variable $\mathbf{y}$ refers to allocations not satisfying $D^+$. Because of
 	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Full-Precomputation-Explain}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
-			\State $\rightsquigarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)
-			\State $\pair{\mathbf{u_F}}{\mathbf{c_F}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
+			\State $\twoheadrightarrow_F$ $\gets$ \textsc{Construct-Feasibility}($m$, $n$)
+			\State $\pair{\mathbf{u_F}}{\mathbf{c_F}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\twoheadrightarrow_F$, $\mathbf{0}$, $\mathbf{0}$)
 			\State\textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c_F}$)
 
-			\State $\pair{\rightsquigarrow_S}{\mathbf{C}}$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\rightsquigarrow_F$)
-			\State $\pair{\mathbf{u_S}}{\mathbf{c_S}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_S$, $\mathbf{u_F}$, $\mathbf{c_F}$)
+			\State $\pair{\twoheadrightarrow_S}{\mathbf{C}}$ $\gets$ \textsc{Construct-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\twoheadrightarrow_F$)
+			\State $\pair{\mathbf{u_S}}{\mathbf{c_S}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\twoheadrightarrow_S$, $\mathbf{u_F}$, $\mathbf{c_F}$)
 			\State\textsc{Explain-Efficiency}($\mathbf{p}$, $\mathbf{C}$, $\mathbf{u_S}$, $\mathbf{c_S}$)
 
-			\State $\rightsquigarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $\mathbf{x}$, $\rightsquigarrow_F$)
-			\State $\pair{\mathbf{u_D}}{\mathbf{c_D}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\rightsquigarrow_D$, $\mathbf{u_F}$, $\mathbf{c_F}$)
+			\State $\twoheadrightarrow_D$ $\gets$ \textsc{Construct-Satisfaction}($m$, $n$, $\mathbf{x}$, $\twoheadrightarrow_F$)
+			\State $\pair{\mathbf{u_D}}{\mathbf{c_D}}$ $\gets$ \textsc{Explain-Stability}($\mathbf{x}$, $\twoheadrightarrow_D$, $\mathbf{u_F}$, $\mathbf{c_F}$)
 			\State\textsc{Explain-Satisfaction}($\mathbf{u_D}$, $\mathbf{c_D}$)
 		\EndFunction
 	\end{algorithmic}
@@ -584,35 +713,35 @@ The above high-level algorithm generates explanations for feasibility, efficienc
 
 A full framework requires at least $m^2n^2$ bytes space in memory. For, $m=n=256$ this requires 4GiB. One solution is not to construct frameworks and compute their stability in sequence, but rather inline partial framework construction into frameworks. This reduces the memory complexity to $\mathcal{O}(mn)$, while keeping the same computational complexity. This obviously will be slower to compute, but this method is more scalable. Therefore, we need to modify any function requiring a data object of size $m^2n^2$ such as $\mathbf{c}$ and $\mathbf{x}$.
 \linespace
-The framework construction functions are trivially modified to compute a sub-graph from a node, given its indices. For example, $\textsc{Construct-Feasibility}(i,j)=\rightsquigarrow_{F_{i,j}}$
+The framework construction functions are trivially modified to compute a sub-graph from a node, given its indices. For example, $\textsc{Construct-Feasibility}(i,j)=\twoheadrightarrow_{F_{i,j}}$
 
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
 		\Function{Partial-Precomputation-Explain}{$m$, $n$, $\mathbf{p}$, $D$, $\mathbf{x}$}
-			\Function{$\rightsquigarrow'_F$}{$i$, $j$}
+			\Function{$\twoheadrightarrow'_F$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Feasibility}($m$, $n$, $i$, $j$)
 			\EndFunction
 			\Function{$\mathbf{c'_F}$}{$i$, $j$}
-				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\twoheadrightarrow'_F$, $\mathbf{0}$)
 			\EndFunction
-			\Function{$\rightsquigarrow'_S$}{$i$, $j$}
+			\Function{$\twoheadrightarrow'_S$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Efficiency}($m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $i$, $j$)
 			\EndFunction
 			\Function{$\mathbf{c'_S}$}{$i$, $j$}
-				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_S$, $\rightsquigarrow'_F$)
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\twoheadrightarrow'_S$, $\twoheadrightarrow'_F$)
 			\EndFunction
-			\Function{$\rightsquigarrow'_D$}{$i$, $j$}
+			\Function{$\twoheadrightarrow'_D$}{$i$, $j$}
 				\State \Return \textsc{Construct-Partial-Satisfaction}($m$, $n$, $D$, $i$, $j$)
 			\EndFunction
 			\Function{$\mathbf{c'_D}$}{$i$, $j$}
-				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\rightsquigarrow'_D$, $\rightsquigarrow'_F$)
+				\State \Return \textsc{Construct-Partial-Conflicts}($\mathbf{x}$, $\twoheadrightarrow'_D$, $\twoheadrightarrow'_F$)
 			\EndFunction
-			\State $\mathbf{u_F}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_F$, $\mathbf{0}$)
+			\State $\mathbf{u_F}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\twoheadrightarrow'_F$, $\mathbf{0}$)
 			\State \textsc{Explain-Feasibility}($\mathbf{u_F}$, $\mathbf{c'_F}$)
-			\State $\mathbf{u_S}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_S$, $\mathbf{u_F}$)
+			\State $\mathbf{u_S}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\twoheadrightarrow'_S$, $\mathbf{u_F}$)
 			\State \textsc{Explain-Efficiency}($\mathbf{u_S}$, $\mathbf{c'_S}$)
-			\State $\mathbf{u_D}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\rightsquigarrow'_D$, $\mathbf{u_F}$)
+			\State $\mathbf{u_D}$ $\gets$ \textsc{Computed-Unattacked}($\mathbf{x}$, $\twoheadrightarrow'_D$, $\mathbf{u_F}$)
 			\State \textsc{Explain-Satisfaction}($\mathbf{u_D}$, $\mathbf{c'_D}$)
 		\EndFunction
 	\end{algorithmic}

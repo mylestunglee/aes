@@ -44,7 +44,7 @@ The simplistic definition of makespan scheduling gives a good foundation for exp
 \end{align*}
 
 \begin{definition}
-	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$ such that $S=\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but does not specify its formal representation unlike $\mathbf{x}$, which will be used in linear programming and algorithms with its precise definition.
+	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but does not specify its formal representation unlike $\mathbf{x}$, which will be used in linear programming and algorithms with its precise definition.
 \end{definition}
 
 \begin{definition}
@@ -61,10 +61,14 @@ The simplistic definition of makespan scheduling gives a good foundation for exp
 \end{definition}
 
 \begin{definition}
+	\label{sep}
+	
 	A schedule satisfies the single exchange property (SEP) iff for any critical machine and any machine $i,i'\in\mathcal{M}$ and for all critical jobs $j\in\mathcal{J}$, $C_i-C_{i'}\leq p_j$
 \end{definition}
 
 \begin{definition}
+	\label{pep}
+	
 	A schedule satisfies the pairwise exchange property (PEP) iff for any critical job and any job $j,j'\in\mathcal{J}$, if $p_j>p_{j'}$, then $C_i+p_{j'}\leq C_{i'}+p_j$.
 \end{definition}
 
@@ -73,7 +77,7 @@ The simplistic definition of makespan scheduling gives a good foundation for exp
 \end{definition}
 
 \begin{proposition}
-	Schedule efficiency is a necessary condition for optimality.
+	Schedule efficiency is a necessary condition for optimality \cite{aes}.
 \end{proposition}
 
 Makespan schedules are often represented using cascade charts. The charts shows graphically the difference in total completion time of schedules where the problem has the parameters $m=4$ and $n=13$.
