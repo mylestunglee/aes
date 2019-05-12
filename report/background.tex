@@ -2,7 +2,7 @@
 
 \section{Optimisation}
 
-Optimisation is the process to finding the optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to either find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimal decisions. There are a wide range of applications for optimisation, but in this project we focus with mixed-integer linear programming.
+Optimisation is the process of finding an optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimal decisions. There is a wide range of techniques for optimisation, we focus on mixed-integer linear programming.
 
 \begin{figure}[H]
 	\begin{center}
@@ -20,17 +20,17 @@ Optimisation is the process to finding the optimal decision with respect to cons
 	\caption{Abstraction of problem solving}
 \end{figure}
 
-Real-life problems need to be modelled to be optimised. Problems are formulated using constraints and a cost function. Consider the following linear programming example. A person want to sell some drinks. Each unit of hot chocolate requires 1 litre of milk and 3 bars of chocolate. Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate. The person only has 5 units of milk and 12 bars of chocolate. The person sells a unit of hot chocolate for £6 and a unit of milkshake for £5. What is the best strategy for maximising profit given that all units produced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced.
+Real-life problems need to be modelled to be optimised. Problems are formulated using constraints and a cost function. Consider the following linear programming example. A person wants to sell some drinks. Each unit of hot chocolate requires 1 litre of milk and 3 bars of chocolate. Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate. The person only has 5 units of milk and 12 bars of chocolate. The person sells a unit of hot chocolate for 6 and a unit of milkshake for 5 monetary units. What is the best strategy for maximising profit given that all units produced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced, respectively.
 \begin{align*}
 	\max_{x,y}\ &6x+5y&\text{subject to:}\\
 	&x+y\leq 5&\text{milk resource constraint}\\
 	&3x+2y\leq 12&\text{chocolate resource constraint}\\
-	&x,y\geq 0&\text{non-negative constraints}\\
+	&x,y\geq 0&\text{non-negative units}\\
 	&x,y\in\mathbb{N}&\text{whole units only}\\
 \end{align*}
 The problem is sufficiently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best strategy is producing 2 units of hot chocolate and 3 units of milkshake.
 \linespace
-In non-linear optimisation problems, finding global optimums is not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity for arbitrary dimensional problems. In context of the project, it is unfeasible to compute a complete explanation of optimality in polynomial time.
+In non-linear optimisation problems, finding a global optima is not trivial. For gradient-based and local-search algorithms, estimated solutions can return a local optima. This is typically not favoured, however for large problems, finding a global optima result in non-polynomial complexity for arbitrary dimensional problems. In context of the project, it is infeasible to compute a complete explanation of optimality in polynomial time.
 
 \subsection{Makespan Scheduling}
 \label{makespan}
@@ -59,7 +59,7 @@ The simplistic definition of makespan scheduling gives a good foundation for exp
 \end{definition}
 
 \begin{definition}
-	A job $j\in\mathcal{J}$ is critical iff $j$ is allocated to a critical machine $i\in\mathcal{M}$ and $x_{i,j}=1$.
+	A job $j\in\mathcal{J}$ is critical iff $i\in\mathcal{M}$ is critical and $x_{i,j}=1$.
 \end{definition}
 
 \begin{definition}
@@ -90,7 +90,7 @@ Makespan schedules are often represented using cascade charts. The charts shows 
 	\begin{center}
 		\includegraphics[width=.8\linewidth]{figures/makespan_inefficient.pdf}
 	\end{center}
-	\caption{An inefficent schedule}
+	\caption{An inefficient schedule}
 \end{figure}
 
 \begin{figure}[H]
@@ -199,23 +199,17 @@ We will introduce common definitions in abstract argumentation, but these are no
 
 \begin{definition}
 	An extension $E$ is admissible iff $E$ is conflict-free and $E$ attacks every argument attacking $E$.
-\end{definition}
-
-\begin{definition}
+	\linespace
 	An extension $E$ defends an argument $\alpha$ iff for all every argument attacking $\alpha$, $E$ attacks such attacking argument 
-\end{definition}
-
-\begin{definition}
+	\linespace
 	An extension $E$ is complete iff $E$ is admissible and $E$ contains all arguments $E$ defends.
-\end{definition}
-
-\begin{definition}
+	\linespace
 	An extension $E$ is preferred iff $E$ is maximally admissible with respect to $\subseteq$.
 \end{definition}
 
 \section{Explanations}
 
-Explanation generation problems are a class of explainable planning problems. Many generation tasks appeal to either minimality or simplicity \cite{pe}. Explanations may occur over observations. For example, a sequence of states may lead to an error, an explanation can guide an agent to avoid such error. However, trustworthy and theoretical well-understood algorithms are difficult to explain to non-technical users \cite{ep}. The paper highlights concepts to explain given an optimisation context:
+Many explanation generation tasks appeal to either minimality or simplicity \cite{pe}. Explanations may occur over observations. For example, a sequence of states may lead to an error, an explanation can guide an user to avoid such error. However, trustworthy and theoretical well-understood algorithms are difficult to explain to non-technical users \cite{ep}. The paper highlights concepts to explain given an optimisation context:
 \begin{itemize}
 	\item Why did the optimiser do that?
 	\item Why did the optimiser not do this?

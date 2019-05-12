@@ -2,17 +2,17 @@
 	
 \section{Motivation}
 
-Scheduling arises in countless decision processes and its abstract nature results in a wide range of practical applications, such as in healthcare \cite{sanr,operations}. Scheduling problems are accurately modelled in mathematics, hence scheduling is often interpreted as a class of mathematical optimisation problems. With many mature and developed optimisation solvers \cite{clp}, solvers can find solutions to large scheduling problems quickly, which would have been impractical using manual optimisation techniques. However, solver scalability and efficiency often leads to complex algorithms. Such complexity combined with mathematical formulations of scheduling, result in users interpreting solvers and solutions as black-boxes. Therefore, decision making is often not transparent.
+Scheduling arises in countless decision processes and its abstract nature results in a wide range of practical applications, such as in healthcare \cite{sanr,operations}. Scheduling problems are accurately modelled in mathematics, hence scheduling is often interpreted as a class of mathematical optimisation problems. With many mature and developed optimisation solvers \cite{clp}, solvers can find solutions to large scheduling problems quickly, which would have been impractical using manual optimisation techniques. However, solver scalability and efficiency often lead to complex algorithms. Such complexity combined with mathematical formulations of scheduling, result in users interpreting solvers and solutions as black-boxes. Therefore, decision making is often not transparent.
 \linespace
-Transparency of decision making is important. Users require a means to understand why a schedule, whether a solution of a solver or not, is reasonable given a context. For example, hospital managers may seek understanding about the efficiency of their staff and resources. Schedules may need to be robust to unpredictable changes in staff and resources, such as a nurse being unavailable to attend patients due to a personal reasons. In other settings, schedules may need to minimise the number of staff to maximise profits while fulfilling all staff and patients requirements.
+Transparency of decision making is important. Users require a means to understand why a schedule, whether a solution of a solver or not, is reasonable given a context. For example, hospital managers may seek to understand the efficiency of their staff and resources. Schedules may need to be robust to unpredictable changes in staff and resources, such as a nurse being unavailable to attend patients due to personal reasons. In other settings, schedules may need to minimise the number of staff to maximise profits while fulfilling all staff and patients requirements.
 \linespace
-Explanations are vital in communication for understanding. With many possible schedules, and many variations of scheduling problems \cite{sta}, it is impractical to manually-craft explanations for every schedule of every variation. This motivates a tool to generate clear explanations.
+Explanations are vital in communication for understanding. With many possible schedules and many variations of scheduling problems \cite{sta}, it is impractical to manually-craft explanations for every schedule of every variation. This motivates a tool to generate clear explanations.
 
 \section{Objectives}
 
 The first main objective is to devise and implement a tool that explains an solver's scheduling solutions by human-understandable means, and allows the user to interact with the solver in a human-friendly manner. By using the explanation methodology outlined using argumentation \cite{aes}, the user can easier understand scheduling in a practical environments such as nurse rostering and dialysis scheduling. Hence, analysis of such methodology important to understand the applicability of argumentation in practical settings.
 \linespace
-The second main objectives is to extend the theoretical or practical capabilities of argumentation for scheduling. Extensions may include interval scheduling, shop scheduling and job-dependent scheduling.
+The second main objective is to extend the theoretical or practical capabilities of argumentation for scheduling. Extensions may include interval scheduling, shop scheduling and job-dependent scheduling.
 
 \section{Challenges}
 
