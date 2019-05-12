@@ -58,7 +58,7 @@ The tool is developed with many components, represents as individual Python file
 \subsection{Notation}
 
 The tool uses Boolean tensors as data structures to store schedules and argumentation constructs. We will use the below operators in computing conflict-freeness, stability and aggregating explanations. The definitions below share notions with linear algebra over matrices.
-\begin{definition}
+\begin{definition}	
 	Let $\mathbf{0}^{d_1, ..., d_n}$ be the zero-valued tensor. The dimensions may be omitted if clear.
 		
 	For example:
@@ -72,6 +72,8 @@ The tool uses Boolean tensors as data structures to store schedules and argument
 \end{definition}
 
 \begin{definition}
+	\label{tensornot}
+	
 	Let $\incircbin{\neg}$ be the element-wise logical negation operator over a Boolean tensor. Formally, $\incircbin{\neg}$ is a prefix unary function such that $\incircbin{\neg}\mathbf{x}=\mathbf{y}$ iff $\forall i_1\in\intset{1,d_1}...\forall i_n\in\intset{1,d_n}\ x_{i_1,...,i_n}=1-y_{i_1,...,i_n}$ where $\mathbf{x}$ and $\mathbf{y}$ have the same dimensions $d_1,...d_n$.
 	\linespace
 	For example:
@@ -89,6 +91,8 @@ The tool uses Boolean tensors as data structures to store schedules and argument
 \end{definition}
 
 \begin{definition}
+	\label{tensorand}
+	
 	Let $\incircbin{\land}$ be the element-wise logical and operator over Boolean tensors. Formally, $\incircbin{\land}$ is a infix binary function such that $\mathbf{x}\incircbin{\land}\mathbf{y}=\mathbf{z}$ iff $\forall i_1\in\intset{1,d_1}...\forall i_n\in\intset{1,d_n}\ x_{i_1,...,i_n}\times y_{i_1,...,i_n}=z_{i_1,...,i_n}$ where $\mathbf{x}$, $\mathbf{y}$ and $\mathbf{z}$ have the same dimensions $d_1,...,d_n$.
 	\linespace
 	For example:
@@ -113,6 +117,8 @@ The tool uses Boolean tensors as data structures to store schedules and argument
 \end{definition}
 
 \begin{definition}
+	\label{tensoror}
+	
 	Let $\incircbin{\lor}$ be the element-wise logical or operator over Boolean tensors. Formally, $\incircbin{\lor}$ is a infix binary function such that $\mathbf{x}\incircbin{\lor}\mathbf{y}=\mathbf{z}$ iff $\forall i_1\in\intset{1,d_1}...\forall i_n\in\intset{1,d_n}\ x_{i_1,...,i_n}-x_{i_1,...,i_n}\times y_{i_1,...,i_n}+y_{i_1,...,i_n}=z_{i_1,...,i_n}$ where $\mathbf{x}$, $\mathbf{y}$ and $\mathbf{z}$ have the same dimensions $d_1,...,d_n$.
 	\linespace
 	For example:
@@ -279,6 +285,7 @@ The tool uses Boolean tensors as data structures to store schedules and argument
 \end{figure}
 
 \subsection{Framework Construction}
+\label{frameworkconstruction}
 
 The AAFs are constructed using similar definitions in paper \cite{aes}. The definitions are reprinted for feasibility and fixed decisions only. Take arbitrary $i_1,i_2\in\mathcal{M}$ and $j_1,j_2\in\mathcal{J}$. For the following framework definitions, let $Args=\mathcal{M}\times\mathcal{J}$.
 
@@ -333,14 +340,20 @@ The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. Th
 The attack relations $\rightsquigarrow_F$, $\rightsquigarrow_S$ and $\rightsquigarrow_D$ are defined on $Args^2$. In practice, the tool uses a Boolean tensor representation of these attacks.
 
 \begin{definition}
+	\label{tensorfeasiblityframework}
+	
 	Let $\twoheadrightarrow_F$ be the data structure to store $\rightsquigarrow_F$ such iff $\pair{i_1}{j_1}\rightsquigarrow_F\pair{i_2}{j_2}\iff\twoheadrightarrow_{F\ i_1,j_1,i_2,j_2}=1$.
 \end{definition}
 
 \begin{definition}
+	\label{tensorefficiencyframework}
+	
 	Let $\twoheadrightarrow_S$ be the data structure to store $\rightsquigarrow_S$ such iff $\pair{i_1}{j_1}\rightsquigarrow_S\pair{i_2}{j_2}\iff\twoheadrightarrow_{S\ i_1,j_1,i_2,j_2}=1$.
 \end{definition}
 
 \begin{definition}
+	\label{tensorfixeddecisionframework}
+	
 	Let $\twoheadrightarrow_D$ be the data structure to store $\rightsquigarrow_D$ such iff $\pair{i_1}{j_1}\rightsquigarrow_D\pair{i_2}{j_2}\iff\twoheadrightarrow_{D\ i_1,j_1,i_2,j_2}=1$.
 \end{definition}
 

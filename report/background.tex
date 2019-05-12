@@ -33,6 +33,7 @@ The problem is sufficiently small to be solved by inspection, but may also be so
 In non-linear optimisation problems, finding global optimums is not trivial. For gradient-based and local-search algorithms, estimated solutions can return local optimums. This is typically not favoured however for large problems, finding global optimums have non-polynomial complexity for arbitrary dimensional problems. In context of the project, it is unfeasible to compute a complete explanation of optimality in polynomial time.
 
 \subsection{Makespan Scheduling}
+\label{makespan}
 
 The simplistic definition of makespan scheduling gives a good foundation for experimenting with argumentation. Makespan schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $j\in\mathcal{J}$, has an associated processing time $p_j\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makespan schedules are modelled as an optimisation problem:
 \begin{align*}
@@ -44,6 +45,8 @@ The simplistic definition of makespan scheduling gives a good foundation for exp
 \end{align*}
 
 \begin{definition}
+	\label{assignmentmatrix}
+	
 	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but does not specify its formal representation unlike $\mathbf{x}$, which will be used in linear programming and algorithms with its precise definition.
 \end{definition}
 
@@ -98,6 +101,7 @@ Makespan schedules are often represented using cascade charts. The charts shows 
 \end{figure}
 
 \subsection{User Fixed Decisions}
+\label{fixeddecisions}
 
 To accommodate practical applications of makespan schedules, user positive and negative fixed decisions are introduced as an extension to makespan problems. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
 
@@ -142,6 +146,7 @@ If we conclude $\alpha$ to be acceptable, then we must not accept $\beta$. Accep
 Note that this example uses implicit background knowledge, also known as enthymemes. In this scenario, one cannot sleep and work at the same time. To our advantage, argumentation is applied to well-defined scheduling problems, so enthymemes are inapplicable in this project.
 
 \subsection{Abstract Argumentation Frameworks}
+\label{aaf}
 
 An abstract argumentation framework (AAF) models the relation of attacks between arguments \cite{aa}. Formally, an AAF is a directed graph $(Args,\rightsquigarrow)$ where $Args$ is the set of arguments and $\rightsquigarrow$ is a binary relation over $Args$. For $a,b\in Args$, $a$ attacks $b$ iff $a\rightsquigarrow b$. Attacks are extended over sets of arguments, where $A\subseteq Args\rightsquigarrow b\in Args$ iff $\exists a\in A.\ a\rightsquigarrow b$. An extension $E$ is a subset of $Args$.
 
