@@ -14,19 +14,27 @@ Argumentation interfaces between optimisation solvers and explanation generators
 
 While argumentation offers, soundness, completeness, polynomial tractable and computational complexity, a non-argumentative approach can offer these too.
 
+\section{Discussion}
+
+Without knowledge of argumentation, one could define mappings between mathematical constraints and templated-explanations to create an interactive tool. We argue that argumentation was not necessary in the development process. However, argumentation brings subtle benefits that are not expressible in makespan scheduling.
+\linespace
+Argumentation brings an alternative representation of conflicts or constraints. This representation is competitive in recommender systems \cite{recommend}, where chain of reasons are constructed. In abstract argumentation, chain of reasons are constructed when an extension depth-recursively effects satisfaction. This is true with admissible and complete extensions. However, with stability and conflict-freeness, as used in our algorithms, the counter-arguments for a stable or a conflict-free extension does not recurse on the AAF. A potential solution to make better explanations, is to verify that mathematical constraints are admissible-modellable. However, at the time of writing, the notion of admissible and linear constraints have little connection. 
+\linespace
+We have shown in Chapter \ref{properties} that is it possible to translate new constraints to new frameworks. Each constraint and their explanations are loosely-coupled by an AAF. We have attempted to link efficiency and fixed user decisions by defining fixed-decision aware exchange properties. However, this link was inspired by intuitive interpretation of the problem. More generally, schedules can be subject to multi-objective optimisation. If we consider conflicts between objectives, rather than conflicts between possible schedules under a mathematical constraint, then we use can argumentation to compromise between objectives. A drawback with this approach is these explanations are restricted to a dialogue between objectives, and not the schedule itself. This would give limited explanation to why an existing schedule is good.
+
 \section{Future Work}
 
 \begin{itemize}
 	\item\textbf{Space of stability-modellable linear programs:} We have shown that makespan and interval scheduling are stability-modellable. An interesting direction would be to explore the space of linear programming problems that are stability-modellable, or more generally, extension-modellable.
 	\item\textbf{Implementation of interval scheduling:} We have shown that interval scheduling feasibility is stability-modellable. Due to the time constraints of this project, we have not been able to integrate makespan and interval scheduling into a single graphical tool.
-	\item\textbf{Nurse preferences:} It is known that previous literature ignores nurses preferences, or attempt to simplify individual nurses preferences as groups \cite{preferences}. A future direction would be to explore the modelling individual nurses preferences using existing argumentation methods \cite{acceptability, aba}
-	\item\textbf{Web GUI:} The Python GUI is clear for users from an academic environment. But in comparison with commercial tools, their interface allows users to reschedule by intuitive drag-drop interactions. Although this could have been implemented, writing a full software package is an unlikely outcome of an university project. 
+	\item\textbf{Nurse preferences:} It is known that previous literature ignores nurses preferences, or attempts to simplify individual nurses preferences as groups \cite{preferences}. A future direction would be to explore the modelling individual nurses preferences using existing argumentation methods \cite{acceptability, aba}
+	\item\textbf{Web GUI:} The Python GUI is clear for users from an academic environment. But in comparison with commercial tools, their interface allows users to reschedule by intuitive drag-drop interactions. This was beyond the scope of an academic project.
 \end{itemize}
 
 \section{Summary}
 
 \begin{framed}
 	\centering
-	Scheduling using argumentation is\\practically
+	Makespan scheduling using argumentation is\\practically
 	possible but not practically suitable.
 \end{framed}

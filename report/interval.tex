@@ -1,4 +1,5 @@
 \chapter{Schedule Properties and Argumentation}
+\label{properties}
 
 Schedule properties such as feasibility are modelled using frameworks to explain the satisfaction of properties. The definitions of efficiency and fixed decision frameworks extend from the definition of the feasibility framework. In this chapter, this extension is interesting because, this can be generalised to reason about arbitrary number of properties, using a extended framework. We apply this generalisation to interval scheduling to illustrate applications of argumentation.
 \linespace 
@@ -371,7 +372,7 @@ $\rightsquigarrow_\alpha$ can be interpreted as an generalisation of $\rightsqui
 \begin{definition}
 	\label{intervalbeta}
 	
-	Let $\rightsquigarrow_\beta$ be the sequential-feasibility framework such that $\triple{i}{j}{t}\rightsquigarrow_\beta\triple{i'}{j'}{t'}\Leftrightarrow i=i'\land(t'\leq t\leq t'+p_j\lor t\leq t'<t+p_j)$.
+	Let $\rightsquigarrow_\beta$ be the sequential-feasibility framework such that $\triple{i}{j}{t}\rightsquigarrow_\beta\triple{i'}{j'}{t'}\Leftrightarrow i=i'\land(t'\leq t\leq t'+p_j'\lor t\leq t'<t+p_j)$.
 \end{definition}
 
 \begin{lemma}
@@ -379,9 +380,9 @@ $\rightsquigarrow_\alpha$ can be interpreted as an generalisation of $\rightsqui
 	$\rightsquigarrow_\beta$ conflict-models $\beta$.
 	
 	\begin{proof}
-		To prove forward implication: Take arbitrary $i\in\mathcal{M}$, $t\in\mathcal{T}$. To aim for a contradiction, assume $\sum_{j\in\mathcal{J}}\sum_{t'\in\max\{t-p_j+1,0\}}x_{i,j,t'}\geq 2$. Then there exists some $j_1,j_2\in\mathcal{J}$ and some $t_1,t_2\in\mathcal{T}$ such that $0\leq t_1,t_2\leq t$ and $x_{i,j_2,t_2}+x_{i,j_2,t_2}=2$. Then $\triple{i}{j_1}{t_1}\in E$ and $\triple{i}{j_2}{t_2}\in E$. By conduction of $\beta$, then either $t_1\leq t_2\leq t_1+p_1$ or $t_2\leq t_1\leq t_2+p_2$. By definition of $\rightsquigarrow_\beta$, $\triple{i}{j_1}{t_1}\rightsquigarrow_\beta\triple{i}{j_2}{t_2}$. But this contradicts that $E$ is conflict-free. Therefore $\beta$ holds.
+		To show $E$ is conflict-free implies $\beta$: Take arbitrary $i\in\mathcal{M}$, $t\in\mathcal{T}$. To aim for a contradiction, assume $\sum_{j\in\mathcal{J}}\sum_{t'\in\max\{t-p_j+1,0\}}x_{i,j,t'}\geq 2$. Then there exists some $j_1,j_2\in\mathcal{J}$ and some $t_1,t_2\in\mathcal{T}$ such that $0\leq t_1,t_2\leq t$ and $x_{i,j_1,t_1}+x_{i,j_2,t_2}=2$. Then $\triple{i}{j_1}{t_1}\in E$ and $\triple{i}{j_2}{t_2}\in E$. By conduction of $\beta$, then either $t_1\leq t_2\leq t_1+p_1$ or $t_2\leq t_1\leq t_2+p_2$. By definition of $\rightsquigarrow_\beta$, $\triple{i}{j_1}{t_1}\rightsquigarrow_\beta\triple{i}{j_2}{t_2}$. But this contradicts that $E$ is conflict-free. Therefore $\beta$ holds.
 		\linespace
-		To prove backward implication: Assume $\beta$ holds. Take arbitrary $i\in\mathcal{M}$, $t\in\mathcal{T}$. Then there does not exists overlapping jobs $j_1$ and $j_2$ such that $x_{i,j_1,t_1}+x_{i,j_2,t_2}=2$. Then $\triple{i}{j_1}{t_1}\not\in E$ and $\triple{i}{j_2}{t_2}\not\in E$. Therefore, $E$ is conflict-free.
+		To show $\beta$ implies $E$ is conflict-free: Assume $\beta$ holds. Take arbitrary $i\in\mathcal{M}$, $t\in\mathcal{T}$. Then there does not exists overlapping jobs $j_1$ and $j_2$ such that $x_{i,j_1,t_1}+x_{i,j_2,t_2}=2$. Then $\triple{i}{j_1}{t_1}\not\in E$ and $\triple{i}{j_2}{t_2}\not\in E$. Therefore, $E$ is conflict-free.
 	\end{proof}
 \end{lemma}
 
