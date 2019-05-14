@@ -1,0 +1,192 @@
+\chapter{Stability Algorithm Proof}
+\label{stabilityproof}
+
+In this chapter, we reprint the proofs in section \ref{verifyingstability}. We will define some notation to make the proofs more clear. Let $\prec$ be the lexicographical ordering on $Args$, such that $\pair{i_1}{j_1}\prec\pair{i_2}{j_2}$ iff $i_1<i_2\lor i_1=i_2\land j_1<j_2$. Let $Q_l$ be the post-condition of line $l$, which states a property about the current state of execution through the algorithm. We will use logical variables $k$ and $\ell$ to differentiate from program variables $i$ and $j$, in functional correctness proofs using Hoore logic \cite{hoare}.
+
+\section{\textsc{Compute-Unattacked} is correct}
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\Function{Compute-Unattacked}{$\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$}
+			\State $\mathbf{u}$ $\gets\incircbin{\neg}$ $\mathbf{x}$
+			\For{$i\in\mathcal{M},j\in\mathcal{J}$}
+				\If{$x_{i,j}=1$}
+					\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}\twoheadrightarrow_{i,j}$
+				\EndIf
+			\EndFor
+			\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{u}}$
+			\State \Return $\mathbf{u}$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{proof}
+	To show:
+	\begin{align*}
+		\forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \bar{u}_{k,\ell}=0\implies\Big(u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+		&x_{k,\ell}=0\\
+		\land\ &x_{k',\ell'}=1\\
+		\land\ &\twoheadrightarrow_{k',\ell',k,\ell}=1\Big)\\
+		\land\ \bar{u}_{k,\ell}=1\implies&u_{k,\ell}=0
+	\end{align*}
+	Take arbitrary Boolean tensors $\mathbf{x}$, $\twoheadrightarrow$ and $\bar{\mathbf{u}}$, such that their dimensions are valid. The parameters are required to be well-defined for the operators to be well-defined.
+	\begin{align*}
+		Q_2: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ u_{k,\ell}=1\iff x_{k,\ell}=0
+	\end{align*}
+	From the definition of $\incircbin{\neg}$, $u_{k,\ell}=1-x_{k,\ell}$. Because $\mathbf{u}$ and $\mathbf{x}$ are Boolean-valued, then $u_{k,\ell}=1\iff x_{k,\ell}=0$. So $Q_2$ holds.
+	\begin{align*}
+		Q_3: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \pair{k}{\ell}\prec\pair{i}{j}\implies(u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+		&x_{k,\ell}=0\\
+		\land\ &x_{k',\ell'}=1\\
+		\land\ &\twoheadrightarrow_{k',\ell',k,\ell}\ =1\\
+		\pair{k}{\ell}\succeq\pair{i}{j}\implies(u_{k,\ell}=1\iff&x_{k,\ell}=0)
+	\end{align*}	
+	$Q_3$ is a loop invariant, that holds from $Q_2$ because initially, $i=1$ and $j=1$, so there are no $\pair{k}{\ell}\prec\pair{i}{j}$.
+	\begin{align*}
+		Q_4: Q_3\land x_{i,j}=1
+	\end{align*}
+	$Q_4$ holds from $Q_3$ because of the if condition.
+	\begin{align*}
+		Q_5: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \pair{k}{\ell}\preceq\pair{i}{j}\implies(u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+		&x_{k,\ell}=0\\
+		\land\ &x_{k',\ell'}=1\\
+		\land\ &\twoheadrightarrow_{k',\ell',k,\ell}\ =1\\
+		\pair{k}{\ell}\succ\pair{i}{j}\implies(u_{k,\ell}=1\iff&x_{k,\ell}=0)
+	\end{align*}
+
+	At line 5, any argument $\pair{k}{\ell}$ that is attacked by $\pair{i}{j}$ is marked as attacked, so $u_{i,j}=0$. The attack from $\pair{i}{j}$ is relevant because from $Q_4$, we know that $\pair{i}{j}\in E$. But at the next iteration, values $i$ and $j$ are overwritten so we retain $\exists k',\ell'\ \pair{k'}{\ell'}\twoheadrightarrow\pair{k}{\ell}$. So $Q_5$ holds from $Q_4$.
+	\linespace
+	We also need to prove that $Q_5$ holds from $Q_3$ if the if condition fails. $Q_5$ holds because if $x_{i,j}=0$, then there are no attacks from $\pair{i}{j}\in E$.
+	\begin{align*}
+		Q_8: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ u_{k,\ell}=1\iff&\neg\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}\\
+		&x_{k,\ell}=0\\
+		\land\ &x_{k',\ell'}=1\\
+		\land\ &\twoheadrightarrow_{k',\ell',k,\ell}\ =1
+	\end{align*}
+	$Q_8$ holds from $Q_3$ because at the end of the loop, for any $\pair{k}{\ell}\prec\pair{i}{j}$. $\mathbf{u}$ will be filtered by $\bar{\mathbf{u}}$, so $\forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \bar{u}_{k,\ell}=1\implies u_{k,\ell}=0$. Therefore, the function is correct.
+\end{proof}
+
+\section{\textsc{Compute-Partial-Conflicts} is correct}
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\Function{Compute-Partial-Conflicts}{$\mathbf{x}$, $\twoheadrightarrow_{i, j}$, $\bar{c}_{i,j}$}
+			\State $c_{i,j}$ $\gets\mathbf{0}^{m\times n}$
+			\If{$x_{i,j}=1$}
+				\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\twoheadrightarrow_{i,j}$ 
+			\EndIf
+			\State $c_{i,j}$ $\gets$ $c_{i,j}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{c}_{i,j}$
+			\State \Return $c_{i,j}$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{proof}
+	To show:
+	\begin{align*}
+		\forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ c_{i,j,k,\ell}=1\iff&x_{i,j}=1\\
+		\land\ &x_{k,\ell}=1\\
+		\land\ &\twoheadrightarrow_{i,j,k,\ell}\ =1\\
+		\land\ &\bar{c}_{i,j,k,\ell}=0
+	\end{align*}
+	
+	At line 2, $c_{i,j,k,l}=0$ by assignment. At line 3, if $x_{i,j}=1$, then $\pair{i}{j}\in E$ may be an attacker. At line 4, there is a conflict $\pair{i}{j}\rightsquigarrow\pair{k}{\ell}$ when $x_{i,j}=1$, $x_{k,\ell}=1$ and $\twoheadrightarrow_{i,j,k,\ell}=1$. If so, $c_{i,j,k,\ell}=1$. At line 6, $\bar{c}_{i,j,k,\ell}=1\implies c_{i,j,k,\ell}=0$. Therefore, the function is correct.
+
+\end{proof}
+
+\section{\textsc{Compute-Stability} is correct}
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\Function{Explain-Stability}{$\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
+		\State $\mathbf{u}$ $\gets$ \textsc{Compute-Unattacked}($\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$)
+		\For{$i\in\mathcal{M},j\in\mathcal{J}$}
+		\State $c_{i,j}$ $\gets$ \textsc{Compute-Partial-Conflicts}($\mathbf{x}$, $\twoheadrightarrow_{i,j}$, $\bar{c}_{i,j}$)
+		\EndFor			
+		\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{proof}
+	Assume \textsc{Compute-Stability}$(\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}})=\pair{\mathbf{u}}{\mathbf{c}}$. From inspection of the algorithm, $\mathbf{u}$ and each sub-matrix of $\mathbf{c_{i,j}}$ is assigned exactly once in \textsc{Compute-Stability}, so $Q_2$ and $Q_5$ holds, meaning we can use Lemmas \ref{computeunattacked} and \ref{computepartialconflicts}. 
+	\begin{align*}
+		Q_2: \textsc{Compute-Unattacked}(\mathbf{x},\twoheadrightarrow,\bar{\mathbf{u}})=\mathbf{u}
+	\end{align*}
+	\begin{align*}
+		Q_5: \forall k\in\mathcal{M}\ \forall\ell\in\mathcal{J}\ \textsc{Compute-Partial-Conflicts}(\mathbf{x},\twoheadrightarrow_{k,\ell},\bar{c}_{k,\ell})=c_{k,\ell}
+	\end{align*}
+	To show:
+	\begin{align*}
+		\alpha:\ &\forall\pair{k}{\ell}\in Args\setminus E\\
+		&\bar{u}_{k,\ell}=0\implies\big(\exists\pair{k'}{\ell'}\in E\ \pair{k'}{\ell'}\rightsquigarrow\pair{k}{\ell}\iff u_{k,\ell}=0\big)\\
+		\land\ &\bar{u}_{k,\ell}=1\implies u_{k,\ell}=0\\
+	\end{align*}
+	\begin{enumerate}
+		\item Take arbitrary $\pair{k}{\ell}\in Args\setminus E$
+		\item $x_{k,\ell}=0$\hfill 1
+		\item Assume $\bar{u}_{k,\ell}=0$\hfill assumption
+		\begin{level}
+			\item Assume $\exists\pair{k'}{\ell'}\in E\ \pair{k'}{\ell'}\rightsquigarrow\pair{k}{\ell}$\hfill assumption
+			\begin{level}
+				\item Take arbitrary $k,\ell$ such that $\pair{k'}{\ell'}\rightsquigarrow\pair{k}{\ell}$
+				\item $x_{k',\ell'}=1$\hfill 4
+				\item $\twoheadrightarrow_{k',\ell',k,\ell}$\hfill 5
+				\item $u_{k',\ell',k,\ell}=0$\hfill 2, 3, 5, 7, Lemma \ref{computeunattacked}
+			\end{level}
+			\item Assume $u_{k',\ell',k,\ell}=0$\hfill assumption
+			\begin{level}
+				\item$\exists k'\in\mathcal{M}\ \exists\ell'\in\mathcal{J}
+				x_{k',\ell'}=1\land\twoheadrightarrow_{k',\ell',k,\ell}=1$\hfill 9, Lemma \ref{computeunattacked}
+				\item Take arbitrary $k',\ell'$ such that $x_{k',\ell'}=1\land\twoheadrightarrow_{k',\ell',k,\ell}=1$
+				\begin{level}
+					\item $\pair{k'}{\ell'}\in E$\hfill 11
+					\item $\pair{k'}{\ell'}\rightsquigarrow\pair{k}{\ell}$\hfill 11
+				\end{level}
+				\item $\exists\pair{k'}{\ell'}\in E\ \pair{k'}{\ell'}\rightsquigarrow\pair{k}{\ell}$\hfill 11, 12, 13
+			\end{level}
+			\item $\exists\pair{k'}{\ell'}\in E\ \pair{k'}{\ell'}\rightsquigarrow\pair{k}{\ell}\iff u_{k',\ell',k,\ell}=0$\hfill 4, 8, 9, 14
+		\end{level}
+		\item $\bar{u}_{k,\ell}=0\implies\exists\pair{k'}{\ell'}\in E\ \pair{k'}{\ell'}\rightsquigarrow\pair{k}{\ell}\iff u_{k',\ell',k,\ell}=0$\hfill 3, 14
+		\item Assume $\bar{u}_{k,\ell}=1$\hfill assumption
+		\begin{level}
+			\item $u_{k,\ell}=0$\hfill 17, Lemma \ref{computeunattacked}
+		\end{level}
+		\item $\bar{u}_{k,\ell}=1\implies u_{k,\ell}=0$\hfill 17, 18
+		\item $\alpha$\hfill 16, 19
+	\end{enumerate}
+	To show:
+	\begin{align*}
+		\beta:\ &\forall\pair{k}{\ell},\pair{k'}{\ell'}\in E\\
+		&\bar{c}_{k,\ell,k',\ell'}=0\implies\big(\pair{k}{\ell}\rightsquigarrow\pair{k'}{\ell'}\iff c_{k,\ell,k',\ell'}=1\big)\\
+		\land\ &\bar{c}_{k,\ell,k',\ell'}=1\implies c_{k,\ell,k',\ell'}=1
+	\end{align*}
+	\begin{enumerate}
+		\item Take arbitrary $\pair{k}{\ell},\pair{k'}{\ell'}\in E$
+		\item $\pair{k}{\ell}\in E$\hfill 1
+		\item $\pair{k'}{\ell'}\in E$\hfill 1
+		\item Assume $\bar{c}_{k,\ell,k',\ell'}=0$\hfill assumption
+		\begin{level}
+			\item Assume $\pair{k}{\ell}\rightsquigarrow\pair{k'}{\ell'}$\hfill assumption
+			\begin{level}
+				\item $\twoheadrightarrow_{k,\ell,k',\ell'}$\hfill 5
+				\item $c_{k,\ell,k',\ell'}$\hfill 2, 3, 4, 6, Lemma \ref{computepartialconflicts}
+			\end{level}
+			\item Assume $c_{k,\ell,k',\ell'}$\hfill assumption
+			\begin{level}
+				\item $\twoheadrightarrow_{k,\ell,k',\ell'}$\hfill 8, Lemma \ref{computepartialconflicts}
+				\item $\pair{k}{\ell}\rightsquigarrow\pair{k'}{\ell'}$\hfill 9
+			\end{level}
+			\item $\pair{k}{\ell}\rightsquigarrow\pair{k'}{\ell'}\iff c_{k,\ell,k',\ell'}=1$\hfill 5, 7, 8, 10
+		\end{level}
+		\item $\bar{c}_{k,\ell,k',\ell'}=0\implies\big(\pair{k}{\ell}\rightsquigarrow\pair{k'}{\ell'}\iff c_{k,\ell,k',\ell'}=1\big)$\hfill 4, 11
+		\item Assume $\bar{c}_{k,\ell,k',\ell'}=1$\hfill assumption
+		\begin{level}
+			\item $c_{k,\ell,k',\ell'}=1$\hfill 13, Lemma \ref{computepartialconflicts}
+		\end{level}
+		\item $\bar{c}_{k,\ell,k',\ell'}=1\implies\big(\pair{k}{\ell}\rightsquigarrow\pair{k'}{\ell'}\iff c_{k,\ell,k',\ell'}=1\big)$\hfill 13, 14
+		\item $\beta$\hfill 12, 15
+	\end{enumerate}
+
+	We have shown that $\alpha$ and $\beta$ holds, which intuitively means that $\mathbf{u}$ and $\mathbf{c}$ is computed corrected.
+\end{proof}

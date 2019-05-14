@@ -111,31 +111,20 @@ A formal stating of Theorem \ref{modelling}.
 \end{align*}
 
 \begin{algorithm}[H]
-	\caption{}
+	\caption{Compact, but space inefficient stability algorithm}
 	\begin{algorithmic}[1]
-		\Function{Construct-Efficiency}{$m$, $n$, $\mathbf{p}$, $\mathbf{x}$, $D$, $\twoheadrightarrow_F$}
-			\State $\mathbf{C}$ $\gets$ $\mathbf{x}\cdot\mathbf{p}$
-			\State $C_{\max}$ $\gets$ $\max(\mathbf{C})$
-			\State $\twoheadrightarrow_S$ $\gets$ $\twoheadrightarrow_F$
-			\For{$i_1\in\mathcal{M}$}
-				\If{$i_1=C_{\max}$}
-					\For{$j_1\in\mathcal{J}$}
-						\If{$x_{i_1,j_1}=1$}
-							\For{$i_2\in\mathcal{M}$}
-								\If{$\text{SEP}(i_1,j_1,i_2,D)$}
-									\State ${\twoheadrightarrow_S}_{i_1,j_1,i_2,j_1}$ $\gets$ 0
-								\EndIf
-								\For{$j_2\in\mathcal{J}$}
-									\If{$\text{PEP}(i_1,j_1,i_2,j_2,D)$}
-										\State ${\twoheadrightarrow_S}_{i_1,j_2,i_2,j_2}$ $\gets$ 1
-									\EndIf
-								\EndFor
-							\EndFor
-						\EndIf
-					\EndFor
-				\EndIf
-			\EndFor
-			\State \Return $\pair{\twoheadrightarrow_S}{\mathbf{C}}$
+		\Function{Explain-Stability}{$\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
+		\State $\mathbf{u}$ $\gets\incircbin{\neg}$ $\mathbf{x}$
+		\State $\mathbf{c}$ $\gets\mathbf{0}^{(m\times n)^2}$
+		\For{$i\in\mathcal{M},j\in\mathcal{J}$}
+		\If{$x_{i,j}=1$}
+		\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}\twoheadrightarrow_{i,j}$
+		\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\twoheadrightarrow_{i,j}$ 
+		\EndIf
+		\EndFor			
+		\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{u}}$
+		\State $\mathbf{c}$ $\gets$ $\mathbf{c}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{c}}$
+		\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
