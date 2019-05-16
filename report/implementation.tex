@@ -372,7 +372,7 @@ The attack relations $\rightsquigarrow_F$, $\rightsquigarrow_S$ and $\rightsquig
 	\end{algorithmic}
 \end{algorithm}
 
-$\twoheadrightarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity, because of the complexity of zero-initialising $\twoheadrightarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ complexity using a sparse data structure, but results in greatly more complicated code.
+$\twoheadrightarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity, because of the complexity of zero-initialising $\twoheadrightarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ space complexity using a sparse data structure, but results worse computational complexity.
 
 \begin{algorithm}[H]
 	\caption{}
@@ -601,9 +601,9 @@ The algorithm features two optimisations. The variable $\mathbf{y}$ represent ov
 	\end{algorithmic}
 \end{algorithm}
 
-The algorithm has $\mathcal{O}(mn^2\log(mn))$ computational complexity, arising from sorting reasons generated. Explanation of efficiency results in at most $m^2n^2$ lines, which  grows quickly for large schedules. To make this easier for the user to understand, we sort the explanations by its reduction, the amount the total completion time will reduce when an  single or pairwise exchange occurs. This will highlight the most significant improvements for the user. This justifies the increased complexity with the logarithmic factor.
+The algorithm has $\mathcal{O}(mn^2\log(mn^2))$ computational complexity, arising from sorting the reasons generated. Explanation of efficiency results in at most $m^2n^2$ lines, which  grows quickly for large schedules. To make this easier for the user to understand, we sort the explanations by its reduction, the amount the total completion time will reduce when an  single or pairwise exchange occurs. This will highlight the most significant improvements for the user. This justifies the increased complexity with the logarithmic factor.
 \linespace
-A key limitation with sorting by reduction, is in the cases of multiple critical machines. In this case, all reductions are zero. This is because single or pairwise exchange results in local optimisations of the same objective value. To find a strictly more optimal schedule, we need to look $k$ steps ahead, where $k$ is the number of critical machines. To solve this, the tool will need to generate instructions of $k$ actions, of single and pair-wise exchanges. For an arbitrary large schedule, this will cause an exponential explosion in $k$ of the explanation length. We continue the assumption that exponential tractable complexity is not feasible, so therefore, a full explanation for efficiency is not feasible.
+A key limitation with sorting by reduction, is in the cases of multiple critical machines. In this case, all reductions are zero. This is because single or pairwise exchange results in local optimisations of the same objective value. To find a strictly more optimal schedule, we need to look $k$ steps ahead, where $k$ is the number of critical machines. To solve this, the tool will need to generate instructions of $k$ actions, of single and pair-wise exchanges. For an arbitrary large schedule, this will cause an exponential explosion in $k$ of the explanation length. We continue the assumption that exponential tractable complexity is not feasible, so therefore, an explanation for a strictly more efficient schedule is not feasible.
 \linespace
 An alternative solution is to restrict the explanation space by giving local explanations. Hence in the algorithm, we consider only one critical machine, as in line 2. This reduces the computational complexity by a factor of $m$, which is significant because efficiency is the most expensive schedule property to explain.
 

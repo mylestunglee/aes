@@ -33,22 +33,7 @@ We can also use the survey to ask how well our tool performs with respect to app
 	\caption{Computational, memory and tractability complexity of algorithms using argumentation}
 \end{figure}
 
-\begin{figure}[H]
-	\begin{tabular}{lccc}
-	\hline
-	Algorithm & Computational & Memory & Tractability\\
-	\hline
-	\textsc{Naive-Explain-Feasibility} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
-	\textsc{Naive-Explain-Efficiency} & $\mathcal{O}(mn^2\log(mn^2))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
-	\textsc{Naive-Explain-Satisfaction} & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$ & $\mathcal{O}(mn)$\\
-	\textsc{Naive-Explain} & $\mathcal{O}(mn^2\log(mn^2))$ & $\mathcal{O}(mn^2)$ & $\mathcal{O}(mn^2)$\\
-	\hline
-	\end{tabular}
-	\caption{Computational, memory and tractability complexity of algorithms without using argumentation}
-
-\end{figure}
-
-Using an naive explanation approach only improves the computational complexity of verifying the feasibility property. 
+Using an naive explanation approach only improves the computational complexity of verifying the feasibility property, from $\mathcal{O}(m^2n^2)$ to $\mathcal{O}(mn)$.
 
 \section{Practical Results} 
 
@@ -110,4 +95,5 @@ During development of the tool, I asked my colleagues and friends for advice abo
 \begin{itemize}
 	\item In early versions of the tool, the GUI did not arrange textboxes and buttons into groups such as problem, schedule and explanation. Instead, all buttons and their functionality were exposed as an menu. This was confusing to new users because it was not evident which textboxes were input or output.
 	\item The paper \cite{aes} represented machine job pair assignments as a pairs of integer indices. The tool internally uses indices to compute explanations, however exposing both machines and job as integer indices was confusing. Therefore, jobs are now represented alphabetically.
+	\item The tool uses regular expressions to validate user input. This was too strict, and users often forgot to input well-formatted white-space. To solve this, the tool automatically corrects missing or surplus white-space.
 \end{itemize}

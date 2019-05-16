@@ -57,7 +57,7 @@ python -m pip install pyomo
 
 To start the tool, run \texttt{python3 main.py -g} on Linux or \texttt{python main.py -g} on Windows in the \texttt{src} directory supplied in the repository.
 \linespace
-The makespan problem consists of the number of machines and job processing times. The tutorial will use a hospital setting, where nurses and patients are represented as machines and jobs respectively. Consider the following example where there are two nurses, Alice and Bob. and two patients, Charlie and Dave. Charlie's and Dave's appointment takes 15 and 10 minutes respectively. To enter the example in the tool, nurses and patients are indexed. Hence, A represents Alice, B represents Bob for nurses and 1 represents Charlie and 2 represents Dave for patients. Numbers are used to index machines and letters are used to index jobs. The problem is to minimise the total completion time, which intuitively is the longest time any nurse has to work.
+The makespan problem consists of the number of machines and job processing times. The tutorial will use a hospital setting, where nurses and patients are represented as machines and jobs respectively. Consider the following example where there are two nurses, Alice and Bob. and two patients, Charlie and Dave. Charlie's and Dave's appointment takes 15 and 10 minutes respectively. To enter the example in the tool, nurses and patients are indexed. Hence, A represents Alice, B represents Bob for nurses and 1 represents Charlie and 2 represents Dave for patients. Numbers are used to index machines and letters are used to index jobs. The problem is to minimise the total completion time, which intuitively is the longest time any nurse has to work. Machines must be integer-indexed and jobs must be alphabetically-index.
 
 \begin{figure}[H]
 	\centering
@@ -130,6 +130,8 @@ schedule
 --partial             use partial framework construction to
 favour memory over CPU
 --naive               do not use argumentation
+-f, --fixed_decision_aware
+    force efficiency to respect fixed decisions
 -t TIME_LIMIT, --time_limit TIME_LIMIT
     maximum time for optimisation in seconds, use negative
     time_limit for infinite limit, default is unlimited
