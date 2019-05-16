@@ -21,7 +21,7 @@ def construct_partial_feasibility_framework(m, n, i1, j):
 	return ff
 
 # Creates an efficiency framework from a feasibility framework
-def construct_efficiency_framework(m, p, nfd, pfd, S, ff, copy=True):
+def construct_efficiency_framework(m, p, nfd, pfd, S, ff, copy, options):
 	if copy:
 		ef = np.copy(ff)
 	else:
@@ -40,7 +40,7 @@ def construct_efficiency_framework(m, p, nfd, pfd, S, ff, copy=True):
 	for j1 in J[i1]:
 		for i2 in M:
 			# Single exchange property
-			if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
+			if C[i1] > C[i2] + p[j1] and (not options['fixed'] or not pfd[i1, j1] and not nfd[i2, j1]):
 				ef[i1, j1, i2, j1] = False
 			# If feasible assignment (i2, j2)
 			for j2 in J[i2]:
@@ -48,13 +48,13 @@ def construct_efficiency_framework(m, p, nfd, pfd, S, ff, copy=True):
 				if (i1 != i2 and j1 != j2 and
 					p[j1] > p[j2] and
 					C[i1] + p[j2] > C[i2] + p[j1] and
-					not pfd[i1, j1] and not pfd[i2, j2] and
-					not nfd[i2, j1] and not nfd[i1, j2]):
+					(not options['fixed'] or not pfd[i1, j1] and not pfd[i2, j2] and
+					not nfd[i2, j1] and not nfd[i1, j2])):
 					ef[i1, j1, i2, j2] = True
 
 	return ef, C, C_max
 
-def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1):
+def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1, options):
 	_, n = S.shape
 	ef = construct_partial_feasibility_framework(m, n, i1, j1)
 	J = [np.flatnonzero(S[i,:]) for i in range(m)]
@@ -63,7 +63,7 @@ def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1):
 	if i1 == np.argmax(C):
 		for i2 in range(m):
 			# Single exchange property
-			if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
+			if C[i1] > C[i2] + p[j1] and (not options['fixed'] or not pfd[i1, j1] and not nfd[i2, j1]):
 				ef[i2, j1] = False
 			# If feasible assignment (i2, j2)
 			for j2 in J[i2]:
@@ -71,8 +71,8 @@ def construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i1, j1):
 				if (i1 != i2 and j1 != j2 and
 					p[j1] > p[j2] and
 					C[i1] + p[j2] > C[i2] + p[j1] and
-					not pfd[i1, j1] and not pfd[i2, j2] and
-					not nfd[i2, j1] and not nfd[i1, j2]):
+					(not options['fixed'] or not pfd[i1, j1] and not pfd[i2, j2] and
+					not nfd[i2, j1] and not nfd[i1, j2])):
 					ef[i2, j2] = True
 
 	return ef
@@ -353,7 +353,7 @@ def explain_naive_feasibility(m, n, S):
 	else:
 		return True, [('feasible', [])]
 
-def explain_naive_efficiency(m, n, p, nfd, pfd, S):
+def explain_naive_efficiency(m, n, p, nfd, pfd, S, options):
 	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C) if m > 0 else 0
 	pairs = []
@@ -376,7 +376,7 @@ def explain_naive_efficiency(m, n, p, nfd, pfd, S):
 					continue
 
 				# Single exchange
-				if C[i1] > C[i2] + p[j1] and not pfd[i1, j1] and not nfd[i2, j1]:
+				if C[i1] > C[i2] + p[j1] and (not options['fixed'] or not pfd[i1, j1] and not nfd[i2, j1]):
 					allocated = S_reduced[:, j1].copy()
 					S_reduced[:, j1] = False
 					S_reduced[i2, j1] = True
@@ -390,8 +390,8 @@ def explain_naive_efficiency(m, n, p, nfd, pfd, S):
 					# Pairwise exchange
 					if (j1 != j2 and S[i2, j2] and
 						p[j1] > p[j2] and C[i1] + p[j2] > C[i2] + p[j1] and
-						not pfd[i1, j1] and not pfd[i2, j2] and
-						not nfd[i2, j1] and not nfd[i1, j2]):
+						(not options['fixed'] or not pfd[i1, j1] and not pfd[i2, j2] and
+						not nfd[i2, j1] and not nfd[i1, j2])):
 						S_reduced[i1, j1] = False
 						S_reduced[i2, j2] = False
 						S_reduced[i1, j2] = True
@@ -435,7 +435,7 @@ def explain_naive_satisfaction(m, n, nfd, pfd, S):
 		return True, [('satisfies', [])]
 
 # Generate explanations using naive implementation
-def full_precomputation_explain(m, n, p, nfd, pfd, S):
+def full_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	reasons = []
 
 	ff = construct_feasibility_framework(m, n)
@@ -449,16 +449,17 @@ def full_precomputation_explain(m, n, p, nfd, pfd, S):
 	reasons += formatter.format_argument('Schedule does {}satisfies user fixed decisions',
 		explain_schedule_satisfaction(nfd, pfd, decisions_unattacked, decisions_conflicts))
 
-	ef, C, C_max = construct_efficiency_framework(m, p, nfd, pfd, S, ff, False)
+	ef, C, C_max = construct_efficiency_framework(m, p, nfd, pfd, S, ff, False, options)
 	efficiency_unattacked, efficiency_conflicts = explain_stability(S, ef,
 		feasibility_unattacked, feasibility_conflicts)
+
 	reasons += formatter.format_argument('Schedule is {}efficient',
 		explain_efficiency(p, S, C, C_max, efficiency_unattacked, efficiency_conflicts))
 
 	return reasons
 
 # Favour memory over CPU resource consumption
-def partial_precomputation_explain(m, n, p, nfd, pfd, S):
+def partial_precomputation_explain(m, n, p, nfd, pfd, S, options):
 	reasons = []
 	C = schedule.calc_completion_times(p, S)
 	C_max = np.max(C) if m > 0 else 0
@@ -476,7 +477,7 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S):
 		return compute_partial_conflicts(S, df_partial, fc_partial, i, j, False)
 
 	def ef_partial(i, j):
-		return construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i, j)
+		return construct_partial_efficiency_framework(m, p, nfd, pfd, S, C, C_max, i, j, options)
 
 	def ec_partial(i, j):
 		return compute_partial_conflicts(S, ef_partial, fc_partial, i, j, False)
@@ -497,26 +498,26 @@ def partial_precomputation_explain(m, n, p, nfd, pfd, S):
 
 	return reasons
 
-def naive_explain(m, n, p, nfd, pfd, S):
+def naive_explain(m, n, p, nfd, pfd, S, options):
 	return (
 		formatter.format_argument('Schedule is {}feasible',
 			explain_naive_feasibility(m, n, S)) +
 		formatter.format_argument('Schedule does {}satisfies user fixed decisions',
 			explain_naive_satisfaction(m, n, nfd, pfd, S)) +
 		formatter.format_argument('Schedule is {}efficient',
-			explain_naive_efficiency(m, n, p, nfd, pfd, S)))
+			explain_naive_efficiency(m, n, p, nfd, pfd, S, options)))
 
 # Switch between different explanation methods
 def explain(m, n, p, nfd, pfd, S, options):
 	if options['naive']:
 		# Just do explaining without all this complicated stuff
-		reasons = naive_explain(m, n, p, nfd, pfd, S)
+		reasons = naive_explain(m, n, p, nfd, pfd, S, options)
 	elif options['partial']:
 		# Saves a lot of memory but a bit slower
-		reasons = partial_precomputation_explain(m, n, p, nfd, pfd, S)
+		reasons = partial_precomputation_explain(m, n, p, nfd, pfd, S, options)
 	else:
 		# Faster but naive implementation is easier to debug
-		reasons = full_precomputation_explain(m, n, p, nfd, pfd, S)
+		reasons = full_precomputation_explain(m, n, p, nfd, pfd, S, options)
 
 	# Converts reasons into [(readable reason, [(readable action, internal action)])]
 	lines = []

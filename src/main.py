@@ -70,6 +70,11 @@ def get_arguments():
 		help='do not use argumentation',
 		action='store_true')
 	parser.add_argument(
+		'-f',
+		'--fixed_decision_aware',
+		help='force efficiency to respect fixed decisions',
+		action='store_true')
+	parser.add_argument(
 		'-t',
 		'--time_limit',
 		default=solver.default_time_limit,
@@ -134,7 +139,8 @@ def run_arguments(args):
 	options = {
 		'graphical': args.graphical,
 		'partial': args.partial,
-		'naive': args.naive
+		'naive': args.naive,
+		'fixed': args.fixed_decision_aware
 	}
 
 	# Do something with a schedule
