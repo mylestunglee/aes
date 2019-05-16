@@ -94,7 +94,7 @@ In this chapter, we reprint the proofs in section \ref{verifyingstability}. We w
 
 \end{proof}
 
-\section{\textsc{Compute-Stability} is correct}
+\section{\textsc{Explain-Stability} is correct}
 
 \begin{algorithm}[H]
 	\begin{algorithmic}[1]
@@ -109,7 +109,7 @@ In this chapter, we reprint the proofs in section \ref{verifyingstability}. We w
 \end{algorithm}
 
 \begin{proof}
-	Assume \textsc{Compute-Stability}$(\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}})=\pair{\mathbf{u}}{\mathbf{c}}$. From inspection of the algorithm, $\mathbf{u}$ and each sub-matrix of $\mathbf{c_{i,j}}$ is assigned exactly once in \textsc{Compute-Stability}, so $Q_2$ and $Q_5$ holds, meaning we can use Lemmas \ref{computeunattacked} and \ref{computepartialconflicts}. 
+	Assume \textsc{Explain-Stability}$(\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}})=\pair{\mathbf{u}}{\mathbf{c}}$. From inspection of the algorithm, $\mathbf{u}$ and each sub-matrix of $\mathbf{c_{i,j}}$ is assigned exactly once in \textsc{Explain-Stability}, so $Q_2$ and $Q_5$ holds, meaning we can use Lemmas \ref{computeunattacked} and \ref{computepartialconflicts}. 
 	\begin{align*}
 		Q_2: \textsc{Compute-Unattacked}(\mathbf{x},\twoheadrightarrow,\bar{\mathbf{u}})=\mathbf{u}
 	\end{align*}
