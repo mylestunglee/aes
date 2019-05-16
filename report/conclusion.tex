@@ -22,6 +22,19 @@ Argumentation brings an alternative representation of conflicts or constraints. 
 \linespace
 We have shown in Chapter \ref{properties} that is it possible to translate new constraints to new frameworks. Each constraint and their explanations are loosely-coupled by an AAF. We have attempted to link efficiency and fixed user decisions by defining fixed-decision aware exchange properties. However, this link was inspired by intuitive interpretation of the problem. More generally, schedules can be subject to multi-objective optimisation. If we consider conflicts between objectives, rather than conflicts between possible schedules under a mathematical constraint, then we use can argumentation to compromise between objectives. A drawback with this approach is these explanations are restricted to a dialogue between objectives, and not the schedule itself. This would give limited explanation to why an existing schedule is good.
 
+\begin{figure}
+	\input{problempath}
+	\caption{Venn diagram of makespan schedule properties with a local schedule optimisation path.}
+\end{figure}
+
+
+
+\begin{figure}
+	\input{problemspace}
+	\caption{Complete makespan problem space for $m=n=2$, $\mathbf{p}=[1,1]$, $D^-=\{\pair{2}{1}\}$ and $D^+=\varnothing$.}
+\end{figure}
+
+
 \section{Future Work}
 
 \begin{itemize}

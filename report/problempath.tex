@@ -1,0 +1,20 @@
+\centering
+\begin{tikzpicture}
+	\def\firstcircle{(0,0) circle (2cm)}
+	\def\secondcircle{(60:3cm) circle (2cm)}
+	\def\thirdcircle{(0:3cm) circle (2cm)}
+
+	\fill[red,opacity=0.3] \firstcircle;
+	\fill[green,opacity=0.3] \secondcircle;
+	\fill[blue,opacity=0.3] \thirdcircle;
+	\draw \firstcircle node[] {feasible};
+	\draw \secondcircle node [] {$D^+,D^-$ satisifed};
+	\draw \thirdcircle node [] {efficient};
+	
+	\fill[black](-3, 4) circle (0.1cm);
+	\draw[arrow](-3,4)--(-2,2.7);
+	\draw[arrow](-2,2.7)--(-1,2);
+	\draw[arrow](-1,2)--(0,0.7);
+	\draw[arrow](0,0.7)--(0.9,1);
+	\draw[arrow](0.9,1)--(1.7,0.8);
+\end{tikzpicture}
