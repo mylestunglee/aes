@@ -1,18 +1,8 @@
 \begin{center}
 \begin{tikzpicture}
-	\fill[red,opacity=0.15] (-0.75,-0.75) rectangle (7.25,1.75);
-	\fill[red,opacity=0.15] (7.25,-0.75) rectangle (9.75,7.25);
-	\fill[red,opacity=0.15] (1.75,7.25) rectangle (9.75,9.75);
-	\fill[red,opacity=0.15] (-0.75,1.75) rectangle (1.75,9.75);
-	% not sat. fixed decisions
-	\fill[green,opacity=0.15] (-1,-1) rectangle (10,4.5);
-	% not efficient
-	\fill[blue,opacity=0.15] (2.75,4.75) rectangle (4.25,6.25);
-	\fill[blue,opacity=0.15] (4.75,2.75) rectangle (6.25,4.25);
-
-	%\node[fill=red!15, minimum width=4cm] at (1, -1.5){infeasible};
-	%\node[fill=blue!15, minimum width=4cm] at (1, -2.1){inefficient};
-	%\node[fill=green!15, minimum width=4cm] at (1, -2.7){unsatisfied decisions};
+	\fill[green,opacity=0.15] (5,5) rectangle (6,6);
+	\fill[red,opacity=0.15] (5,5) rectangle (6,6);
+	\fill[blue,opacity=0.15] (5,5) rectangle (6,6);
 
 	\node(aa) at (0, 9){$\begin{bmatrix}0&0\\0&0\end{bmatrix}$};
 	\node(ab) at (3, 8){$\begin{bmatrix}0&0\\0&1\end{bmatrix}$};
@@ -38,12 +28,12 @@
 	\draw[arrow](aa) -- (ab);	
 	\draw[arrow](aa) to [bend left=20](ac);	
 	\draw[arrow](aa) -- (ba);	
-	\draw[arrow](aa) to [bend right=20](ca);
+	\draw[arrow,red](aa) to [bend right=20](ca);
 	
 	\draw[arrow](ad) to [bend right=20](ab);
 	\draw[arrow](ad) -- (ac);
 	\draw[arrow](ad) -- (bd);
-	\draw[arrow](ad) to [bend left=20](cd);
+	\draw[arrow,red](ad) to [bend left=20](cd);
 
 	\draw[arrow](da) to [bend left=20](ba);
 	\draw[arrow](da) -- (ca);
@@ -56,29 +46,29 @@
 	\draw[arrow](dd) -- (dc);
 
 
-	\draw[arrow](ab) -- (bb);
-	\draw[arrow](ab) to [bend right=40](cb);
+	\draw[arrow,red](ab) -- (bb);
+	\draw[arrow,red](ab) to [bend right=40](cb);
 	
 	\draw[arrow](ac) -- (bc);
-	\draw[arrow](ac) to [bend left=40](cc);
+	\draw[arrow,red](ac) to [bend left=40](cc);
 	
-	\draw[arrow](ba) -- (bb);
+	\draw[arrow,red](ba) -- (bb);
 	\draw[arrow](ba) to [bend left=40](bc);
 	
-	\draw[arrow](bd) to [bend right=40](bb);
+	\draw[arrow,red](bd) to [bend right=40](bb);
 	\draw[arrow](bd) -- (bc);
 	
 	\draw[arrow](ca) -- (cb);
-	\draw[arrow](ca) to [bend right=40](cc);
+	\draw[arrow,red](ca) to [bend right=40](cc);
 	
 	\draw[arrow](cd) to [bend left=40](cb);
-	\draw[arrow](cd) -- (cc);
+	\draw[arrow,red](cd) -- (cc);
 	
 	\draw[arrow](db) to [bend left=40](bb);
 	\draw[arrow](db) -- (cb);
 	
 	\draw[arrow](dc) to [bend right=40](bc);
-	\draw[arrow](dc) to (cc);
+	\draw[arrow,red](dc) to (cc);
 	
 	
 	\draw[arrow](bb) -- (bc);

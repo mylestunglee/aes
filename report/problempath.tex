@@ -4,18 +4,32 @@
 	\def\secondcircle{(60:3cm) circle (2cm)}
 	\def\thirdcircle{(0:3cm) circle (2cm)}
 
-	\fill[red,opacity=0.3] \firstcircle;
-	\fill[green,opacity=0.3] \secondcircle;
-	\fill[blue,opacity=0.3] \thirdcircle;
-	\draw \firstcircle node[] {feasible};
-	\draw \secondcircle node [] {$D^+,D^-$ satisifed};
-	\draw \thirdcircle node [] {efficient};
+	\fill[red,opacity=0.2] \firstcircle;
+	\fill[green,opacity=0.2] \secondcircle;
+	\fill[blue,opacity=0.2] \thirdcircle;
+	\node at (0, 0){feasible};
+	\node at (60:3cm){$D$ is satisifed};
+	\node at (0:3cm) {efficient};
 	
-	\fill[black](-3, 4) circle (0.1cm);
-	\draw[arrow](-3,4)--(-2,2.7);
-	\draw[arrow](-2,2.7)--(-1,2);
-	\draw[arrow](-1,2)--(0,0.7);
-	\draw[arrow](0,0.7)--(0.9,1);
-	\draw[arrow](0.9,1)--(1.7,0.8);
+	\node[dot](a) at (-3, 4){};
+	\node[dot](b) at (-2,2.7){};
+	\node[dot](c) at (-1,2){};
+	\node[dot](d) at (-0.5,1.1){};
+	\node[dot](e) at (0.7,1.3){};
+	\node[dot](e1) at (0, 2.5){};
+	\node[dot](e2) at (2.2, -0.8){};
+	\node[dot](f) at (1.6,0.8){};
+	\node[dot](f1) at (1.7,2){};
+	
+	\draw[arrow](a)--(b);
+	\draw[arrow](b)--(c);
+	\draw[arrow](c)--(d);
+	\draw[arrow](d)--(e);
+	\draw[arrow](e)--(f);
+	
+	\draw[arrow, red](d)--(e1);
+	\draw[arrow, red](e)--(f1);
+	\draw[arrow, red](e2)--(d);
+	\draw[arrow, red](e)--(e2);
 \end{tikzpicture}
 \end{center}

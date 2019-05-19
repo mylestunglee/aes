@@ -20,20 +20,25 @@ Without knowledge of argumentation, one could define mappings between mathematic
 \linespace
 Argumentation brings an alternative representation of conflicts or constraints. This representation is competitive in recommender systems \cite{recommend}, where chain of reasons are constructed. In abstract argumentation, chain of reasons are constructed when an extension depth-recursively effects satisfaction. This is true with admissible and complete extensions. However, with stability and conflict-freeness, as used in our algorithms, the counter-arguments for a stable or a conflict-free extension does not recurse on the AAF. A potential solution to make better explanations, is to verify that mathematical constraints are admissible-modellable. However, at the time of writing, the notion of admissible and linear constraints have little connection. 
 \linespace
-We have shown in Chapter \ref{properties} that is it possible to translate new constraints to new frameworks. Each constraint and their explanations are loosely-coupled by an AAF. We have attempted to link efficiency and fixed user decisions by defining fixed-decision aware exchange properties. However, this link was inspired by intuitive interpretation of the problem. More generally, schedules can be subject to multi-objective optimisation. If we consider conflicts between objectives, rather than conflicts between possible schedules under a mathematical constraint, then we use can argumentation to compromise between objectives. A drawback with this approach is these explanations are restricted to a dialogue between objectives, and not the schedule itself. This would give limited explanation to why an existing schedule is good.
+We have shown in Chapter \ref{properties} that is it possible to translate new constraints to new frameworks. Each constraint and their explanations are loosely-coupled by an AAF. We have attempted to link efficiency and fixed user decisions by defining fixed-decision aware exchange properties. However, this link was inspired by intuitive interpretation of the problem. More generally, schedules can be subject to multi-objective optimisation. If we consider conflicts between objectives, rather than conflicts between possible schedules under a mathematical constraint, then we use can argumentation to compromise between objectives. By computing admissibility, we can infer an explanation from the chain of conflicting arguments. However, the depth of the explanation is restricted to the number of schedule properties. Given we have only three properties, these explanations do not offer much beyond a simple inspection of a schedule.
 
 \begin{figure}
+	\label{problempath}
 	\input{problempath}
-	\caption{Venn diagram of makespan schedule properties with a local schedule optimisation path.}
+	\caption{Venn diagram of makespan schedule properties with a local schedule optimisation path. Red arrows represent a schedule becoming unsatisfied of some property.}
 \end{figure}
 
 
 
 \begin{figure}
+	\label{problemspace}
 	\input{problemspace}
-	\caption{Complete makespan problem space for $m=n=2$, $\mathbf{p}=[1,1]$, $D^-=\{\pair{2}{1}\}$ and $D^+=\varnothing$.}
+	\caption{Complete makespan problem space for $m=n=2$, $\mathbf{p}=[1,1]$, $D^-=\{\pair{2}{1}\}$ and $D^+=\varnothing$. The shaded schedule is satisfies all properties.}
 \end{figure}
 
+As illustrated in Figure \ref{problempath}, our tool can take a schedule, possibly an empty schedule, and iteratively improve on it. However, at certain intermediate schedules, we may not improve the schedule in trivial ways to satisfy schedule properties, possibly because of nurse preferences. This results in steps which contradict already-satisfied properties, as highlighted in red. Given an explanation constructed using argumentation, we can justify the compromise between schedule properties using preferences.
+\linespace
+It is possible that all possible improvements on a schedule may contradict already-satisfied properties. Consider figure \ref{problemspace}, where we give a concrete problem. At schedule $[[0\ 0]\ [0\ 1]]$, all improvements are marked as red. Suppose we have no preferences on schedules. In this case, we cannot justify making any improvements because we enforce all schedule properties to hold. There are better schedules, but they are inaccessible given our current schedule. In other words, we have reached an local optimal using explanations. This motivates to use global search, but as we stated before, this in intractable for arbitrary schedule spaces. Therefore, there is a clear trade-off between expressibility and computational tractability of explanations. Given the scope of this project, there is no inconclusive method to compute complete generalised explanations.
 
 \section{Future Work}
 
