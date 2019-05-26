@@ -6,11 +6,11 @@ The success of the project can be measured by comparing the project results with
 \linespace
 Arguably, the most important outcome of this project is that the tool is functionality correct. This means the tool is required to explain schedules for feasibility, efficiency and satisfaction with respect to user decisions.
 \linespace
-One objective is to implement an accessible tool. To measure accessibility, we can refer to the tractability complexity from explanations. The length of explanations either in the number of words or characters may be correlated with understandability. Alternatively, we can conduct a survey targeted towards potential users. Because the understandability of explanations are difficult to measure, we will attempt to quantity this using multiple choice questions. To carefully evaluate explanations, one would need to refer to cognitive science, which is beyond the scope of this project. In addition, we can measure performance to reflect responsiveness and scalability of the tool. This may be achieved by using profiling utilities to measure performance metrics such as time to generate explanations and memory consumption. We will have two groups, one group without access to the tool, another group with access. By using these metrics, we can measure how accessible our tool is.
-\linespace
-We can also use the survey to ask how well our tool performs with respect to applicability and knowledge transfer. We can also infer the practical limitations from the tool to measure the applicability.
+One objective is to implement an accessible tool. To measure accessibility, we can refer to the tractability complexity from explanations. The length of explanations either in the number of words or characters may be correlated with understandability. In addition, we conduct a survey targeted towards potential users. Because the understandability of explanations are difficult to measure, we will use open-ended questions. To carefully evaluate explanations, one would need to refer to cognitive science, which is beyond the scope of this project. We will have two groups, one group without access to the tool, another group with access. By using these metrics, we can measure the accessibility of our tool. Moreover, we can measure performance to reflect responsiveness and scalability of the tool. This may be achieved by using profiling utilities to measure performance metrics such as execution time and memory consumption. 
 
 \section{Theoretical Results}
+
+We summarise our complexity results from Chapter \ref{implementation}.
 
 \begin{figure}[H]
 	\begin{tabular}{lccc}
@@ -37,11 +37,11 @@ Using an naive explanation approach only improves the computational complexity o
 
 \section{Practical Results} 
 
-I will be able to demonstrate the tool, and its functionality. This will be reflected in the report through a user documentation guide.
+The tool's functionality is demonstrated in the user documentation guide in Appendix \ref{userguide}. We will compare different implementation methods and see how fit for purpose our tool is through a survey.
 
-\subsection{Full versus Partial Precomputation}
+\subsection{Comparison of Explanation Generation Methods}
 
-We will compare two algorithmic approaches to AAF construction with the naive approach without argumentation. The algorithms are implemented, then profiled for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of dual-core CPU at 2GHz with 2GiB RAM.
+We will compare two algorithmic approaches to AAF construction with and the naive approach without argumentation. The algorithms are implemented, then profiled for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of dual-core CPU at 2GHz with 2GiB RAM.
 \linespace
 Time comparison:
 \begin{itemize}
@@ -88,7 +88,11 @@ Memory comparison:
 	\caption{Maximum allocated memory comparison where $m=10$ and $0\leq n\leq 800$ with 8000 samples.}
 \end{figure}
 
-\section{Feedback}
+\subsection{Survey Responses}
+
+...
+
+\subsection{Feedback}
 
 During development of the tool, I asked my colleagues and friends for advice about the usability of my tool.
 

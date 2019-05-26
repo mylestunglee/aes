@@ -1,5 +1,15 @@
 \chapter{Conclusion}
 
+\section{Contributions}
+We give details on our contributions as stated in Section \ref{introcontributions}.
+
+\begin{itemize}
+	\item Implementation a new tool \emph{\toolname}, as in Chapter \ref{implementation}.
+	\item Algorithms and their discussion, balances between computational complexity and explanation expressibility, and optimisations.
+	\item Theoretical applications of argumentation with Theorem \ref{modelling} and \ref{intervalfeasibilty}, that use that argumentation frameworks can be overlapped to aggregate schedule properties.
+	\item A discussion on applicability of argumentation, as discussed in this chapter.
+\end{itemize}
+
 \section{Limitations}
 
 Argumentation interfaces between optimisation solvers and explanation generators. By computing satisfaction of extensions, such as stability, solvers are exposed as white-box algorithms, transforming argumentation semantics into human-understandable explanations. However, this application of argumentation is flawed in practice. 
@@ -22,15 +32,13 @@ Argumentation brings an alternative representation of conflicts or constraints. 
 \linespace
 We have shown in Chapter \ref{properties} that is it possible to translate new constraints to new frameworks. Each constraint and their explanations are loosely-coupled by an AAF. We have attempted to link efficiency and fixed user decisions by defining fixed-decision aware exchange properties. However, this link was inspired by intuitive interpretation of the problem. More generally, schedules can be subject to multi-objective optimisation. If we consider conflicts between objectives, rather than conflicts between possible schedules under a mathematical constraint, then we use can argumentation to compromise between objectives. By computing admissibility, we can infer an explanation from the chain of conflicting arguments. However, the depth of the explanation is restricted to the number of schedule properties. Given we have only three properties, these explanations do not offer much beyond a simple inspection of a schedule.
 
-\begin{figure}
+\begin{figure}[H]
 	\label{problempath}
 	\input{problempath}
 	\caption{Venn diagram of makespan schedule properties with a local schedule optimisation path. Red arrows represent a schedule becoming unsatisfied of some property.}
 \end{figure}
 
-
-
-\begin{figure}
+\begin{figure}[H]
 	\label{problemspace}
 	\input{problemspace}
 	\caption{Complete makespan problem space for $m=n=2$, $\mathbf{p}=[1,1]$, $D^-=\{\pair{2}{1}\}$ and $D^+=\varnothing$. The shaded schedule is satisfies all properties.}

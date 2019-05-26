@@ -1,7 +1,7 @@
 \chapter{Stability Algorithm Proof}
 \label{stabilityproof}
 
-In this chapter, we reprint the proofs in section \ref{verifyingstability}. We will define some notation to make the proofs more clear. Let $\prec$ be the lexicographical ordering on $Args$, such that $\pair{i_1}{j_1}\prec\pair{i_2}{j_2}$ iff $i_1<i_2\lor i_1=i_2\land j_1<j_2$. Let $Q_l$ be the post-condition of line $l$, which states a property about the current state of execution through the algorithm. We will use logical variables $k$ and $\ell$ to differentiate from program variables $i$ and $j$, in functional correctness proofs using Hoore logic \cite{hoare}.
+In this chapter, we reprint lemmas and theorems in section \ref{verifyingstability}. We will define some notation to make the proofs more clear. Let $\prec$ be the lexicographical ordering on $Args$, such that $\pair{i_1}{j_1}\prec\pair{i_2}{j_2}$ iff $i_1<i_2\lor i_1=i_2\land j_1<j_2$. Let $Q_l$ be the post-condition of line $l$, which states a property about the current state of execution through the algorithm. We will use logical variables $k$ and $\ell$ to differentiate from program variables $i$ and $j$, in functional correctness proofs using Hoore logic \cite{hoare}.
 
 \section{\textsc{Compute-Unattacked} is correct}
 
@@ -188,5 +188,5 @@ In this chapter, we reprint the proofs in section \ref{verifyingstability}. We w
 		\item $\beta$\hfill 12, 15
 	\end{enumerate}
 
-	We have shown that $\alpha$ and $\beta$ holds, which intuitively means that $\mathbf{u}$ and $\mathbf{c}$, respectively, are computed correctly.
+	We have shown that $\alpha$ and $\beta$ holds, which intuitively means that $\mathbf{u}$ and $\mathbf{c}$ are computed correctly, respectively.
 \end{proof}
