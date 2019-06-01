@@ -51,3 +51,9 @@
 {\addtolength{\itemindent}{2em}}%
 {\addtolength{\itemindent}{-2em}}
 
+\newcommand{\unchapter}[1]{%
+  \begingroup
+  \let\@makechapterhead\@gobble % make \@makechapterhead do nothing
+  \chapter{#1}
+  \endgroup
+}

@@ -27,13 +27,19 @@
 	\input{conclusion}
 	
 	\begin{appendices}
-		\input{stability}
 		\input{notation}
+		\input{stability}
 		\input{userguide}
 		%\input{diagram}
+
+		% no chapter sectioning
+		\unchapter{Questionnare}
+		\includepdf[pages=-]{questionnaire.pdf}
 	\end{appendices}
 
 	\cleardoublepage
+	% warning, set when needed
+	\setcounter{page}{68}
 	\bibliography{bibliography}
 	\addcontentsline{toc}{chapter}{Bibliography}
 	\bibliographystyle{ieeetr}
