@@ -88,9 +88,37 @@ Memory comparison:
 	\caption{Maximum allocated memory comparison where $m=10$ and $0\leq n\leq 800$ with 8000 samples.}
 \end{figure}
 
-\subsection{Survey Responses}
+\subsection{Survey}
 
-Used two sample groups, one group without access to the tool, and one group with access. In both groups, we used the same questionnaire, which can be found in the appendix.
+Used two sample groups, one group without access to the tool, and one group with access. In both groups, we used the same questionnaire, which can be found in the appendix. Each question was designed with purpose. We try not to use too many machines and jobs to ensure that the questions could be done without too much effort. Note we do not ask questions about feasibility because its validation is trivial. 
+
+\begin{itemize}
+	\item Question 1 shows a schedule which is efficient, but not optimal. The tool does not explain for optimality, so users can see there are cases in which the tool may not be helpful.
+	\item Question 2 shows a schedule with more machines and jobs, to test whether users can find improvements in a non-trivial schedule. It is possible to optimise the schedule in one single exchange, but this may not be obvious.
+	\item Question 3 shows an application of fixed decisions.
+	\item Question 4 explores pairs of jobs, which can be modelled using fixed decisions. The question explores how intuition can be formed using additional constraints.
+	\item Question 5 explores replanning of a schedule by insertion of a new job. Clearly, trivially inserting a new job does not result in a optimal schedule. It is possible to arrange the schedule in one single exchange before insertion to achieve an optimal updated schedule.
+\end{itemize}
+
+Although these five questions do not cover the tool's complete functionality, they cover questions and seek explanations that require intuition, with or without the tool. This is important in assessing how users can operate the tool in non-trivial cases. 
+
+\begin{figure}[H]
+	\label{notooltable}
+	\begin{center}
+		\begin{tabular}{c | c c c c}
+			Question & Incorrect & Incomplete & Complex & Correct \\
+			\hline
+			1 & 0 & 2 & 0 & 8 \\
+			2 & 2 & 1 & 2 & 5 \\
+			3 & 3 & 0 & 0 & 7 \\
+			4 & 2 & 5 & 0 & 3 \\
+			5 & 2 & 1 & 3 & 4 \\	
+		\end{tabular}
+	\end{center}
+	\caption{Aggregated results from Section \ref{notool}}
+\end{figure}
+
+In this survey, we asked a wide demographic, from GCSE students to graduates, including people who do have little knowledge of computer science or mathematics. From Figure \ref{notooltable}, we see that the majority of respondents are able to get most questions correct. Some responses are considered complex, when their answers are technically correct, but give more steps than necessary. This may hint that some intuitive ways to optimise a schedule may not minimise the number of job exchanges. Some responses are considered incomplete, where only the question was partially answered. We can see in more complex schedules that users give more complex answers. Excluding outliers, the questionnaire took 15 minutes on average to complete.
 
 \subsection{Feedback}
 
