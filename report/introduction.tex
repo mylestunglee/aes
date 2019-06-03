@@ -2,36 +2,36 @@
 	
 \section{Motivation}
 
-Scheduling arises in countless decision processes and its abstract nature results in a wide range of practical applications, such as in healthcare \cite{sanr,operations}. Scheduling problems are accurately modelled in mathematics, hence scheduling is often interpreted as a class of mathematical optimisation problems. With many mature and developed optimisation solvers \cite{clp}, solvers can find solutions to large scheduling problems quickly, which would have been impractical using manual optimisation techniques. However, solver scalability and efficiency often lead to complex algorithms. Such complexity combined with mathematical formulations of scheduling, result in users interpreting solvers and solutions as black-boxes. Therefore, decision making is often not transparent.
+Scheduling arises in countless decision processes and its abstract nature results in a wide range of practical applications, such as in healthcare \cite{sanr,operations}. Scheduling problems are accurately modelled in mathematics, hence scheduling is often interpreted as a class of mathematical optimisation problems. With many mature and developed optimisation solvers \cite{clp}, they can find solutions to large scheduling problems quickly, which are impractical using manual optimisation techniques. However, solver scalability and performance considerations often lead to complex algorithms. This combined with mathematical formulations of scheduling, result in users interpreting solvers and solutions as black boxes. Therefore, decision-making is often not transparent.
 \linespace
-Transparency of decision making is important. Users require a means to understand why a schedule, whether a solution of a solver or not, is reasonable given a context. For example, hospital managers may seek to understand the efficiency of their staff and resources. Schedules may need to be robust to unpredictable changes in staff and resources, such as a nurse being unavailable to attend patients due to personal reasons. In other settings, schedules may need to minimise the number of staff to maximise profits while fulfilling all staff and patients requirements.
+Transparency of decision making is important. Users require to understand why a particular schedule is reasonable. For example, hospital managers may seek to understand the efficiency of their staff and resources. Schedules may need to be robust to unpredictable changes in staff and resources, such as a nurse being unavailable to attend patients. In other scenarios, schedules may need to minimise staff to maximise profits while fulfilling all staff and patient requirements.
 \linespace
 Explanations are vital in communication for understanding. With many possible schedules and many variations of scheduling problems \cite{sta}, it is impractical to manually-craft explanations for every schedule of every variation. This motivates a tool to generate clear explanations.
 
 \section{Objectives}
 
-The first main objective is to devise and implement a tool that explains an solver's scheduling solutions by human-understandable means, and allows the user to interact with the solver in a human-friendly manner. By using the explanation methodology outlined using argumentation \cite{aes}, the user can easier understand scheduling in a practical environments such as nurse rostering and dialysis scheduling. Hence, analysis of such methodology important to understand the applicability of argumentation in practical settings.
+The first objective is to devise and implement an interactive tool that explains solvers' solutions so that schedules are human-understandable. We implement the explanation methodology outlined in the paper \cite{aes}. With argumentation, the user can easily understand scheduling in a practical environments such as nurse rostering and dialysis scheduling. The analysis of such methodology is important to understand the applicability of argumentation in practical settings.
 \linespace
-The second main objective is to extend the theoretical or practical capabilities of argumentation for scheduling. Extensions may include interval scheduling, shop scheduling and job-dependent scheduling.
+The second objective is to extend the theoretical and practical capabilities of argumentation for scheduling. Extensions may include interval scheduling, shop scheduling and job-dependent scheduling.
 
 \section{Challenges}
 
-A tool satisfying such objectives are subjected solving the challenges:
+A tool satisfying such objectives are subjected solving the following challenges:
 \begin{enumerate}
-	\item\textbf{Trust:} Users of the tool need to be confident that the explanations generated are true. This requires correctness of algorithms proposed and implemented.
-	\item\textbf{Accessibility:} Explanations generated from this tool are required to be accessible to people without domain-specific knowledge of optimisation or argumentation. The tool should be accessible to computer novices.
+	\item\textbf{Trust:} Users of the tool need to be confident that the explanations generated are true. That is, the algorithms proposed and implemented are correct.
+	\item\textbf{Accessibility:} Explanations generated from this tool are required to be accessible to computer novices without domain-specific knowledge of optimisation or argumentation.
 	\item\textbf{Applicability:} Explanations should relate to makespan schedules. The tool should generate clear explanations promptly to users.
 	\item\textbf{Knowledge transfer:} Explanations are constructed using knowledge structures, commonly represented using natural languages or diagrams. A challenge would be to effectively explore the usefulness of using natural languages compared to diagrams.
-	\item\textbf{Background:} Explainable planning is relatively new research area compared to optimisation \cite{pe}. Challenges arises from finding related literate on the title.
+	\item\textbf{Background:} Explainable planning is relatively new research area compared to optimisation \cite{pe}. Challenges arise from finding related literature on the project area.
 \end{enumerate}
 
 \section{Contributions}
 \label{introcontributions}
 
-The main contributions of this report are listed below:
+The main contributions of this project are listed as follows:
 \begin{itemize}
-	\item A new tool \emph{\toolname} that implements the concepts behind using argumentation for optimisation for makespan scheduling.
-	\item Algorithms and their optimisations, alongside with some proofs.
-	\item Theoretical applications of argumentation with two theorems.
+	\item A new tool \emph{\toolname} that implements the concepts behind using argumentation for makespan scheduling.
+	\item Algorithms and their optimisations, alongside with proofs as necessary.
+	\item Theoretical applications of argumentation with theorems.
 	\item A discussion on applicability of argumentation.
 \end{itemize}

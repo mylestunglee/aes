@@ -1,10 +1,10 @@
 \chapter{Background}
 
-We will first introduce optimisation and argumentation, where our project lies at their intersection. Afterwards, we will explore lightly on the notion of explanations. Finally, we will conduct two case studies that explore existing tools.
+We will first introduce optimisation and argumentation, where our project lies at their intersection. Afterwards, we will lightly explore on the notion of explanations. Finally, we will conduct two case studies that explore existing tools.
 
 \section{Optimisation}
 
-Optimisation is the process of finding an optimal decision with respect to constraints given a set of possible decisions. The optimal decision is measured by a cost function, that typically determines a numerical value representing how good a decision is. The problem is to find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing, science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding arbitrary optimal decisions. There is a wide range of techniques for optimisation, we focus on mixed-integer linear programming.
+Optimisation is the process of finding an optimal decision with respect to constraints, given a set of possible decisions. The optimal decision is measured by a cost function, which typically determines a numerical value representing how good a decision is. The objective is to find the optimal decision, either as a minima or maxima using systematic methods. Applications of optimisation occur in many practical situations such as in engineering, manufacturing and science. In engineering applications, accurate modelling of a problem may require discrete decisions and non-linear relationships, resulting in difficulty in finding optimal decisions. There are a wide range of techniques for optimisation. In this project, we focus on mixed-integer linear programming, in particular makespan scheduling.
 
 \begin{figure}[H]
 	\begin{center}
@@ -22,7 +22,14 @@ Optimisation is the process of finding an optimal decision with respect to const
 	\caption{Abstraction of problem solving}
 \end{figure}
 
-Real-life problems need to be modelled to be optimised. Problems are formulated using constraints and a cost function. Consider the following linear programming example. A person wants to sell some drinks. Each unit of hot chocolate requires 1 litre of milk and 3 bars of chocolate. Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate. The person only has 5 units of milk and 12 bars of chocolate. The person sells a unit of hot chocolate for 6 and a unit of milkshake for 5 monetary units. What is the best strategy for maximising profit given that all units produced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced, respectively.
+Real-life problems are formulated mathematically to be optimised. Consider the following linear programming example where person wants to sell some drinks.
+\begin{itemize}
+	\item Each unit of hot chocolate requires 1 litre of milk and 3 bars of chocolate.
+	\item Each unit of milkshake requires 1 litre of milk and 2 bars of chocolate.
+	\item The person only has 5 units of milk and 12 bars of chocolate.
+	\item The person sells a unit of hot chocolate for 6 and a unit of milkshake for 5 monetary units.
+\end{itemize}
+What is the best strategy for maximising profit given that all units produced are sold? The problem is abstracted as follows. Let $x$ and $y$ be the number of hot chocolates and milkshakes produced respectively.
 \begin{align*}
 	\max_{x,y}\ &6x+5y&\text{subject to:}\\
 	&x+y\leq 5&\text{milk resource constraint}\\
@@ -30,14 +37,14 @@ Real-life problems need to be modelled to be optimised. Problems are formulated 
 	&x,y\geq 0&\text{non-negative units}\\
 	&x,y\in\mathbb{N}&\text{whole units only}\\
 \end{align*}
-The problem is sufficiently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted as that the best strategy is producing 2 units of hot chocolate and 3 units of milkshake.
+The problem is sufficiently small to be solved by inspection, but may also be solved using graphical methods or a simplex algorithm. The optimum is $x^*=2$ and $y^*=3$, which is interpreted by the best strategy is to produce 2 units of hot chocolate and 3 units of milkshake.
 \linespace
-In non-linear optimisation problems, finding a global optima is not trivial. For gradient-based and local-search algorithms, estimated solutions can return a local optima. This is typically not favoured, however for large problems, finding a global optima result in non-polynomial complexity for arbitrary dimensional problems. In context of the project, it is infeasible to compute a complete explanation of optimality in polynomial time.
+In non-linear or large optimisation problems, finding a global optima is not trivial. For gradient-based and local-search algorithms, estimated solutions can return a local optima. This is typically undesirable, however, finding a global optima result in non-polynomial complexity for arbitrary dimensional problems. In context of the project, it is intractable to compute a complete explanation of optimality in polynomial time.
 
 \subsection{Makespan Scheduling}
 \label{makespan}
 
-The simplistic definition of makespan scheduling gives a good foundation for experimenting with argumentation. Makespan schedules are defined by a $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $j\in\mathcal{J}$, has an associated processing time $p_j\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a feasible schedule, each job is assigned to a machine non-preemptively. For some $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ be the assignment matrix that allocates jobs to machines. Formally, makespan schedules are modelled as an optimisation problem:
+The simplistic definition of makespan scheduling gives a good foundation for experimenting with argumentation. Makespan schedules are defined by $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $j\in\mathcal{J}$, has an associated processing time $p_j\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a schedule to be feasible, each job is assigned to a machine non-preemptively. For some machine $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ denote the assignment matrix that represents the allocation jobs to machines. Formally, makespan schedules are modelled as an optimisation problem:
 \begin{align*}
 	\min_{C_{\max},\mathbf{C},\mathbf{x}}\ &C_{\max}&\text{ subject to:}\\
 	\forall i\in\mathcal{M}.\ &C_{\max}\geq C_i\\
@@ -103,7 +110,7 @@ Makespan schedules are often represented using cascade charts. The charts shows 
 \subsection{User Fixed Decisions}
 \label{fixeddecisions}
 
-To accommodate practical applications of makespan schedules, user positive and negative fixed decisions are introduced as an extension to makespan problems. In a hospital setting, positive fixed decisions capture patients exclusively allocated to a nurse while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
+To accommodate practical applications of makespan schedules, we introduce user positive and negative fixed decisions as extensions to makespan scheduling. In a hospital scenario, positive fixed decisions capture patients exclusively allocated to a nurse, while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
 
 \begin{definition}
 	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall \pair{i}{j}\in D^+.\ x_{i,j}=1$.
@@ -113,14 +120,16 @@ To accommodate practical applications of makespan schedules, user positive and n
 	A fixed decision $D$ is satisfiable iff there exists a schedule $S$ such that $S$ satisfies $D$. 
 \end{definition}
 
-A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
-\begin{itemize}
-	\item$D^+$ and $D^-$ are disjoint.
-	\item$\forall\pair{i}{j},\pair{i'}{j'}\in D^+.\ i=i'\lor j\neq j'$
-	\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$
-\end{itemize}
+\begin{definition}
+	A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
+	\begin{itemize}
+		\item$D^+$ and $D^-$ are disjoint.
+		\item$\forall\pair{i}{j},\pair{i'}{j'}\in D^+.\ i=i'\lor j\neq j'$
+		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$
+	\end{itemize}
+\end{definition}
 
-The relaxed definition of $D$ allows $D$ to be not satisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations over validation of user input, which is more useful to users in a practical setting.
+The relaxed definition of $D$ allows it to be not satisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations over validation of user input, which is more useful to users in a practical setting.
 
 \subsection{Interval Scheduling}
 
