@@ -90,7 +90,15 @@ Memory comparison:
 
 \subsection{Survey}
 
-Used two sample groups, one group without access to the tool, and one group with access. In both groups, we used the same questionnaire, which can be found in the appendix. Each question was designed with purpose. We try not to use too many machines and jobs to ensure that the questions could be done without too much effort. Note we do not ask questions about feasibility because its validation is trivial. 
+We conduct a surveys over three sample groups.
+
+\begin{itemize}
+	\item Group 1 of 10 people are given only questions.
+	\item Group 2 of 12 people are given explanations generated from the tool, but do not have interactive access to the tool.
+	\item Group 3 of \verb|TODO| people are given interactive access to the tool.
+\end{itemize}
+
+In all groups, we used the same questionnaire, which can be found in the appendix. Each question was designed with purpose. We have less than ten machines and jobs to ensure that the questions could be completed mentally. Note we do not ask questions about feasibility because its validation is trivial. 
 
 \begin{itemize}
 	\item Question 1 shows a schedule which is efficient, but not optimal. The tool does not explain for optimality, so users can see there are cases in which the tool may not be helpful.
@@ -100,25 +108,42 @@ Used two sample groups, one group without access to the tool, and one group with
 	\item Question 5 explores replanning of a schedule by insertion of a new job. Clearly, trivially inserting a new job does not result in a optimal schedule. It is possible to arrange the schedule in one single exchange before insertion to achieve an optimal updated schedule.
 \end{itemize}
 
-Although these five questions do not cover the tool's complete functionality, they cover questions and seek explanations that require intuition, with or without the tool. This is important in assessing how users can operate the tool in non-trivial cases. 
+Although these five questions do not cover the tool's complete functionality, they cover questions and seek explanations that require intuition, with or without the tool. This is important in assessing how users can operate the tool in non-trivial cases. In this survey, we asked a wide demographic, from GCSE students to graduates, including people who do have little knowledge of computer science or mathematics. 
+
+\subsubsection{Group 1 Results}
 
 \begin{figure}[H]
-	\label{notooltable}
+	\label{group1chart}
 	\begin{center}
-		\begin{tabular}{c | c c c c}
-			Question & Incorrect & Incomplete & Complex & Correct \\
-			\hline
-			1 & 0 & 2 & 0 & 8 \\
-			2 & 2 & 1 & 2 & 5 \\
-			3 & 3 & 0 & 0 & 7 \\
-			4 & 2 & 5 & 0 & 3 \\
-			5 & 2 & 1 & 3 & 4 \\	
-		\end{tabular}
+		\includegraphics[scale=0.55]{figures/questionnaire_results_group_one}
 	\end{center}
-	\caption{Aggregated results from Section \ref{notool}}
+	\caption{Aggregated Group 1 results from Section \ref{group1data}}
 \end{figure}
 
-In this survey, we asked a wide demographic, from GCSE students to graduates, including people who do have little knowledge of computer science or mathematics. From Figure \ref{notooltable}, we see that the majority of respondents are able to get most questions correct. Some responses are considered complex, when their answers are technically correct, but give more steps than necessary. This may hint that some intuitive ways to optimise a schedule may not minimise the number of job exchanges. Some responses are considered incomplete, where only the question was partially answered. We can see in more complex schedules that users give more complex answers. Excluding outliers, the questionnaire took 15 minutes on average to complete.
+From Figure \ref{group1chart}, we see that the majority of respondents are able to get most questions correct. Some responses are considered complex, when their answers are technically correct, but give more steps than necessary. This may hint that some intuitive ways to optimise a schedule may not minimise the number of job exchanges. This was evident in Question 2 and 5, that has many jobs. We can see in more complex schedules that users give more complex answers. Some responses are considered incomplete, where only the question was partially answered. This was evident in Question 4, where many respondents failed to identity either decision yields an optimal schedule.
+
+\subsubsection{Group 2 Results}
+
+\begin{figure}[H]
+	\label{group2chart}
+	\begin{center}
+		\includegraphics[scale=0.55]{figures/questionnaire_results_group_two}
+	\end{center}
+	\caption{Aggregated Group 2 results from Section \ref{group2data}}
+\end{figure}
+
+From Figure \ref{group2chart}, we can make the following observations of Group 2 compared to Group 1:
+\begin{itemize}
+	\item Group 2 respondents performed better than Group 1, and in less time, from 15 minutes 37 seconds to 9 minutes 12 seconds on average.
+	\item Group 1 respondents completed all questions, but there a few Group 2 respondents who did not answer the latter questions. This is illustrated the constant bar heights in Figure \ref{group1chart} and decreasing bar heights in Figure \ref{group2chart}.
+	\item When relevant explanations are given in Questions 2 and 5, there are more complex answers in Group 2 than Group 1. The answers suggests that respondents are likely to select the easiest to understand explanation, rather than the simplest optimal schedule. This is significant in Question 5, where many respondents used the first suggestion from the explanation without further intuition.
+	\item Question 3 and 4 give situations in which respondents answer which situation results in a more optimal schedule. We can see that explanations significantly improve answers.
+	\item In question 1, the explanation given was not relevant, so we would expect answers from Groups 1 and 2 would be similar because the underlying question is the same. From the data, we can see some variance between Groups 1 and 2.
+\end{itemize}
+
+\subsubsection{Group 3 Results}
+
+\verb|still collecting data...|
 
 \subsection{Feedback}
 

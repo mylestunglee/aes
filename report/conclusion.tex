@@ -24,7 +24,7 @@ We show that argumentation can interface between optimisation solvers and explan
 
 While argumentation offers, soundness, completeness, polynomial tractability and polynomial computational complexity, a non-argumentative approach remains sufficiently viable.
 
-\section{Discussion}
+\section{Practicability of Argumentation}
 
 Without knowledge of argumentation, one could define mappings between mathematical constraints and templated-explanations to create an interactive tool. We argue that argumentation is unnecessary in the development process. However, argumentation brings subtle benefits that are not expressible in makespan scheduling.
 \linespace
@@ -48,10 +48,14 @@ As illustrated in Figure \ref{problempath}, our tool can take a schedule, possib
 
 It is possible that all possible improvements on a schedule may contradict already-satisfied properties. Consider figure \ref{problemspace}, where we give a concrete problem. At schedule $[[0\ 0]\ [0\ 1]]$, all improvements are marked as red. Suppose we have no preferences on schedules. In this case, we cannot justify making any improvements because we enforce all schedule properties to hold. There are better schedules, but they are inaccessible given our current schedule. In other words, we have reached an local optimal using explanations. This motivates to use global search, but as we stated before, this in intractable for arbitrary schedule spaces. Therefore, there is a clear trade-off between expressibility and computational tractability of explanations. Given the scope of this project, there is no conclusive method to tractably compute complete generalised explanations.
 
+\section{Discussion of the Tool}
+
+From the survey, we have shown that explanations allows better reasoning of makespan schedules. The survey responses suggests that the tool is better suited to comparing and understanding different scheduling cases, than understanding how to optimise a schedule. This contradicts the original premise where optimisation of a particular schedule is the focus. Given we implement the tool with focus on polynomial algorithms, it is difficult to interface users with clear explanations for optimality or near-optimality of schedules. This implies that the tool would be better suited to comparing schedules. As this is a form of replanning, the tool is useful in decision-maker, but lacks expressibility for general replanning.
+
 \section{Future Work}
 
 \begin{itemize}
-	\item\textbf{Space of stability-modellable linear programs:} We have shown that makespan and interval scheduling are stability-modellable. An interesting direction would be to explore the space of linear programming problems that are stability-modellable, or more generally, extension-modellable. Future work would need to consider limitation with local extensions or non-polynomial verification.
+	\item\textbf{Space of stability-modellable linear programs:} We have shown that makespan and interval scheduling are stability-modellable. An interesting direction would be to explore the space of linear programming problems that are stability-modellable, or more generally, extension-modellable. This is particularly difficult because of limitations with local extensions and non-polynomial verification \cite{aes}.
 	\item\textbf{Implementation of interval scheduling:} We have shown that interval scheduling feasibility is stability-modellable. Due to the time constraints of this project, we have not been able to integrate makespan and interval scheduling into a single graphical tool.
 	\item\textbf{Nurse preferences:} It is known that previous literature ignores nurses preferences, or attempts to simplify individual nurses preferences as groups \cite{preferences}. A future direction would be to explore the modelling individual nurses preferences using existing argumentation methods \cite{acceptability, aba} with a focus on explanations.
 	\item\textbf{Web GUI:} The Python GUI is clear for users from an academic environment. But in comparison with commercial tools, their interface allows users to reschedule by intuitive drag-drop interactions. This was beyond the scope of an academic project.
@@ -61,6 +65,6 @@ It is possible that all possible improvements on a schedule may contradict alrea
 
 \begin{framed}
 	\centering
-	Makespan scheduling using argumentation is\\practically
+	Optimisation of makespan scheduling using argumentation is\\practically
 	possible but not practically suitable.
 \end{framed}
