@@ -1,21 +1,21 @@
 \chapter{Design and Implementation}
 \label{implementation}
 
-In this chapter, we will describe and discuss the technical implementation of the tool. First, we discuss our practical implementation methodology. Secondly, we define our implemented algorithms, alongside some theorems to state their correctness.
+In this chapter, we will describe and discuss the technical implementation of the tool. First, we discuss our practical implementation methodology. Secondly, we define our implemented algorithms, alongside theorems to state their correctness.
 
 \section{Design Decisions}
 
-To select a programming language suitable for developing the tool, languages were compared with respect to possible challenges. The language should be compatible with popular optimisation solvers. To make efficient use of time, using an existing interface library between popular solvers is recommended. Interfaces are written for popular languages such as C++, Java and Python. Python was selected for its development speed and support for a wide range of libraries.
+To choose a programming language to develop the tool, we compared languages against the requirements of the tool. The language should be interface-able with popular optimisation solvers. Interfaces are written for C++, Java, Python and other popular languages. We choose Python for its lightweight development and support for a wide range of libraries.
 \linespace
-There is a balance between program speed and development time. A tool written in C may be fast but time-consuming. The purpose is to demonstrate the concept of argumentation with schedules while allowing analysis of potential future directions and short-comings. Hence, the tool should be sufficiently fast to be responsive, but not necessarily fast as possible.
+We balance between program speed and development time. A tool written in C may be fast but time-consuming to develop. The purpose is to demonstrate the argumentation while giving insight of future directions and short-comings. We prioritise the usability of the tool over optimal performance.
 \linespace
-There are many powerful and efficient solvers such as CPLEX and GLPK \cite{clp}. To solver large problems, users use commercial over open-source solvers for their superior speed. However, users may not have access to a commercial solver. To accommodate users, Pyomo is used to interface to many popular solvers.
+There are many powerful and efficient solvers such as CPLEX and GLPK \cite{clp}. To solver large problems, commercial solvers are used over open-source solvers for their superior speed. However, users may not have access to a commercial solver. To accommodate a wider audience, we use Pyomo to interface to both commercial and open-source solvers.
 \linespace
-The tool features a GUI to aid its accessibility. Users such as hospital managers can often use a suitably-designed GUI without training of the tool. In practice, a GUI is easier to demonstrate than a CLI.
+The tool features a GUI to aid its accessibility. Users such as hospital managers can often use a suitably-designed GUI without extensive training of the tool.
 
 \section{Structure}
  
-The tool is developed with many components, represents as individual Python files. 
+The tool is developed with many components, represented as individual Python files. 
 
 \begin{figure}[H]
 	\resizebox{\textwidth}{!}{
@@ -60,7 +60,7 @@ The tool is developed with many components, represents as individual Python file
 
 \subsection{Notation}
 
-The tool uses Boolean tensors as data structures to store schedules and argumentation constructs. We will use the below operators in computing conflict-freeness, stability and aggregating explanations. The definitions below share notions with linear algebra over matrices.
+The tool uses Boolean tensors as data structures to store schedules and argumentation constructs. We will use the operators below in computing conflict-freeness, stability and aggregating explanations. The definitions below share notions with linear algebra over matrices.
 \begin{definition}	
 	Let $\mathbf{0}^{d_1, ..., d_n}$ be the zero-valued tensor. The dimensions may be omitted if clear.
 		
@@ -709,5 +709,6 @@ The framework construction functions are modified to compute a sub-graph from a 
 \end{algorithm}
 
 \section{Testability}
+\label{testability}
 
 To ensure the the tool is robust, we used unit tests and regression tests to verify code quality. The unit tests were implemented with \texttt{pytest}, a commonly used Python library. Although it would be ideal to automate testing of the GUI, this is beyond the scope of this academic project. We have setup typical problem and schedule data sets, including non-well defined and defined problems. Due to the nature of mathematical optimisation, it is impossible to test every schedule, so we select the data sets to be representative of the tool's explanation features. An advantage to using regression tests, is that we can automate the comparison of different approaches: full-precomputation, partial-computation and naive. This will allow us to prove that the non-argumentative and argumentative approaches are functionally equivalent.

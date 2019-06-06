@@ -1,7 +1,8 @@
 \chapter{Conclusion}
+\label{conclusion}
 
 \section{Contributions}
-We give details on our contributions as stated in Section \ref{introcontributions}.
+We restate our contributions as stated in Section \ref{introcontributions}.
 
 \begin{itemize}
 	\item We implement a new tool \emph{\toolname}, as in Chapter \ref{implementation}.
@@ -10,7 +11,7 @@ We give details on our contributions as stated in Section \ref{introcontribution
 	\item A discussion on the applicability of argumentation, as discussed in this chapter.
 \end{itemize}
 
-\section{Limitations}
+\section{Limitations of Argumentation}
 
 We show that argumentation can interface between optimisation solvers and explanation generators. By computing the satisfaction of extensions, such as stability, solvers are exposed as white-box algorithms, transforming argumentation semantics into human-understandable explanations. However, this application of argumentation is flawed in practice. 
 
@@ -25,8 +26,9 @@ We show that argumentation can interface between optimisation solvers and explan
 While argumentation offers, soundness, completeness, polynomial tractability and polynomial computational complexity, a non-argumentative approach remains sufficiently viable.
 
 \section{Practicability of Argumentation}
+\label{practicability}
 
-Without knowledge of argumentation, one could define mappings between mathematical constraints and templated-explanations to create an interactive tool. We argue that argumentation is unnecessary in the development process. However, argumentation brings subtle benefits that are not expressible in makespan scheduling.
+Without knowledge of argumentation, one could define mappings between mathematical constraints and templated-explanations to create an interactive tool. We argue that argumentation is unnecessary in the development process. However, argumentation may bring subtle benefits that are not expressible in makespan scheduling.
 \linespace
 Argumentation brings an alternative representation of conflicts or constraints. This representation is competitive in recommender systems \cite{recommend}, where chains of reasons can be constructed. In abstract argumentation, chain of reasons are constructed when a extension is fixed-point computable. This is true with admissible and complete extensions. However, with stability and conflict-freeness, as in our algorithms, the counter-arguments for a stable or a conflict-free extension does not construct chains of arguments. A potential solution to improve explanations, is to verify that mathematical constraints are admissible-modellable. However, at the time of writing, the notion of admissible and linear constraints have little connection. 
 \linespace
@@ -48,9 +50,20 @@ As illustrated in Figure \ref{problempath}, our tool can take a schedule, possib
 
 It is possible that all possible improvements on a schedule may contradict already-satisfied properties. Consider figure \ref{problemspace}, where we give a concrete problem. At schedule $[[0\ 0]\ [0\ 1]]$, all improvements are marked as red. Suppose we have no preferences on schedules. In this case, we cannot justify making any improvements because we enforce all schedule properties to hold. There are better schedules, but they are inaccessible given our current schedule. In other words, we have reached an local optimal using explanations. This motivates to use global search, but as we stated before, this in intractable for arbitrary schedule spaces. Therefore, there is a clear trade-off between expressibility and computational tractability of explanations. Given the scope of this project, there is no conclusive method to tractably compute complete generalised explanations.
 
-\section{Discussion of the Tool}
+\section{Discussion of Objectives}
+
+We complete the first objective (stated in section \ref{objectives}), that is to implement a tool satisfying the challenges mentioned (section \ref{challenges}). We revisit these challenges as follows:
+\begin{enumerate}
+	\item\textbf{Trust:} We use both formal and practical verification methods to ensure our program is correct. We give proofs to our algorithms (section \ref{stabilityproof}) and a test framework (section \ref{testability}).
+	\item\textbf{Accessibility:} From our survey, we have shown users are able to construct and manipulate problems and schedules to model scenarios.
+	\item\textbf{Applicability:} From out survey, we have shown users are apply to explanations to aid decision-making.
+	\item\textbf{Knowledge transfer:} In the tool, we provide both a cascade chart alongside an interactive explanation. The feedback from users suggested that explanations were relatively clear given a diagram. The extent in which the interface provides the best knowledge transfer is not known.
+	\item\textbf{Background:} We have been able to construct a functional tool with limited implementation details from the paper \cite{aes}.
+\end{enumerate}
 
 From the survey, we have shown that explanations allows better reasoning of makespan schedules. The survey responses suggests that the tool is better suited to comparing and understanding different scheduling cases, than understanding how to optimise a schedule. This contradicts the original premise where optimisation of a particular schedule is the focus. Given we implement the tool with focus on polynomial algorithms, it is difficult to interface users with clear explanations for optimality or near-optimality of schedules. This implies that the tool would be better suited to comparing schedules. As this is a form of replanning, the tool is useful in decision-maker, but lacks expressibility for general replanning.
+\linespace
+We make progress the second objective, that is to extend theoretical or practical capabilities of argumentation for scheduling. This is evident from Chapter \ref{properties}. From section \ref{practicability}, we have shown further effort is challenging. The future of using argumentation for scheduling is unknown at the time of writing and future work may transform the paradigm first mentioned in the paper \cite{aes} into a disruptive technology.
 
 \section{Future Work}
 
@@ -65,6 +78,6 @@ From the survey, we have shown that explanations allows better reasoning of make
 
 \begin{framed}
 	\centering
-	Optimisation of makespan scheduling using argumentation is\\practically
+	Explaining makespan schedules using argumentation is\\practically
 	possible but not practically suitable.
 \end{framed}
