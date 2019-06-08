@@ -1,9 +1,10 @@
 \chapter{Survey Responses}
 
-\section{Group 1: Without Explanations}
+\section{No Explanations}
 \label{group1data}
 
 \begin{tabular}{l l}
+	\hline
 	Respondent & Time Taken \\
 	\hline
 	1 & 00:12:17 \\
@@ -16,9 +17,11 @@
 	8 & 00:13:31 \\
 	9 & 00:14:40 \\
 	10 & 00:54:44 \\
+	\hline
 \end{tabular}
 \linespace
 \begin{tabularx}{\linewidth}{c c X}
+	\hline
 	Question & Respondent & Answer \\
 	\hline
 	1 & 1 & Switch C and D to machine 2 and F to machine 1. \\
@@ -77,12 +80,14 @@
 	& 8 & Move B machine 2 and new job in machine 4 \\
 	& 9 & 1. H; 2. G, A; 3. E, C, F; 4. D, B \\
 	& 10 & We will put job D in machine 3 and move job F to machine 2, and then also schedule job H to machine 2. This should keep the total time the same. \\
+	\hline
 \end{tabularx}
 
-\section{Group 2: With Explanations but without Tool}
+\section{Simple Explanations}
 \label{group2data}
 
 \begin{tabular}{l l}
+	\hline
 	Respondent & Time Taken \\
 	\hline
 	1 & 00:09:41 \\
@@ -97,9 +102,11 @@
 	10 & 00:09:14 \\
 	11 & 00:12:02 \\
 	12 & 00:11:02 \\
+	\hline
 \end{tabular}
 \\\\\\
 \begin{tabularx}{\linewidth}{c c X}
+	\hline
 	Question & Respondent & Answer \\
 	\hline
 	1 & 1 & Move job F to machine 1. move jobs C and D to machine 2. \\
@@ -169,8 +176,71 @@
 	& 10 & swap D and F and allocate H to machine 2 \\
 	& 11 & Job F to machine 1; Job D to machine 4; and new job H to machine 2 \\
 	& 12 & swap job D and F from machine 2 and 4 \\
+	\hline
 \end{tabularx}
 
 \newpage
-\section{Group 3: With Tool}
+\section{Interactive Explanations}
 \label{group3data}
+
+\begin{tabular}{l l}
+	\hline
+	Respondent & Time Taken \\
+	\hline
+	1 & 00:14:15 \\
+	2 & over a day \\
+	3 & 00:15:45 \\
+	4 & 00:31:28 \\
+	5 & 11:44:21 \\
+	6 & 00:19:03 \\
+	7 & 00:11:45 \\
+	\hline
+\end{tabular}
+\\\\\\
+\begin{tabularx}{\linewidth}{c c X}
+	Question & Respondent & Answer \\
+	\hline
+	1 & 1 & Swap c and d with f \\
+	& 2 & Machine 1-\textgreater ABE; Machine 2 -\textgreater CDF \\
+	& 3 & move F to machine 1, Move C\&D to machine 2 \\
+	& 4 & Take F to machine 1, then bring C and D to machine 2 \\
+	& 5 & Move job F to machine 1, move jobs A and B to machine B. (doesn't have to be those jobs specifically, just move a large job to 1 and two small jobs to 2) \\
+	& 6 & Both machines could be done an hour sooner. Put EAB on 1, FCD on 2. \\
+	& 7 & Move C and D to 2 and F to 1. \\
+	\hline
+	2 & 1 & Not optimal. Move Job f to machine 2 then swap g and b from machines 3 and 4 \\
+	& 2 & This schedule is not optimal. Optimal makespan is 5 \\
+	& 3 & move C to machine 2 \\
+	& 4 & Job C can be allocated from machine 3 to 2 to reduce by 1.0 \\
+	& 5 & No, any of the suggested improvements can be done to make it optimal (since each one results in no machine taking more than 5 seconds and there is less than a total of 4 seconds "spare" among the 4 machines, meaning it cannot be optimised further) \\
+	& 6 & Move C to machine 2. \\
+	& 7 & All of the above suggested changes are true. The schedule is not optimal. \\
+	\hline
+\end{tabularx}
+\begin{tabularx}{\linewidth}{c c X}
+	\hline
+	3 & 1 & Job a moves to machine 3. Then move job e from 3 to 1 \\
+	& 2 & This is makespan optimal. \\
+	& 3 & move job A to machine 3 and then move E to 1 after 1 unit of time \\
+	& 4 & Move job A to machine 3 then re allocate job E \\
+	& 5 & Move Job A and B to machine 3, move job E and F to machine 1. \\
+	& 6 & Move A to 3, and E to 1. \\
+	& 7 & Also move B to 3 and then move E and F to 1. \\
+	\hline
+	4 & 1 & B and e together as they have a total length of 5 which is shorter than c and d total length 6 \\
+	& 2 & There is only one solutions fulfilling that constraint. \\
+	& 3 & C and D together \\
+	& 4 & Doesn't matter. They've both reached their optimal level. \\
+	& 5 & Doesn't matter. The example has shown that an optimal schedule can be made that follows both constraints, so the constraints don't worsen anything. \\
+	& 6 & Does not matter \\
+	& 7 & It doesn't matter. \\
+	\hline
+	5 & 1 & Add h to machine 4 then move b from 4 to 2 making the longest time 6 \\
+	& 2 & Swap H and G to reduce makespan by 1. Add E to machine 4, makespan is still7. Add 5 units of time to machine 1. Makespan is 7 (i think this is minimised) \\
+	& 3 & move job B to machine 2 and add H to machine 4 \\
+	& 4 & Jobs D and F can be swapped with machines 2 and 4 to reduce by 2.0 \\
+	& 5 & Move job H to machine 4, move job B to machine 2 \\
+	& 6 & Put b on 2 and H on 5. \\
+	& 7 & Add H to 4 and move B to 2. \\
+	\hline
+\end{tabularx}

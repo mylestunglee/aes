@@ -15,9 +15,18 @@ group_two_results = np.array([
 	[1, 0, 0, 7],
 	[0, 0, 7, 1]])
 
-questions = np.arange(1, 6)
+group_three_results = np.array([
+	[0, 0, 0, 7],
+	[0, 1, 1, 5],
+	[1, 4, 0, 2],
+	[2, 0, 0, 5],
+	[1, 0, 1, 5]])
 
-for name, results in [('one', group_one_results), ('two', group_two_results)]:
+questions = np.arange(5) + 1
+groups = np.arange(3) + 1
+
+# draw plot for each group
+for name, results in [('one', group_one_results), ('two', group_two_results), ('three', group_three_results)]:
 	bottom = np.zeros(5)
 	plt.bar(questions, results[:, 0], color='red', bottom=bottom, label='Incorrect')
 	bottom += results[:, 0]
@@ -36,3 +45,28 @@ for name, results in [('one', group_one_results), ('two', group_two_results)]:
 
 	plt.savefig('questionnaire_results_group_{}.png'.format(name))
 	plt.close()
+
+summary = np.array([
+	group_one_results.sum(axis=0) / group_one_results.sum(),
+	group_two_results.sum(axis=0) / group_two_results.sum(),
+	group_three_results.sum(axis=0) / group_three_results.sum()])
+
+# draw plot for summary plot
+bottom = np.zeros(3)
+plt.bar(groups, summary[:, 0], color='red', bottom=bottom, label='Incorrect')
+bottom += summary[:, 0]
+plt.bar(groups, summary[:, 1], color='yellow', bottom=bottom, label='Incomplete')
+bottom += summary[:, 1]
+plt.bar(groups, summary[:, 2], color='lime', bottom=bottom, label='Complex')
+bottom += summary[:, 2]
+plt.bar(groups, summary[:, 3], color='green', bottom=bottom, label='Correct')
+
+plt.xticks(groups, ['No Explanations', 'Simple Explanations', 'Interactive Explanations'], rotation=-15)
+plt.yticks(np.arange(0, 11, 2) / 10, ['{:.0%}'.format(x / 10) for x in range(0, 11, 2)])
+plt.ylabel('Responses')
+
+plt.legend(bbox_to_anchor=(1,1), loc="upper left")
+
+plt.subplots_adjust(right=0.75, bottom=0.2)
+
+plt.savefig('questionnaire_results_summary.png')

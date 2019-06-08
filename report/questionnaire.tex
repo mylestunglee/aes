@@ -6,8 +6,9 @@
 \usepackage{graphicx}
 \usepackage{multicol}
 \usepackage[margin=1in]{geometry}
+\pagenumbering{gobble}
 
-\title{Makespan Schedule Explanation Questionnaire}
+\title{\textbf{Makespan Schedule Explanation Questionnaire}}
 \date{}
 \author{}
 
@@ -16,7 +17,7 @@
 \vspace{-4\baselineskip}
 \noindent\hrulefill
 
-\noindent This questionnaire should take around five minutes. This will judge the general ability to understand and explain makespan schedule. Makespan schedules consist of $m$ machines and $n $ jobs. Every job is assigned to only one machine for the schedule to be feasible. Each job has a processing time. The objective is to minimise the longest collective processing time. Machines and jobs are denoted by integers $1,2,3,...$ and by letters $A,B,C,...$, respectively. A schedule is optimal when the longest collective processing time cannot be faster.
+\noindent This questionnaire should take less than ten minutes. This will judge the general ability to understand and explain makespan schedule. Makespan schedules consist of $m$ machines and $n $ jobs. Every job is assigned to only one machine for the schedule to be feasible. Each job has a processing time. The objective is to minimise the longest collective processing time. Machines and jobs are denoted by integers $1,2,3,...$ and by letters $A,B,C,...$, respectively. A schedule is optimal when the longest collective processing time cannot be earlier.
 
 \begin{multicols}{2}
 	\includegraphics[width=0.5\textwidth]{figures/makespan_unoptimal}
@@ -25,7 +26,7 @@
 	\end{center}
 	\includegraphics[width=0.4\textwidth]{figures/makespan_optimal}
 	\begin{center}
-		Schedule is optimal no assignment can be improved.
+		Schedule is optimal because no assignment can be improved.
 	\end{center}
 \end{multicols}
 
