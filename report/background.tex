@@ -129,17 +129,17 @@ To accommodate practical applications of makespan schedules, we introduce user p
 	\end{itemize}
 \end{definition}
 
-The relaxed definition of $D$ allows it to be not satisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations over validation of user input, which is more useful to users in a practical setting.
+The relaxed definition of $D$ allows it to be not satisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations for validation of user input, which is practically useful.
 
 \subsection{Interval Scheduling}
 
-Interval scheduling is a natural extension to makespan scheduling. This has freedom in determining the starting times of its jobs. In practice, rearranging critical jobs may effect the feasibility of a schedule. Interval scheduling is a widely researched area, with many literature proposing algorithms for variants of interval scheduling \cite{is}.
+Interval scheduling is a natural extension to makespan scheduling with arrangement of its jobs. In practice, rearranging critical jobs may effect the feasibility of a schedule. Interval scheduling is a well researched area, with many literature proposing algorithms for variants of interval scheduling \cite{is}.
 \linespace
-Interval scheduling is defined over $m\in\mathbb{N}$ and $n\in\mathbb{N}$ jobs where they are collectively denoted by the sets $\mathcal{M}$ and $\mathcal{J}$ such that $\mathcal{M}=\{1,...,m\}$ and $\mathcal{J}=\{1,...,n\}$ respectively. Each job $j\in\mathcal{J}$ must be allocated a machine $i\in\mathcal{M}$ preemptively. In addition, each job must be allocated between the interval $[s_j,f_j)$ such that $s_j<f_j$ where $s_j,f_j\in\mathbb{R}_{\geq 0}$ without loss of generality. Finally, each job is associated with a processing time $p_j\in\mathbb{R}_{\geq 0}$. No jobs are allowed to overlap. Note that $p_j>f_j-s_j$ is possible, meaning that interval schedules can be constructed to be infeasible.
+Interval scheduling is defined over $m\in\mathbb{N}$ and $n\in\mathbb{N}$ jobs where they are collectively denoted by the sets $\mathcal{M}$ and $\mathcal{J}$ such that $\mathcal{M}=\{1,...,m\}$ and $\mathcal{J}=\{1,...,n\}$ respectively. Each job $j\in\mathcal{J}$ must be allocated a machine $i\in\mathcal{M}$ preemptively. In addition, each job must be allocated between the interval $[s_j,f_j)$ such that $s_j<f_j$ where $s_j,f_j\in\mathbb{R}_{\geq 0}$ without loss of generality. Finally, each job is associated with a processing time $p_j\in\mathbb{R}_{\geq 0}$. No jobs are allowed to overlap. If $p_j>f_j-s_j$ is possible, then the scheduling problem has no feasible solution.
 
 \section{Argumentation}
 
-Argumentation is a method to understand and evaluate reasons for and against potential conclusions. Argumentation is useful in resolving conflicts, clarifying incomplete information and most importantly, with respect to this project, explanations. The precise definition of an argument varies on the literature, however it is commonly agreed that arguments can attack or support other arguments. For an argument $\alpha$ to attack an argument $\beta$, $\alpha$ may critically challenge $\beta$ such that acceptability of $\beta$ is doubted \cite{at}. This may be to question one of $\beta$'s premises, by proposing a counter-example. For example, consider an scenario whether to sleep. Let $\alpha$ be ``I want to sleep", $\beta$ be ``I have work to do" and $\gamma$ be ``I can work tomorrow". Using human intuition, we can derive that $\gamma$ attacks $\beta$ and $\beta$ attacks $\alpha$. This is represented graphically below.
+Argumentation is a method to understand and evaluate reasons for and against conclusions. Argumentation is useful in resolving conflicts, clarifying incomplete information and generating explanations. The precise definition of an argument varies between literature, however it is commonly agreed that arguments can attack or support other arguments. For an argument $\alpha$ to attack an argument $\beta$, $\alpha$ may critically challenge $\beta$ such that acceptability of $\beta$ is doubted \cite{at}. This may be to question one of $\beta$'s premises, by proposing a counter-example. For example, consider an scenario whether to sleep. Let $\alpha$ be ``I want to sleep", $\beta$ be ``I have work" and $\gamma$ be ``I can work tomorrow". Using human intuition, we can derive that $\gamma$ attacks $\beta$ and $\beta$ attacks $\alpha$. This is represented graphically as follows.
 
 \begin{center}
 	\begin{tikzpicture}
@@ -151,13 +151,13 @@ Argumentation is a method to understand and evaluate reasons for and against pot
 	\end{tikzpicture}
 \end{center}
 
-If we conclude $\alpha$ to be acceptable, then we must not accept $\beta$. Accepting two arguments with conflicts can be interpreted as a contradiction or hypocritical. Hence, argumentation theory have measures of acceptable extensions, to decide whether some set of arguments are acceptable in some notion, with respect to different intuitions. This motivates to use abstract argumentation frameworks.\linespace
-Note that this example uses implicit background knowledge, also known as enthymemes. In this scenario, one cannot sleep and work at the same time. To our advantage, argumentation is applied to well-defined scheduling problems, so enthymemes are inapplicable in this project.
+If we conclude $\alpha$ to be acceptable, then we must not accept $\beta$. Accepting two conflicting arguments can be interpreted as a contradiction or being hypocritical. Hence, argumentation theory have notions of acceptable extensions, to decide whether some set of arguments are acceptable, with respect to different intuitions. This motivates to use abstract argumentation frameworks.\linespace
+Note that this example uses implicit background knowledge, also known as enthymemes. In this scenario, one cannot sleep and work at the same time. To our advantage, scheduling problems are mathematically well-defined, so we do not encounter enthymemes in this project.
 
 \subsection{Abstract Argumentation Frameworks}
 \label{aaf}
 
-An abstract argumentation framework (AAF) models the relation of attacks between arguments \cite{aa}. Formally, an AAF is a directed graph $(Args,\rightsquigarrow)$ where $Args$ is the set of arguments and $\rightsquigarrow$ is a binary relation over $Args$. For $a,b\in Args$, $a$ attacks $b$ iff $a\rightsquigarrow b$. Attacks are extended over sets of arguments, where $A\subseteq Args\rightsquigarrow b\in Args$ iff $\exists a\in A.\ a\rightsquigarrow b$. An extension $E$ is a subset of $Args$.
+An abstract argumentation framework (AAF) models the relation of attacks between arguments \cite{aa}. Formally, an AAF is a directed graph $\pair{Args}{\rightsquigarrow}$ where $Args$ is the set of arguments and $\rightsquigarrow$ is a binary relation over $Args$. For $a,b\in Args$, $a$ attacks $b$ iff $a\rightsquigarrow b$. Attacks are extended over sets of arguments, where $A\subseteq Args\rightsquigarrow b\in Args$ iff $\exists a\in A\ a\rightsquigarrow b$. An extension $E$ is a subset of $Args$.
 
 \begin{definition}
 	An extension $E$ is conflict-free iff $\forall a,b\in E.\ a\not\rightsquigarrow\ b$.
@@ -260,7 +260,7 @@ Linear algebra is a mature area in literature. We will be using Boolean tensors 
 		
 			
 	\end{center}
-	\caption{Equivalent representations of a directed graph. Left: graphical; right: adjacency matrix}
+	\caption{Equivalent representations of a directed graph. Left: graphical; right: adjacency matrix.}
 \end{figure}
 \begin{figure}[H]
 	\begin{center}
@@ -302,14 +302,14 @@ Linear algebra is a mature area in literature. We will be using Boolean tensors 
 		\end{minipage}
 		
 	\end{center}
-	\caption{A more complicated case with a 2-dimensional node, resulting a in a 4-dimensional adjacency tensor.}
+	\caption{A more complicated case with 2-dimensional nodes, resulting in a 4-dimensional adjacency tensor.}
 \end{figure}
 
-We will use a 2-dimension case for makespan schedules, with machines and jobs as the two dimensions, and 3-dimensional case for interval scheduling.
+We will use the 2-dimension case for makespan schedules, with machines and jobs as the two dimensions, and the 3-dimensional case for interval scheduling.
 
 \section{Existing Tools}
 
-We will look at two scheduling software, Setmore and LEKIN, in terms of explainable planning. We will not look existing tools using argumentation because of relevancy, we use argumentation as a means of explanation in an intermediate process.
+We will look at two scheduling software, Setmore and LEKIN, in terms of explainable planning. We will not look existing tools using argumentation because of existing tools do not use argumentation to explain scheduling.
 
 \subsection{Setmore}
 
@@ -320,11 +320,11 @@ We will look at two scheduling software, Setmore and LEKIN, in terms of explaina
 	\caption{Setmore interactive interface \cite{setmore}}
 \end{figure}
 
-Setmore is a commercial online application that records appointments, schedules and employees. The application is designed for small business such as in healthcare \cite{setmore}, where managers can organise appointments on a calender. Makespan schedules are formulae where employees are machines and appointments are jobs. The intuitive interface enables users to quickly glance at appointments and their times, it is graphically clear when two appointments overlap. However, under the condition that one employee is able to attend at most one appointment, the user is presented with an error message. Messages also occur when resources are fully-booked or unavailable. Scheduling error messages alert the user during data input, which may prove problematic when a user wishes to input a large number of appointments. Appointments cannot be over-allocated because each appointment has at most assignment one by interface restrictions.
+Setmore is a commercial online application that records appointments, schedules and employees. The application is designed for small business such as in healthcare \cite{setmore}, where managers can organise appointments on a calender. Makespan schedules are modelled daily where employees are machines and appointments are jobs. The intuitive interface enables users to quickly glance at appointments and their times, it is clear graphically when two appointments overlap. However, under the condition that one employee is able to attend at most one appointment, the user is presented with an error message. Messages also occur when resources are fully-booked or unavailable. Scheduling error messages alert the user during data input, which may prove problematic when a user wishes to input a large number of appointments. Appointments cannot be over-allocated because each appointment has at most assignment one by interface restrictions.
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[scale=0.6]{figures/setmore_overallocated.png}
+		\includegraphics[width=\linewidth]{figures/setmore_overallocated.png}
 	\end{center}
 	\caption{Overlapping appointment allocation error message}
 \end{figure}
@@ -336,7 +336,7 @@ Setmore is a commercial online application that records appointments, schedules 
 	\caption{Data input of an appointment where there are no possible services, or possible assignments}
 \end{figure}
 
-We will assess the application under its free-trail, which may limit its explanative functionality. A key observation is that there is no emphasis on the concept of an optimal schedule. Because the tool is designed for small businesses and optimality is not well-defined for arbitrary businesses, the user can graphically inspect and improve a schedule with respect to the user's notion of optimality. Modification of an existing schedule is well-facilitated within its interface, where appointments can be moved or swapped between employees. Explanations for unfeasible schedules are limited to data input verification and validation error messages.
+We will assess the application under its free-trail, which may limit its explanative functionality. A key observation is that there is no emphasis on the concept of an optimal schedule. Because the tool is designed for small businesses and optimality is not well-defined for arbitrary objectives, the user can graphically inspect and improve a schedule with respect to the user's notion of optimality. Modification of an existing schedule is well-facilitated within its interface, where appointments can be moved or swapped between employees. Explanations for unfeasible schedules are limited to data input verification and validation error messages.
 
 \subsection{LEKIN}
 
@@ -347,13 +347,14 @@ We will assess the application under its free-trail, which may limit its explana
 	\caption{LEKIN interactive interface \cite{lekin}}
 \end{figure}
 
-LEKIN is a academic-oriented scheduling application to teach students scheduling theory and its applications, developed at the Stem School of Business, NYU \cite{lekin}. The application features numerous optimisation algorithms specialised for scheduling and draws inspiration from academic for rules and heuristics \cite{sta}. The tool supports single machines, parallel machines and flexible job shop settings.
+LEKIN is a academic-oriented scheduling application to teach students scheduling theory and its applications. The application was developed at the Stem School of Business, NYU \cite{lekin}. It features numerous optimisation algorithms specialised for scheduling and draws inspiration from academic for rules and heuristics \cite{sta}. The tool supports single machines, parallel machines and flexible job shop settings.
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.8]{figures/lekin_overallocated.png}
 	\end{center}
 	\caption{Over-allocation of a job to multiple machines}
+	\label{lekinover}
 \end{figure}
 
 \begin{figure}[H]
@@ -361,15 +362,17 @@ LEKIN is a academic-oriented scheduling application to teach students scheduling
 		\includegraphics[scale=0.8]{figures/lekin_unallocated.png}
 	\end{center}
 	\caption{A job is not allocated to any machine}
+	\label{lekinunder}
 \end{figure}
 
-The application validates a schedule's feasibility at data input. Infeasible schedule results in error messages. The application computes optimal schedules, but has no functionality to verify its optimality. While our approach is to weaken optimality with efficiency, LEKIN takes the approach to compute common scheduling performance metrics such as makespan completion time, tardiness and weighted metrics over machines. The advantage is that these metrics can be easily and quickly be computed and are intuitive to non-technical users given some background reading. However, these metrics are global across all machines, and give no indication to improving schedules. Non-technical users may run one of the provided optimisers to improve metrics, but no explanation is offered between the assignments of the pre-optimised and the post-optimised schedules.
+The application validates a schedule's feasibility at data input. When a schedule is infeasible, error messages appear as in Figures \ref{lekinover} and \ref{lekinunder}. The application computes optimal schedules, but has no functionality to verify its optimality. While our approach is to weaken optimality with efficiency, LEKIN takes an alternative approach to compute scheduling performance metrics, as shown in Figure \ref{lekinmetrics}, such as makespan completion time, tardiness and weighted metrics over machines. The advantage is that these metrics can be easily and quickly be computed and are intuitive to non-technical users given some background reading. However, these metrics are global across all machines, and give no indication to improving schedules. Non-technical users may run one of the provided optimisers to improve metrics, but no explanation is offered between the pre-optimised and the post-optimised schedules.
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[scale=0.8]{figures/lekin_metric.png}
 	\end{center}
 	\caption{Performance metrics of an schedule}
+	\label{lekinmetrics}
 \end{figure}
 
 \subsection{Comparison}

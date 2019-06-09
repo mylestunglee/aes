@@ -33,15 +33,15 @@ We summarise our complexity results from Chapter \ref{implementation}.
 	\caption{Computational, memory and tractability complexity of algorithms using argumentation}
 \end{figure}
 
-Using an naive explanation approach only improves the computational complexity of verifying the feasibility property, from $\mathcal{O}(m^2n^2)$ to $\mathcal{O}(mn)$.
+Using an naive explanation approach only improves the computational complexity of verifying the feasibility property, from $\mathcal{O}(m^2n^2)$ to $\mathcal{O}(mn)$. Overall, we sse that \textsc{Partial-Precomputation-Explain} is better than \textsc{Full-Precomputation-Explain} by an order of $m$ in memory.
 
 \section{Practical Results} 
 
-The tool's functionality is demonstrated in the user documentation guide in Appendix \ref{userguide}. We will compare different implementation methods and see how fit for purpose our tool is through a survey.
+The tool's functionality is demonstrated in the user documentation guide in Appendix \ref{userguide}. We will compare different implementation methods and their effectiveness using performance metrics.
 
 \subsection{Comparison of Explanation Generation Methods}
 
-We will compare two algorithmic approaches to AAF construction with and the naive approach without argumentation. The algorithms are implemented, then profiled for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of dual-core CPU at 2GHz with 2GiB RAM.
+We will compare two algorithmic approaches to AAF construction with and the naive approach without argumentation. We implement the algorithms, then we profile for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of dual-core CPU at 2GHz with 2GiB RAM.
 \linespace
 Time comparison:
 \begin{itemize}
@@ -90,7 +90,7 @@ Memory comparison:
 
 \subsection{Survey}
 
-We conduct a surveys over three sample groups.
+We conduct surveys with three disjoint sample groups.
 
 \begin{itemize}
 	\item \textbf{Group 1}: 10 people who are not given any explanations.
@@ -101,14 +101,14 @@ We conduct a surveys over three sample groups.
 In all groups, we used the same questionnaire, which can be found in the appendix. Each question was carefully designed to be completed mentally while exploring concepts in makespan scheduling. We do not ask about feasibility because its validation is trivial. 
 
 \begin{itemize}
-	\item Question 1 shows an efficient schedule, but not optimal. The tool does not explain optimality, so users can see there are cases in which the tool may not be helpful.
+	\item Question 1 shows an efficient but non-optimal schedule. The tool does not explain optimality, so users can see cases where the tool may not be helpful.
 	\item Question 2 shows a schedule with more machines and jobs, to test whether users can find improvements in a non-trivial schedule. It is possible to optimise the schedule in one single exchange, but this may not be obvious.
 	\item Question 3 shows an application of fixed decisions.
 	\item Question 4 explores pairs of jobs, which can be modelled using fixed decisions. The question explores how intuition can be formed using additional constraints.
 	\item Question 5 explores replanning of a schedule by insertion of a new job. Clearly, trivially inserting a new job does not result in a optimal schedule. It is possible to arrange the schedule in one single exchange before insertion to achieve an optimal updated schedule.
 \end{itemize}
 
-Although these five questions do not cover the tool's complete functionality, they cover questions and seek explanations that require intuition, with or without the tool. This is important in assessing how users can operate the tool in non-trivial cases. In this survey, we asked a wide demographic, from GCSE students to graduates, including people who do have little knowledge of computer science or mathematics. 
+Although these five questions do not cover the tool's complete functionality, they seek explanations that require intuition, with or without the tool. This is important in assessing how users can operate the tool in non-trivial cases. In this survey, we asked a wide demographic, from GCSE students to graduates, including people who do have little knowledge of computer science or mathematics.
 
 \subsubsection{Group 1 Results}
 

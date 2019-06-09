@@ -38,13 +38,15 @@ pip3 install pyomo
 
 \subsection{Windows Installation}
 
-The tool was tested on Windows 10. First, download Python from the official website, then setup the path environment variable so \texttt{python} can be executed on the command prompt. Afterwards, install the required dependencies as below: 
+The tool was tested on Windows 10. First, download Python from the official website, then setup the path environment variable so \texttt{python} can be executed on the command prompt. Afterwards, install the required dependencies as follows:
 
 \begin{verbatim}
 python -m pip install matplotlib
 python -m pip install pillow
 python -m pip install pyomo
 \end{verbatim}
+
+If you install GLPK, ensure the path variable is set correctly so \texttt{pyomo} can access GLPK.
 
 \section{Usage}
 
@@ -58,7 +60,7 @@ python -m pip install pyomo
 
 To start the tool, run \texttt{python3 main.py -g} on Linux or \texttt{python main.py -g} on Windows in the \texttt{src} directory supplied in the repository.
 \linespace
-The makespan problem consists of the number of machines and job processing times. The tutorial will use a hospital setting, where nurses and patients are represented as machines and jobs respectively. Consider the following example where there are two nurses, Alice and Bob. and two patients, Charlie and Dave. Charlie's and Dave's appointment takes 15 and 10 minutes respectively. To enter the example in the tool, nurses and patients are indexed. Hence, A represents Alice, B represents Bob for nurses and 1 represents Charlie and 2 represents Dave for patients. Numbers are used to index machines and letters are used to index jobs. The problem is to minimise the total completion time, which intuitively is the longest time any nurse has to work. Machines must be integer-indexed and jobs must be alphabetically-index.
+The makespan problem consists of the number of machines and job processing times. The tutorial will use a hospital setting, where nurses and patients are represented as machines and jobs respectively. Consider the following example where there are two nurses, Alice and Bob. and two patients, Charlie and Dave. Charlie's and Dave's appointment takes 15 and 10 minutes respectively. To enter the example in the tool, nurses and patients are indexed. Hence, A represents Alice, B represents Bob for nurses and 1 represents Charlie and 2 represents Dave for patients. Numbers are used to index machines and letters are used to index jobs. The problem is to minimise the total completion time, which intuitively is the longest time any nurse has to work. Machines must be integer-indexed and jobs must be alphabetically-indexed.
 
 \begin{figure}[H]
 	\centering
