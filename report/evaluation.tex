@@ -8,7 +8,7 @@ Arguably, the most important outcome of this project is that the tool is functio
 \linespace
 One objective is to implement an accessible tool. To measure accessibility, we can refer to the tractability complexity from explanations. The length of explanations either in the number of words or characters may be correlated with understandability. In addition, we conduct a survey targeted towards potential users. Because the understandability of explanations are difficult to measure, we will use open-ended questions. To carefully evaluate explanations, one would need to refer to cognitive science, which is beyond the scope of this project. We use a survey to measure the accessibility of our tool. Moreover, we can measure performance to reflect responsiveness and scalability of the tool \cite{foundationimplementation}. This may be achieved by using profiling utilities to measure performance metrics such as execution time and memory consumption. 
 
-\section{Theoretical Results}
+\section{Complexity Results}
 
 We summarise our complexity results from Chapter \ref{implementation}.
 
@@ -35,13 +35,9 @@ We summarise our complexity results from Chapter \ref{implementation}.
 
 Using an naive explanation approach only improves the computational complexity of verifying the feasibility property, from $\mathcal{O}(m^2n^2)$ to $\mathcal{O}(mn)$. Overall, we sse that \textsc{Partial-Precomputation-Explain} is better than \textsc{Full-Precomputation-Explain} by an order of $m$ in memory.
 
-\section{Practical Results} 
+\section{Profiling} 
 
-The tool's functionality is demonstrated in the user documentation guide in Appendix \ref{userguide}. We will compare different implementation methods and their effectiveness using performance metrics.
-
-\subsection{Comparison of Explanation Generation Methods}
-
-We will compare two algorithmic approaches to AAF construction with and the naive approach without argumentation. We implement the algorithms, then we profile for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of dual-core CPU at 2GHz with 2GiB RAM.
+The tool's functionality is demonstrated in the user documentation guide in Appendix \ref{userguide}. We will compare different implementation methods and their effectiveness using performance metrics. We will compare two algorithmic approaches to AAF construction with and the naive approach without argumentation. We implement the algorithms, then we profile for elapsed time and maximum allocated memory. The time and memory are measured with the Python's \texttt{cProfile} and \texttt{memory-profiler} modules respectively. The tool was executed on Department of Computing's virtual machines, with the specification of dual-core CPU at 2GHz with 2GiB RAM.
 \linespace
 Time comparison:
 \begin{itemize}
@@ -88,7 +84,7 @@ Memory comparison:
 	\caption{Maximum allocated memory comparison where $m=10$ and $0\leq n\leq 800$ with 8000 samples.}
 \end{figure}
 
-\subsection{Survey}
+\section{Questionnaire}
 
 We conduct surveys with three disjoint sample groups.
 
@@ -110,7 +106,7 @@ In all groups, we used the same questionnaire, which can be found in the appendi
 
 Although these five questions do not cover the tool's complete functionality, they seek explanations that require intuition, with or without the tool. This is important in assessing how users can operate the tool in non-trivial cases. In this survey, we asked a wide demographic, from GCSE students to graduates, including people who do have little knowledge of computer science or mathematics.
 
-\subsubsection{Group 1 Results}
+\subsection{Group 1 Results}
 
 \begin{figure}[H]
 	\begin{center}
@@ -122,7 +118,7 @@ Although these five questions do not cover the tool's complete functionality, th
 
 From Figure \ref{group1chart}, we see that the majority of respondents are able to get most questions correct. Some responses are considered complex, when their answers are technically correct, but give more steps than necessary. This may hint that some intuitive ways to optimise a schedule may not minimise the number of job exchanges. This was evident in Question 2 and 5, that has many jobs. We can see in more complex schedules that users give more complex answers. Some responses are considered incomplete, where only the question was partially answered. This was evident in Question 4, where many respondents failed to identity either decision yields an optimal schedule.
 
-\subsubsection{Group 2 Results}
+\subsection{Group 2 Results}
 
 \begin{figure}[H]
 	\begin{center}
@@ -141,7 +137,7 @@ From Figure \ref{group2chart}, we can make the following observations of Group 2
 	\item In question 1, the explanation given was not relevant, so we would expect answers from Groups 1 and 2 would be similar because the underlying question is the same. From the data, we can see some variance between Groups 1 and 2.
 \end{itemize}
 
-\subsubsection{Group 3 Results}
+\subsection{Group 3 Results}
 
 \begin{figure}[H]
 	\begin{center}
@@ -156,7 +152,7 @@ From Figure \ref{group2chart}, we can make the following observations of Group 2
 	\item From question 3, many respondents said to simply move jobs to satisfy negative fixed decisions, without concern of the schedule's optimality. This suggests that users took the suggestions from the took too literally. As many users suggested local changes, many answers were considered incompletes.
 \end{itemize}
 
-\subsubsection{Summary}
+\subsection{Summary}
 
 \begin{figure}[H]
 	\begin{center}
