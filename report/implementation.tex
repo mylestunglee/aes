@@ -580,7 +580,8 @@ The algorithm features two optimisations. The variable $\mathbf{y}$ represent ov
 \begin{algorithm}[H]
 	\caption{}
 	\begin{algorithmic}[1]
-		\Function{Explain-Efficiency}{$\mathbf{p}$, $\mathbf{C}$, $\mathbf{u}$, $\mathbf{c}$}				\State $i_1$ $\gets$ first argmax of $\mathbf{C}$
+		\Function{Explain-Efficiency}{$\mathbf{p}$, $\mathbf{C}$, $\mathbf{u}$, $\mathbf{c}$}
+			\State $i_1$ $\gets$ first maximal argument of $\mathbf{C}$
 			\State reasons $\gets$ empty list
 			\For{$i_2\in\mathcal{M},j_1\in\mathcal{J}$}
 				\If{$u_{i_2,j_1}=1$}

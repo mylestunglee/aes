@@ -1,40 +1,54 @@
-@book{aes,
-	author    = {Kristijonas Cyras and Dimitrios Letsios and Ruth Misener and Francesca Toni},
+@inproceedings{aes,
+	author    = {Kristijonas Cyras and
+	Dimitrios Letsios and
+	Ruth Misener and
+	Francesca Toni},
 	title     = {Argumentation for Explainable Scheduling},
-	year      = {2018}
+	year      = {2019},
+	publisher = {AAAI Press},
+	booktitle = {Thirty-Third AAAI Conference on Artificial Intelligence},
+	address   = {Honolulu, Hawaii, USA}
 }
 
 @book{sanr,
-	author = {Burke, Edmund K. and De Causmaecker, Patrick and Berghe, Greet Vanden and Van Landeghem, Hendrik},
-	title = {The State of the Art of Nurse Rostering},
-	issue_date = {November-December 2004},
-	year = {2004},
-	issn = {1094-6136},
-	pages = {441--499},
-	numpages = {59},
-	url = {https://doi.org/10.1023/B:JOSH.0000046076.75950.0b},
-	doi = {10.1023/B:JOSH.0000046076.75950.0b},
-	acmid = {1029477},
-	publisher = {Kluwer Academic Publishers},
+	author    = {Edmund K. Burke and
+	Patrick De Causmaecker and
+	Greet Vanden Berghe and
+	Hendrik Van Landeghem},
+	title     = {The State of the Art of Nurse Rostering},
+	journal   = {J. Scheduling},
+	volume    = {7},
+	number    = {6},
+	pages     = {441--499},
+	year      = {2004},
+	url       = {https://doi.org/10.1023/B:JOSH.0000046076.75950.0b},
+	doi       = {10.1023/B:JOSH.0000046076.75950.0b},
+	timestamp = {Fri, 30 Nov 2018 13:19:12 +0100},
+	biburl    = {https://dblp.org/rec/bib/journals/scheduling/BurkeCBL04},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
 } 
 
 @book{sta,
 	author = {Pinedo, Michael},
-	year = {2019},
-	title = {Scheduling: Theory, Algorithms, and Systems}
+	year = {2012},
+	title = {Scheduling: Theory, Algorithms, and Systems},
+	publisher={Springer}
 }
 
-@book{aa,
-	title = "On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games",
-	journal = "Artificial Intelligence",
-	volume = "77",
-	number = "2",
-	pages = "321 - 357",
-	year = "1995",
-	issn = "0004-3702",
-	doi = "https://doi.org/10.1016/0004-3702(94)00041-X",
-	url = "http://www.sciencedirect.com/science/article/pii/000437029400041X",
-	author = "Phan Minh Dung"
+@article{aa,
+	author    = {Phan Minh Dung},
+	title     = {On the Acceptability of Arguments and its Fundamental Role in Nonmonotonic
+	Reasoning and Logic Programming},
+	booktitle = {Proceedings of the 13th International Joint Conference on Artificial
+	Intelligence. Chamb{\'{e}}ry, France, August 28 - September 3,
+	1993},
+	pages     = {852--859},
+	year      = {1993},
+	crossref  = {DBLP:conf/ijcai/1993},
+	url       = {http://ijcai.org/Proceedings/93-2/Papers/003.pdf},
+	timestamp = {Tue, 19 Jul 2016 14:12:43 +0200},
+	biburl    = {https://dblp.org/rec/bib/conf/ijcai/Dung93},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @book{sa,
@@ -47,7 +61,7 @@
 @book{clp,
   title={Comparison of open-source linear programming solvers},
   author={Gearhart, Jared L and Adair, Kristin L and Detry, Richard J and Durfee, Justin D and Jones, Katherine A and Martin, Nathaniel},
-  journal={Tech. Rep. SAND2013-8847},
+  journal={Sandia National Laboratories, SAND2013-8847},
   year={2013}
 }
 
@@ -60,13 +74,20 @@
 	publisher={Springer}
 }
 
-@book{ep,
-  author    = {Maria Fox and
-               Derek Long and
-               Daniele Magazzeni},
-  title     = {Explainable Planning},
-  year      = {2017},
-  url       = {http://arxiv.org/abs/1709.10256},
+@article{ep,
+	author    = {Maria Fox and
+	Derek Long and
+	Daniele Magazzeni},
+	title     = {Explainable Planning},
+	journal   = {CoRR},
+	volume    = {abs/1709.10256},
+	year      = {2017},
+	url       = {http://arxiv.org/abs/1709.10256},
+	archivePrefix = {arXiv},
+	eprint    = {1709.10256},
+	timestamp = {Mon, 13 Aug 2018 16:46:47 +0200},
+	biburl    = {https://dblp.org/rec/bib/journals/corr/abs-1709-10256},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @book{pe,
@@ -91,6 +112,7 @@
 }
 
 @online{lekin,
+	author={Pinedo, Michael and others},
 	title = {Scheduling System},
 	year = 2010,
 	howpublished = {\url{http://web-static.stern.nyu.edu/om/software/lekin}},
@@ -144,17 +166,20 @@
 	address = {San Francisco, CA, USA},
 }
 
-@paper{aba,
-	author = {Kristijonas Cyras and Francesca Toni},
-	title = {ABA+: Assumption-Based Argumentation with Preferences},
-	conference = {Knowledge Representation and Reasoning Conference},
-	year = {2016},
-	keywords = {Argumentation; Preferences; Knowledge Representation and Reasoning},
-	abstract = {We present a novel approach to account for preferences in a well known structured argumentation formalism, Assumption-Based Argumentation (ABA). The new formalism, called ABA+, incorporates object-level preferences (over assumptions) directly into the attack relation to reverse attacks. We give several basic desirable properties of ABA+.},
-	
-	url = {https://www.aaai.org/ocs/index.php/KR/KR16/paper/view/12877/12519}
+@inproceedings{aba,
+	author    = {Kristijonas Cyras and Francesca Toni},
+	title     = {{ABA+:} Assumption-Based Argumentation with Preferences},
+	booktitle = {Principles of Knowledge Representation and Reasoning: Proceedings
+	of the Fifteenth International Conference, {KR} 2016, Cape Town, South
+	Africa, April 25-29, 2016.},
+	pages     = {553--556},
+	year      = {2016},
+	crossref  = {DBLP:conf/kr/2016},
+	url       = {http://www.aaai.org/ocs/index.php/KR/KR16/paper/view/12877},
+	timestamp = {Thu, 21 Apr 2016 20:01:05 +0200},
+	biburl    = {https://dblp.org/rec/bib/conf/kr/CyrasT16},
+	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
-
 @online{adjmat,
 	author = {Weisstein, Eric W.},
 	title = {Adjacency Matrix},

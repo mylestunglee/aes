@@ -39,14 +39,14 @@
 		%\input{diagram}
 
 		% no chapter sectioning
-		\unchapter{Questionnare}
+		\unchapter{Questionnaire}
 		\includepdf[pages=-]{questionnaire.pdf}
 		\input{data}
 	\end{appendices}
 
 	% warning, set when needed
 	%\setcounter{page}{68}
+	\bibliographystyle{ieeetr}
 	\bibliography{bibliography}
 	\addcontentsline{toc}{chapter}{Bibliography}
-	\bibliographystyle{ieeetr}
 \end{document}
