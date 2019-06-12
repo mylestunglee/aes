@@ -341,7 +341,15 @@ Makespan schedules are extended to discrete time-indexed interval scheduling. We
 	t\leq t'-p_j\lor t\geq t'+p_j\implies&x_{i,j,t}=0&\eta\\
 \end{align*}
 
-$\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models that machines cannot process multiple jobs at the same time. $\gamma$ and $\delta$ models the restriction of start and end times respectively. $\varepsilon$ and $\zeta$ models negative and positive fixed decisions respectively. Equivalently, $\zeta$ can be modelled by $\forall\triple{i}{j}{t'}\in D^+\ \exists t\in\mathcal{T}\ x_{i,j,t}=1$. $\zeta$ is defined as such to simplify the proof that the union of these properties is modellable. $\eta$ models enforces that $j$ is working on $i$ at $t$, but does not specify the when $j$ starts. Note that $\gamma,\delta,\zeta$ and $\eta$ can be modelled using $\varepsilon$. We use more constants to give better explanations, because each constraint have different explanations. For argumentation, let $Args=\mathcal{M}\times\mathcal{J}\times\mathcal{T}$.
+$\alpha$ models feasibility, that all jobs must be allocated. $\beta$ models that machines cannot process multiple jobs at the same time. $\gamma$ and $\delta$ models the restriction of start and end times respectively. $\varepsilon$ and $\zeta$ models negative and positive fixed decisions respectively. Equivalently, $\zeta$ can be modelled by $\forall\triple{i}{j}{t'}\in D^+\ \exists t\in\mathcal{T}\ x_{i,j,t}=1$. $\zeta$ is defined as such to simplify the proof by using Theorem \ref{modelling}. $\eta$ models enforces that $j$ is working on $i$ at $t$, but does not specify the when $j$ starts. Note that $\gamma,\delta,\zeta$ and $\eta$ can be modelled using $\varepsilon$. This can be achieved by explicitly stating all negative fixed decisions, as follows:
+\begin{align*}
+	\varepsilon=\ &\{\triple{i}{j}{t}\ |\ i\in\mathcal{M},j\in\mathcal{J},0\leq t<s_{i,j}\}&\text{capturing }\gamma\\
+	\cup\ &\{\triple{i}{j}{t}\ |\ i\in\mathcal{M},j\in\mathcal{J},f_{i,j}-p_j<t<T\}&\text{capturing }\delta\\
+	\cup\ &\{\triple{i}{j}{t}\ |\ \triple{i'}{j}{t'}\in D^+,i\in\mathcal{M},i\neq i', t\in\mathcal{T}\}&\text{capturing }\zeta\\
+	\cup\ &\{\triple{i}{j}{t}\ |\ \triple{i'}{j}{t'}\in D^+,t\in\mathcal{T},t\leq t'-p_j\lor t\geq t'+p_j\}&\text{capturing }\eta
+\end{align*}
+
+We use more constraints, rather than just $\varepsilon$, to give better explanations, because each constraint has different explanations. For argumentation, let $Args=\mathcal{M}\times\mathcal{J}\times\mathcal{T}$.
 
 \begin{figure}[H]
 	\begin{center}
@@ -365,14 +373,14 @@ $\rightsquigarrow_\alpha$ can be interpreted as an generalisation of $\rightsqui
 	\begin{proof}
 		To prove forward implication: $E$ is stable on $\pair{Args}{\rightsquigarrow_\alpha}$. Take arbitrary $j\in\mathcal{J}$. To aim to contradict, assume $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}>1$. Then $\exists\triple{i}{j}{t},\triple{i'}{j}{t'}\in E$ where $x_{i,j,t}=1$ and $x_{i',j,t'}=1$ such that $i\neq i'$ or $t\neq t'$. By definition of $\rightsquigarrow_\alpha$, $\triple{i}{j}{t}\rightsquigarrow_\alpha\triple{i'}{j}{t'}$. Hence $E$ is not conflict-free, then $E$ is not stable. By contradiction, $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}\leq 1$. To aim to contradict, assume $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}=0$. Then $\forall i\in\mathcal{M}\ \forall t\in\mathcal{T}\ x_{i,j,t}=0$. Then $\forall i\in\mathcal{M}\ \forall t\in\mathcal{T}\ \triple{i}{j}{t}\not\in E$. Then $E$ is not stable. By contradiction, $\sum_{i\in\mathcal{M}}\sum_{t\in\mathcal{T}}x_{i,j,t}>0$. Therefore $\alpha$ holds.
 		\linespace
-		To prove backward implication: From $\alpha$, there is exactly one $i\in\mathcal{M}$ and $t\in\mathcal{T}$ such that $x_{i,j,t}=1$. So $E$ is conflict free. Also, for all $j$, $\triple{i}{j}{t}\in E$ attacks every other $\pair{i}{t}$, so $E$ is stable.
+		To prove backward implication: From $\alpha$, there is exactly one $i\in\mathcal{M}$ and $t\in\mathcal{T}$ such that $x_{i,j,t}=1$. So $E$ is conflict free. Also, for all $j$, $\triple{i}{j}{t}\in E$ attacks every other $\triple{i}{j'}{t}$, so $E$ is stable.
 	\end{proof}
 \end{lemma}
 
 \begin{definition}
 	\label{intervalbeta}
 	
-	Let $\rightsquigarrow_\beta$ be the sequential-feasibility framework such that $\triple{i}{j}{t}\rightsquigarrow_\beta\triple{i'}{j'}{t'}\Leftrightarrow i=i'\land(t'\leq t\leq t'+p_j'\lor t\leq t'<t+p_j)$.
+	Let $\rightsquigarrow_\beta$ be the sequential-feasibility framework such that $\triple{i}{j}{t}\rightsquigarrow_\beta\triple{i'}{j'}{t'}\Leftrightarrow i=i'\land(t'\leq t\leq t'+p_{j'}\lor t\leq t'<t+p_j)$.
 \end{definition}
 
 \begin{lemma}
@@ -382,7 +390,7 @@ $\rightsquigarrow_\alpha$ can be interpreted as an generalisation of $\rightsqui
 	\begin{proof}
 		To show $E$ is conflict-free implies $\beta$: Take arbitrary $i\in\mathcal{M}$, $t\in\mathcal{T}$. To aim for a contradiction, assume $\sum_{j\in\mathcal{J}}\sum_{t'\in\max\{t-p_j+1,0\}}x_{i,j,t'}\geq 2$. Then there exists some $j_1,j_2\in\mathcal{J}$ and some $t_1,t_2\in\mathcal{T}$ such that $0\leq t_1,t_2\leq t$ and $x_{i,j_1,t_1}+x_{i,j_2,t_2}=2$. Then $\triple{i}{j_1}{t_1}\in E$ and $\triple{i}{j_2}{t_2}\in E$. By conduction of $\beta$, then either $t_1\leq t_2\leq t_1+p_1$ or $t_2\leq t_1\leq t_2+p_2$. By definition of $\rightsquigarrow_\beta$, $\triple{i}{j_1}{t_1}\rightsquigarrow_\beta\triple{i}{j_2}{t_2}$. But this contradicts that $E$ is conflict-free. Therefore $\beta$ holds.
 		\linespace
-		To show $\beta$ implies $E$ is conflict-free: Assume $\beta$ holds. Take arbitrary $i\in\mathcal{M}$, $t\in\mathcal{T}$. Then there does not exists overlapping jobs $j_1$ and $j_2$ such that $x_{i,j_1,t_1}+x_{i,j_2,t_2}=2$. Then $\triple{i}{j_1}{t_1}\not\in E$ and $\triple{i}{j_2}{t_2}\not\in E$. Therefore, $E$ is conflict-free.
+		To show $\beta$ implies $E$ is conflict-free: Assume $\beta$ holds. Take arbitrary $i\in\mathcal{M}$, $t\in\mathcal{T}$. Then there does not exist overlapping jobs $j_1$ and $j_2$ such that $x_{i,j_1,t_1}+x_{i,j_2,t_2}=2$. Then $\triple{i}{j_1}{t_1}\not\in E$ and $\triple{i}{j_2}{t_2}\not\in E$. Therefore, $E$ is conflict-free.
 	\end{proof}
 \end{lemma}
 
@@ -455,9 +463,9 @@ $\rightsquigarrow_\alpha$ can be interpreted as an generalisation of $\rightsqui
 	\begin{proof}
 		Take arbitrary extension $E$ and arbitrary $a\in Args\setminus E$. If $\lambda\neq\beta$ and $\exists e\in E\ e\rightsquigarrow_\lambda a$, then $a=e$ from the definition of $\rightsquigarrow_\lambda$. But $e\not\in Args\setminus E$. By contradiction, $\lambda=\beta$.
 		\linespace
-		If $m=0$ or $T=0$, then $Args=\varnothing$, so the proof is trivial.
+		If $m=0$ or $T=0$, then $Args=\varnothing$, this case is trivial.
 		\linespace
-		If $m=1$ and $T=1$, then by definition of $\rightsquigarrow_\beta$, $\rightsquigarrow_\beta=\varnothing$. So $\neg\exists e\in E\ e\rightsquigarrow_\beta a$. As the condition does not hold, $\exists e\in E\ e\rightsquigarrow_\alpha a$.
+		If $m=1$ and $T=1$, then by definition of $\rightsquigarrow_\beta$, $\rightsquigarrow_\beta=\varnothing$. So $\neg\exists e\in E\ e\rightsquigarrow_\beta a$. As the antecedent does not hold, this case is trivial.
 		\linespace
 		Otherwise, let $a=\triple{i}{j}{t}$. Because $m>2$ or $T>2$, then there exists $i$ and $t$ such that $\pair{i}{t}\neq\pair{i'}{t'}$. By definition of $\rightsquigarrow_\alpha$, $\triple{i'}{j}{t'}\rightsquigarrow_\alpha a$.
 	\end{proof}
