@@ -145,6 +145,8 @@ The tool uses Boolean tensors as data structures to store schedules and argument
 
 \subsection{Summary}
 
+We will first define the algorithms used for generating explanations using the \textsc{Full-Precomputation} method, which is a naive implementation. Afterwards, we will define a memory-efficient approach with the \textsc{Partial-Precomputation} method.
+
 \begin{figure}[H]
 	\resizebox{\textwidth}{!}{
 	\begin{tikzpicture}
@@ -340,7 +342,7 @@ The paper \cite{aes} defines $\rightsquigarrow_S$ as an optimality framework. Th
 	\end{itemize}
 \end{definition}
 
-The attack relations $\rightsquigarrow_F$, $\rightsquigarrow_S$ and $\rightsquigarrow_D$ are defined on $Args^2$. In practice, the tool uses a Boolean tensor representation of these attacks.
+The attack relations $\rightsquigarrow_F$, $\rightsquigarrow_S$ and $\rightsquigarrow_D$ are defined over $Args$. In practice, the tool uses a Boolean tensor representation of these attacks.
 
 \begin{definition}
 	\label{tensorfeasiblityframework}
@@ -375,7 +377,7 @@ The attack relations $\rightsquigarrow_F$, $\rightsquigarrow_S$ and $\rightsquig
 	\end{algorithmic}
 \end{algorithm}
 
-$\twoheadrightarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity, because of the complexity of zero-initialising $\twoheadrightarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ space complexity using a sparse data structure, but results worse computational complexity.
+$\twoheadrightarrow_F$ can be constructed trivially in a dense data structure in $\mathcal{O}(m^2n^2)$ computational complexity, because of the complexity of zero-initialising $\twoheadrightarrow_F$. This can be constructed in $\mathcal{O}(m^2n)$ space complexity using a sparse data structure, but results in worse computational complexity.
 
 \begin{algorithm}[H]
 	\caption{}
@@ -407,7 +409,7 @@ $\twoheadrightarrow_F$ can be constructed trivially in a dense data structure in
 	\end{algorithmic}
 \end{algorithm}
 
-The construction of $\twoheadrightarrow_S$ is expensive because of the explicit for-loops to iterate over the $\mathcal{M}^2\mathcal{J}^2$ space to compute the edges that satisfy PEP and to copy $\twoheadrightarrow_F$. An optimisation by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$. We return the value of $\mathbf{C}$ because it will be used later, rather an recompute its value when necessary
+The construction of $\twoheadrightarrow_S$ is expensive because of the explicit for-loops to iterate over the $Args^2$ space to compute the edges that satisfy PEP and to copy $\twoheadrightarrow_F$. We optimise the algorithm by computing SEP outside of the $j_2$ loop, because PEP is invariant of $j_2$. We return the value of $\mathbf{C}$ because it will be used later, rather an recompute its value when necessary
 
 \begin{algorithm}[H]
 	\caption{}
@@ -432,7 +434,7 @@ If $D$ is assumed to be satisfiable, then $D^+$ has at most $n$ decisions while 
 \subsection{Verifying Stability}
 \label{verifyingstability}
 
-Stability can be computed by checking whether $E$ exists within a set of all possible stable extensions of some $\pair{Args}{\twoheadrightarrow}$. However, a schedule cannot be reasoned on without understanding whether $E$ may be stable on $\langle Args, \twoheadrightarrow\rangle$. Existing solutions require a complication pipeline using answer set solvers. To make the implementation of the tool easier, we adapt the stability computation to schedules into a concise algorithm.
+Stability can be computed by checking whether $E$ exists within a set of all possible stable extensions of some $\pair{Args}{\twoheadrightarrow}$. However, a schedule cannot be reasoned without understanding whether $E$ may be stable on $\pair{Args}{\twoheadrightarrow}$. Existing solutions require a complex over-engineered pipeline using answer set solvers. To make the implementation of the tool easier, we adapt the stability computation to schedules into a concise algorithm.
 
 \begin{algorithm}[H]
 	\caption{}
@@ -534,7 +536,7 @@ The auxiliary functions \textsc{Compute-Unattacked} and \textsc{Compute-Partial-
 
 \subsection{Explanation}
 
-Explanations are given in italics. Implementation of algorithms use Python's \verb|print()| to collect explanations over all algorithms in the tool's output.
+Explanations are given in italics.
 
 \begin{algorithm}[H]
 	\caption{}

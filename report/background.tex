@@ -47,16 +47,16 @@ In non-linear or large optimisation problems, finding a global optima is not tri
 The simplistic definition of makespan scheduling gives a good foundation for experimenting with argumentation. Makespan schedules are defined by $m\in\mathbb{N}$ independent machines and $n\in\mathbb{N}$ independent jobs \cite{sa}. Let $\mathcal{M}=\{1,...,m\}$ be the set of machines and $\mathcal{J}=\{1,...,n\}$ be the set of jobs. Each job $j\in\mathcal{J}$, has an associated processing time $p_j\in\mathbb{R}_{\geq 0}$. All processing times are collectively denoted by a vector $\mathbf{p}$. A machine can only execute at most one job at any time. For a schedule to be feasible, each job is assigned to a machine non-preemptively. For some machine $i\in\mathcal{M}$, let $C_i$ be the completion time of the $i^\text{th}$ machine. Let $C_{\max}$ be the total completion time. Let $\mathbf{x}\in\{0,1\}^{m\times n}$ denote the assignment matrix that represents the allocation jobs to machines. Formally, makespan schedules are modelled as an optimisation problem:
 \begin{align*}
 	\min_{C_{\max},\mathbf{C},\mathbf{x}}\ &C_{\max}&\text{ subject to:}\\
-	\forall i\in\mathcal{M}.\ &C_{\max}\geq C_i\\
-	\forall i\in\mathcal{M}.\ &C_i=\sum_{j\in\mathcal{J}}x_{i,j}\cdot p_j\\
-	\forall j\in\mathcal{J}.\ &\sum_{j\in\mathcal{J}}x_{i,j}=1\\
-	\forall i\in\mathcal{M},\ \forall j\in\mathcal{J}.\ &x_{i,j}\in\{0,1\}
+	\forall i\in\mathcal{M}\ &C_{\max}\geq C_i\\
+	\forall i\in\mathcal{M}\ &C_i=\sum_{j\in\mathcal{J}}x_{i,j}\cdot p_j\\
+	\forall j\in\mathcal{J}\ &\sum_{j\in\mathcal{J}}x_{i,j}=1\\
+	\forall i\in\mathcal{M}\ \forall j\in\mathcal{J}\ &x_{i,j}\in\{0,1\}
 \end{align*}
 
 \begin{definition}
 	\label{assignmentmatrix}
 	
-	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but does not specify its formal representation unlike $\mathbf{x}$, which will be used in linear programming and algorithms with its precise definition.
+	A schedule $S$ is defined by its assignment matrix $\mathbf{x}$. $S$ will be used to reference a high-level representation of $\mathbf{x}$ but does not specify its formal representation unlike $\mathbf{x}$, that will be used in linear programming and algorithms. $x_{i,j}=1$ is interpreted as job $j$ being assigned to machine $i$.
 \end{definition}
 
 \begin{definition}
@@ -68,30 +68,30 @@ The simplistic definition of makespan scheduling gives a good foundation for exp
 \end{definition}
 
 \begin{definition}
-	A job $j\in\mathcal{J}$ is critical iff $i\in\mathcal{M}$ is critical and $x_{i,j}=1$.
+	A job $j\in\mathcal{J}$ is critical iff there exist a critical machine $i\in\mathcal{M}$ and $x_{i,j}=1$.
 \end{definition}
 
 \begin{definition}
 	\label{sep}
 	
-	A schedule satisfies the single exchange property (SEP) iff for any critical machine and any machine $i,i'\in\mathcal{M}$ and for all critical jobs $j\in\mathcal{J}$, $C_i-C_{i'}\leq p_j$
+	A schedule satisfies the single exchange property (SEP) iff for any critical machine $i$ and any machine $i'$ and for all critical jobs $j\in\mathcal{J}$, $C_i-C_{i'}\leq p_j$
 \end{definition}
 
 \begin{definition}
 	\label{pep}
 	
-	A schedule satisfies the pairwise exchange property (PEP) iff for any critical job and any job $j,j'\in\mathcal{J}$, if $p_j>p_{j'}$, then $C_i+p_{j'}\leq C_{i'}+p_j$.
+	A schedule satisfies the pairwise exchange property (PEP) iff for any critical job $j$ and any job $j'$, if $p_j>p_{j'}$ then $C_i+p_{j'}\leq C_{i'}+p_j$.
 \end{definition}
 
 \begin{definition}
-	A schedule $S$ is efficient iff $S$ satisfies SEP and PEP. Note this definition of efficiency succinctly captures necessary optimally conditions, which differs from the property efficiency defined in the paper \cite{aes}.
+	A schedule $S$ is efficient iff $S$ satisfies SEP and PEP. Note this definition of efficiency succinctly captures necessary optimally conditions, which differs from the efficiency property defined in the paper \cite{aes}.
 \end{definition}
 
 \begin{proposition}
 	Schedule efficiency is a necessary condition for optimality \cite{aes}.
 \end{proposition}
 
-Makespan schedules are often represented using cascade charts. The charts shows graphically the difference in total completion time of schedules where the problem has the parameters $m=4$ and $n=13$.
+Makespan schedules are represented using cascade charts. The charts shows graphically the difference in total completion time of schedules where the problem has the parameters $m=4$ and $n=13$.
 
 \begin{figure}[H]
 	\begin{center}
@@ -110,26 +110,24 @@ Makespan schedules are often represented using cascade charts. The charts shows 
 \subsection{User Fixed Decisions}
 \label{fixeddecisions}
 
-To accommodate practical applications of makespan schedules, we introduce user positive and negative fixed decisions as extensions to makespan scheduling. In a hospital scenario, positive fixed decisions capture patients exclusively allocated to a nurse, while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=(D^-,D^+)$.
+To accommodate practical applications of makespan schedules, we introduce user positive and negative fixed decisions as extensions to makespan scheduling. In a hospital scenario, positive fixed decisions capture patients exclusively allocated to a nurse, while negative fixed decisions capture unavailable or incompatible nurses and patients \cite{aes}. Let $D^-,D^+\subseteq\mathcal{M}\times\mathcal{J}$ be the negative and positive fixed decisions respectively. Let $D$ be the fixed decisions such that $D=\pair{D^-}{D^+}$.
 
 \begin{definition}
-	A schedule $S$ satisfies $D$ iff $\forall(i,j)\in D^-.\ x_{i,j}=0$ and $\forall \pair{i}{j}\in D^+.\ x_{i,j}=1$.
+	A schedule $S$ satisfies $D$ iff $\forall\pair{i}{j}\in D^-.\ x_{i,j}=0$ and $\forall \pair{i}{j}\in D^+.\ x_{i,j}=1$.
 \end{definition}
 
 \begin{definition}
 	A fixed decision $D$ is satisfiable iff there exists a schedule $S$ such that $S$ satisfies $D$. 
 \end{definition}
 
-\begin{definition}
-	A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
-	\begin{itemize}
-		\item$D^+$ and $D^-$ are disjoint.
-		\item$\forall\pair{i}{j},\pair{i'}{j'}\in D^+.\ i=i'\lor j\neq j'$
-		\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$
-	\end{itemize}
-\end{definition}
+A fixed decision $D$ is satisfiable iff if the following necessary and sufficient conditions hold:
+\begin{itemize}
+	\item$D^+$ and $D^-$ are disjoint.
+	\item$\forall\pair{i}{j},\pair{i'}{j'}\in D^+.\ i=i'\lor j\neq j'$
+	\item$\forall j\in\mathcal{J}.\ \exists i\in\mathcal{M}.\ \pair{i}{j}\not\in D^-$
+\end{itemize}
 
-The relaxed definition of $D$ allows it to be not satisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations for validation of user input, which is practically useful.
+The relaxed definition of $D$ allows it to be not satisfiable, which is not permitted in previous work \cite{aes}. This relaxation accommodates for poorly-formulated user problems, allowing explanations for validation of user input, which has practical value.
 
 \subsection{Interval Scheduling}
 
@@ -228,11 +226,11 @@ Many explanation generation tasks appeal to either minimality or simplicity \cit
 	\item Will a better result be produced if given $n$ more hours?
 \end{itemize}
 
-Arguably, understanding cannot be captured with a few questions. Future question include the negation, where their answers are not natively their negation.
+Arguably, understanding cannot be captured with a few questions. Future question include the negation, where their answers are not naively their negation.
 
 \section{Tensors}
 
-Linear algebra is a mature area in literature. We will be using Boolean tensors as multi-dimensional arrays as data structures to manipulate AAFs. For directed graphs, we can obtain a matrix representation of its edges with an adjacency matrix \cite{adjmat}. If we generalise edges to multiple dimensions, then the graph's corresponding adjacency matrix becomes higher-dimensional.
+Linear algebra is a mature area in literature. We will be using Boolean tensors as multi-dimensional data structures to manipulate AAFs. For directed graphs, we can obtain a matrix representation of its edges with an adjacency matrix \cite{adjmat}. If we generalise nodes to higher dimensions, then the graph's corresponding adjacency matrix becomes higher-dimensional.
 \begin{figure}[H]
 	\begin{center}
 		\begin{minipage}{0.3\textwidth}
@@ -309,7 +307,7 @@ We will use the 2-dimension case for makespan schedules, with machines and jobs 
 
 \section{Existing Tools}
 
-We will look at two scheduling software, Setmore and LEKIN, in terms of explainable planning. We will not look existing tools using argumentation because of existing tools do not use argumentation to explain scheduling.
+We will look at two scheduling software, Setmore and LEKIN, in terms of explainable planning. We will not look at existing tools using argumentation because existing tools do not use argumentation in a sufficient manner to explain scheduling.
 
 \subsection{Setmore}
 
@@ -324,7 +322,7 @@ Setmore is a commercial online application that records appointments, schedules 
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=\linewidth]{figures/setmore_overallocated.png}
+		\includegraphics[width=\textwidth]{figures/setmore_overallocated.png}
 	\end{center}
 	\caption{Overlapping appointment allocation error message}
 \end{figure}
@@ -369,7 +367,7 @@ The application validates a schedule's feasibility at data input. When a schedul
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[scale=0.8]{figures/lekin_metric.png}
+		\includegraphics[scale=0.7]{figures/lekin_metric.png}
 	\end{center}
 	\caption{Performance metrics of an schedule}
 	\label{lekinmetrics}
