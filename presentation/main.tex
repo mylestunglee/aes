@@ -1,0 +1,87 @@
+\documentclass[11pt]{beamer}
+\input{definitions}
+
+\begin{document}
+	\author{Myles Lee}
+	\title{Explaining Makespan Schedules}
+	\date{25\textsuperscript{th} June 2019}
+	
+	\begin{frame}[plain]
+		\maketitle
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Introduction}
+		\makebox[\textwidth][c]{
+			\begin{tikzpicture}
+				\node (left) at (0, 0){\includegraphics[scale=0.25]{figures/inefficient_makespan.png}};
+				\node (right) at (6, 0){\includegraphics[scale=0.25]{figures/efficient_makespan.png}};
+				\draw[thick,->] (left) -- (right) node[midway, above] {optimise};
+			\end{tikzpicture}
+		}
+		\begin{itemize}
+			\item Solvers and schedules are difficult to understand
+			\item Apply argumentation to makespan schedules to generate explanations
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Contributions}
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\includegraphics[width=\textwidth]{figures/tool_gui.png}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\resizebox{\textwidth}{!}{\input{theorem_textless}}
+			\end{column}
+		\end{columns}
+
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\begin{itemize}
+					\item Interactive tool
+					\item Algorithms
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\begin{itemize}
+					\item Theoretical extensions 
+					\item Discussion
+				\end{itemize}
+			\end{column}
+		\end{columns}			
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Demonstration}
+		\includegraphics[width=\textwidth]{figures/tool_gui.png}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Pipeline}
+		\resizebox{\textwidth}{!}{\input{pipeline}}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Abstract Argumentation}
+		\begin{itemize}
+			\item An abstract argumentation framework is a directed graph $\pair{Args}{\rightsquigarrow}$.
+			\item Extension $E$ is a subset of $Args$.
+		\end{itemize}
+		
+		\begin{definition}
+			$E$ is conflict-free on $\pair{Args}{\rightsquigarrow}$ iff $\forall a,b\in E. a\not\rightsquigarrow b$.
+		\end{definition}
+	
+		\begin{definition}
+			$E$ is stable on $\pair{Args}{\rightsquigarrow}$ iff $E$ is conflict-free on $\pair{Args}{\rightsquigarrow}$ and $\forall a\in Args\setminus E.\exists e\in E.e\rightsquigarrow a$.
+		\end{definition}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Theorem}
+		\begin{center}
+			\resizebox{0.9\textwidth}{!}{\input{theorem}}		
+		\end{center}
+	\end{frame}
+\end{document}

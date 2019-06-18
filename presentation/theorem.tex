@@ -1,0 +1,47 @@
+\begin{tikzpicture}
+	\node[node, shaded](a) at (0, 1.5){a};
+	\node[node](b) at (1.5, 1.5){b};
+	\node[node, shaded](c) at (1.5, 0){c};
+	\node[node](d) at (0, 0){d};
+	\draw[arrow](a) -- (b);
+	\draw[arrow](b) -- (a);
+	\draw[arrow](c) -- (d);
+	\draw[arrow](d) -- (c);
+	\draw(-0.5,-0.5) rectangle (2,2);
+	\node at (0.8, -0.8){stability-models $P_0$};
+
+	\node at (2.8, 0.5){\Huge{$\land$}};
+
+	\node[node, shaded](a) at (4, 1.5){a};
+	\node[node](b) at (5.5, 1.5){b};
+	\node[node, shaded](c) at (5.5, 0){c};
+	\node[node](d) at (4, 0){d};
+	\draw[arrow](b) -- (c);
+	\draw(3.5,-0.5) rectangle (6,2);
+	\node at (4.8, -0.8){conflict-models $P_1$};
+
+	\node at (7.2, 0.5){\Huge{$\land...\land$}};
+
+	\node[node, shaded](a) at (9, 1.5){a};
+	\node[node](b) at (10.5, 1.5){b};
+	\node[node, shaded](c) at (10.5, 0){c};
+	\node[node](d) at (9, 0){d};
+	\draw[arrow](b) -- (d);
+	\draw(8.5,-0.5) rectangle (11,2);
+	\node at (9.8, -0.8){conflict-models $P_K$};
+
+	\node at (5, -1.7){\Huge{$\Updownarrow$}};
+
+	\node[node, shaded](a) at (4, -3){a};
+	\node[node](b) at (6, -3){b};
+	\node[node, shaded](c) at (6, -5){c};
+	\node[node](d) at (4, -5){d};
+	\draw[arrow](a) -- (b);
+	\draw[arrow](b) -- (a);
+	\draw[arrow](b) -- (c);
+	\draw[arrow](b) -- (d);
+	\draw[arrow](c) -- (d);
+	\draw[arrow](d) -- (c);
+	\draw(3.5,-5.5) rectangle (6.5, -2.5);
+	\node at (5, -5.8){stability-models $P_{\intset{0,K}}$};
+\end{tikzpicture}

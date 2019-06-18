@@ -16,4 +16,12 @@ report/*.toc
 report/*.blg
 report/*.dvi
 report/dummy.pdf
+presentation/*.aux
+presentation/*.log
+presentation/*.synctex.gz
+presentation/*.out
+presentation/*.bbl
+presentation/*.toc
+presentation/*.blg
+presentation/*.dvi
 unit_tests/.cache*
