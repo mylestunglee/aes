@@ -69,4 +69,4 @@ plt.legend(bbox_to_anchor=(1,1), loc="upper left")
 
 plt.subplots_adjust(right=0.75, bottom=0.2)
 
-plt.savefig('questionnaire_results_summary.png')
+plt.savefig('questionnaire_results_summary.png', dpi=300)

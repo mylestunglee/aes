@@ -1,0 +1,29 @@
+\begin{tikzpicture}
+	\node[node](start) at (-7, 6){Start};
+	\node[file, align=center](fpe) at (0, 6){
+		\textsc{Full-Precomputation-Explain}
+		\\\\
+		\tikz{
+			\node[file](cf) at (2.5, 8){\textsc{Construct-}\\\textsc{Feasibility}};
+			\node[file](ce) at (4, 6){\textsc{Construct-}\\\textsc{Efficiency}};
+			\node[file](cs) at (8, 6){\textsc{Construct-}\\\textsc{Satisfaction}};
+			\node[file](sf) at (0, 4){\textsc{Explain-}\\\textsc{Stability}};
+			\node[file](se) at (4, 4){\textsc{Explain-}\\\textsc{Stability}};
+			\node[file](ss) at (8, 4){\textsc{Explain-}\\\textsc{Stability}};
+			\node[file](ef) at (0, 2){\textsc{Explain-}\\\textsc{Feasibility}};
+			\node[file](ee) at (4, 2){\textsc{Explain-}\\\textsc{Efficiency}};
+			\node[file](es) at (8, 2){\textsc{Explain-}\\\textsc{Satisfaction}};
+			\draw[arrow](cf) -- (sf);
+			\draw[arrow](cf) -- (ce);
+			\draw[arrow](cf) -- (cs);
+			\draw[arrow](ce) -- (se);
+			\draw[arrow](cs) -- (ss);
+			\draw[arrow](sf) -- (ef);
+			\draw[arrow](se) -- (ee);
+			\draw[arrow](ss) -- (es);
+		};
+	};
+	\node[node](end) at (7, 6){End};
+	\draw[arrow](start) -- (fpe);
+	\draw[arrow](fpe) -- (end);
+\end{tikzpicture}

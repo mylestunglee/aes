@@ -57,10 +57,7 @@
 		\includegraphics[width=\textwidth]{figures/tool_gui.png}
 	\end{frame}
 
-	\begin{frame}
-		\frametitle{Pipeline}
-		\resizebox{\textwidth}{!}{\input{pipeline}}
-	\end{frame}
+	\subsection{Interactive Tool and Algorithms}
 
 	\begin{frame}
 		\frametitle{Abstract Argumentation}
@@ -78,10 +75,370 @@
 		\end{definition}
 	\end{frame}
 
+	\begin{frame}[label=pipeline]
+		\frametitle{Pipeline}
+		\resizebox{\textwidth}{!}{\input{pipeline}}
+	\end{frame}
+
 	\begin{frame}
-		\frametitle{Theorem}
+		\frametitle{Feasibility Framework Construction}
+				
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					$\begin{bmatrix}
+						1 & 0 & 1\\
+						0 & 1 & 0\\
+					\end{bmatrix}$
+					\begin{equation*}
+						\forall j\in\mathcal{J}.\sum_{i\in\mathcal{M}}x_{i,j}=1
+					\end{equation*}
+				\end{center}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\begin{tikzpicture}
+						\node(a) at (0, 0){$\pair{2}{\mathtt{a}}$};
+						\node(b) at (1, 0){$\pair{2}{\mathtt{b}}$};
+						\node(c) at (2, 0){$\pair{2}{\mathtt{c}}$};
+						\node(d) at (0, 2){$\pair{1}{\mathtt{a}}$};
+						\node(e) at (1, 2){$\pair{1}{\mathtt{b}}$};
+						\node(f) at (2, 2){$\pair{1}{\mathtt{c}}$};
+						
+						\draw[thick,<->](a) -- (d);
+						\draw[thick,<->](b) -- (e);
+						\draw[thick,<->](c) -- (f);
+					\end{tikzpicture}
+					$Args_F=\mathcal{M}\times\mathcal{J}$\\
+					$\pair{i}{j}\rightsquigarrow_F\pair{i'}{j'}$ iff $i\neq i'\land j=j'$
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Framework Modelling}
+		
+		\begin{definition}
+			Framework $\pair{Args}{\rightsquigarrow}$ stability-models a property $P$ iff $\forall E\subseteq Args.E$ is stable on $\pair{Args}{\rightsquigarrow}\Leftrightarrow P$
+		\end{definition}
+	
+		\begin{tikzpicture}
+			\node(a) at (0, 0){$\pair{2}{\mathtt{a}}$};
+			\node(b) at (1, 0){$\pair{2}{\mathtt{b}}$};
+			\node(c) at (2, 0){$\pair{2}{\mathtt{c}}$};
+			\node(d) at (0, 2){$\pair{1}{\mathtt{a}}$};
+			\node(e) at (1, 2){$\pair{1}{\mathtt{b}}$};
+			\node(f) at (2, 2){$\pair{1}{\mathtt{c}}$};
+			
+			\draw[thick,<->](a) -- (d);
+			\draw[thick,<->](b) -- (e);
+			\draw[thick,<->](c) -- (f);
+			
+			\node at (-1.7, 0.5){$\pair{Args_F}{\rightsquigarrow_F}$};
+			\draw (-0.5, -0.5) rectangle (2.5, 2.5);
+			
+			\node at (-5, 1.5){$P_F\equiv\forall j\in\mathcal{J}.\sum_{i\in\mathcal{M}}x_{i,j}=1$};
+		\end{tikzpicture}
+		
+		\begin{theorem}
+			$\pair{Args_F}{\rightsquigarrow_F}$ \textnormal{stability-models} $P_F$
+		\end{theorem}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Algorithm Notation}
+
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\begin{align*}
+					\mathbf{0}^{2\times 2}&=
+					\begin{bmatrix}
+						0&0\\
+						0&0\\
+					\end{bmatrix}
+				\end{align*}
+
+				\begin{align*}
+					\begin{bmatrix}
+						0&0\\
+						1&1\\
+					\end{bmatrix}
+					\incircbin{\land}
+					\begin{bmatrix}
+						0&1\\
+						0&1\\
+					\end{bmatrix}
+					&=
+					\begin{bmatrix}
+						0&0\\
+						0&1\\
+					\end{bmatrix}
+				\end{align*}
+			\end{column}
+			\begin{column}{0.5\textwidth}		
+				\begin{align*}
+					\incircbin{\neg}
+					\begin{bmatrix}
+						1&0\\
+						0&1\\
+					\end{bmatrix}&=
+					\begin{bmatrix}
+						0&1\\
+						1&0\\
+					\end{bmatrix}
+				\end{align*}
+				
+				\begin{align*}
+					\begin{bmatrix}
+						0&0\\
+						1&1\\
+					\end{bmatrix}
+					\incircbin{\lor}
+					\begin{bmatrix}
+						0&1\\
+						0&1\\
+					\end{bmatrix}
+					&=
+					\begin{bmatrix}
+						0&1\\
+						1&1\\
+					\end{bmatrix}
+				\end{align*}
+			\end{column}
+		\end{columns}		
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Construct-Feasibility Algorithm}
+		\begin{algorithm}[H]
+			\caption{}
+			\begin{algorithmic}[1]
+				\Function{Construct-Feasibility}{$m$, $n$}
+				\State $\twoheadrightarrow_F$ $\gets$ $\mathbf{0}^{(m\times n)^2}$
+				\For{$i_1,i_2\in\mathcal{M},j\in\mathcal{J}$}
+				\If{$i_1\neq i_2$}
+				\State ${\twoheadrightarrow_F}_{i_1,j,i_2,j}$ $\gets$ 1
+				\EndIf
+				\EndFor
+				\State \Return $\twoheadrightarrow_F$
+				\EndFunction
+			\end{algorithmic}
+		\end{algorithm}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Explain-Stability Algorithm}
+		\vspace{-0.3\baselineskip}
+		\begin{algorithm}[H]
+			\caption{}
+			\begin{algorithmic}[1]
+				\Function{Explain-Stability}{$\mathbf{x}$, $\twoheadrightarrow$, $\bar{\mathbf{u}}$, $\bar{\mathbf{c}}$}
+				\State $\mathbf{u}$ $\gets\incircbin{\neg}$ $\mathbf{x}$
+				\State $\mathbf{c}$ $\gets\mathbf{0}^{(m\times n)^2}$
+				\For{$i\in\mathcal{M},j\in\mathcal{J}$}
+				\If{$x_{i,j}=1$}
+				\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}\twoheadrightarrow_{i,j}$
+				\State $c_{i,j}$ $\gets$ $\mathbf{x}$ $\incircbin{\land}$ $\twoheadrightarrow_{i,j}$ 
+				\EndIf
+				\EndFor			
+				\State $\mathbf{u}$ $\gets$ $\mathbf{u}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{u}}$
+				\State $\mathbf{c}$ $\gets$ $\mathbf{c}$ $\incircbin{\land}$ $\incircbin{\neg}$ $\bar{\mathbf{c}}$
+				\State \Return $\pair{\mathbf{u}}{\mathbf{c}}$
+				\EndFunction
+			\end{algorithmic}
+		\end{algorithm}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Explain-Feasibility Algorithm}
+		\vspace{-0.8\baselineskip}
+		\scalebox{0.64}{\begin{minipage}{1.5625\textwidth}
+			\begin{algorithm}[H]
+				\caption{}
+				\begin{algorithmic}[1]
+					\Function{Explain-Feasibility}{$\mathbf{u}$, $\mathbf{c}$}
+						\If{$m=0$}
+							\If{$n=0$}
+								\State \emph{There are no jobs, so the schedule is trivially feasible.}
+							\Else
+								\State \emph{There are no machines to allocate to jobs.}
+							\EndIf
+						\Else
+							\If{$\mathbf{u}=\mathbf{0}\land\mathbf{c}=\mathbf{0}$}
+							\State \emph{All jobs are allocated to exactly one machine.}
+							\Else
+							\For{$j\in\mathcal{J}$}
+							\If{$u_{:,j}=1$}
+							\State \emph{Job $j$ is not allocated to any machine.}
+							\EndIf
+							\If{$c_{:,j,:,j}\neq\mathbf{0}$}
+							\State \emph{Job $j$ is over-allocated to machines $\{i\ |\ i\in\mathcal{M}, x_{i,j}=1\}$.}
+							\EndIf
+							\EndFor
+							\EndIf
+						\EndIf
+					\EndFunction
+					\end{algorithmic}
+			\end{algorithm}
+		\end{minipage}}
+	\end{frame}
+
+	\againframe{pipeline}
+
+	\begin{frame}
+		\frametitle{Algorithms Overview}
+		\begin{center}
+			\resizebox{0.9\textwidth}{!}{\input{algorithms}}		
+		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Generating Efficiency Explanations}
+		
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+						\begin{itemize}
+					\item Single and pair-wise exchange properties
+					\item Fixed decision awareness
+					\item Explanations are:
+					\begin{itemize}
+						\item superfluous
+						\item local
+						\item expensive
+					\end{itemize}
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\includegraphics[width=\textwidth]{figures/inefficient_makespan.png}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Generating Fixed Decisions Explanations}
+		\scalebox{0.8}{\begin{minipage}{1.125\textwidth}
+			\begin{algorithm}[H]
+				\caption{}
+				\begin{algorithmic}[1]
+					\Function{Explain-Satisfaction}{$D$, $\mathbf{u}$, $\mathbf{c}$}
+						\For{$j\in\mathcal{J}$}
+							\If{$\exists i\in\mathcal{M}\ \pair{i}{j}\not\in D^-$}
+								\State\emph{Job $j$ cannot be allocated to any machine.}
+							\EndIf
+							\If{$D^-$ and $D^+$ are not disjoint}
+								\State\emph{Job $j$ has conflicting negative and positive fixed decisions.}
+							\EndIf
+							\If{$|\{i\in\mathcal{M}\ |\ \pair{i}{j}\in D^+\}|>1$}
+								\State\emph{Job $j$ cannot be allocated to multiple machines.}	
+							\EndIf
+						\EndFor
+						\State ...
+					\EndFunction
+				\end{algorithmic}
+			\end{algorithm}		
+		\end{minipage}}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Partial-Precomputation Optimisation}
+		\begin{itemize}
+			\item $\twoheadrightarrow$ construction has $\mathcal{O}(m^2n^2)$ memory usage.
+			\item Inline stability and framework construction algorithms
+			\item Operate on sub-graphs $\twoheadrightarrow_{i,j}$
+		\end{itemize}
+		\vspace{\baselineskip}
+		\begin{itemize}
+			\item Full-Precomputation complexity: $\mathcal{O}(m^2n^2)$
+			\item Partial-Precomputation complexity: $\mathcal{O}(mn^2)$
+		\end{itemize}
+	\end{frame}	
+	\subsection{Theoretical Extensions}
+
+	\begin{frame}
+		\frametitle{Time-indexed Interval Scheduling}
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\includegraphics[width=\textwidth]{figures/interval_schedule.png}
+				\end{center}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\begin{itemize}
+					\item Single-allocation of jobs
+					\item No overlapping jobs	
+					\item Start and finish times
+					\item Fixed decisions
+				\end{itemize}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Union of Modelling Frameworks Theorem}
 		\begin{center}
 			\resizebox{0.9\textwidth}{!}{\input{theorem}}		
 		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Theoretical Applications}
+		\begin{definition}
+			Property $P$ is stability-modellable iff $\exists\pair{Args}{\rightsquigarrow}.\pair{Args}{\rightsquigarrow}$ stability models $P$.
+		\end{definition}
+		\begin{theorem}
+			\textnormal{Interval scheduling feasibility is stability-modellable.}
+		\end{theorem}
+	\end{frame}
+
+	\subsection{Evaluation}
+
+	\begin{frame}
+		\frametitle{Questionnaire}
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\fbox{\includegraphics[scale=0.2,page=1]{../report/questionnaire.pdf}}
+				\end{center}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\fbox{\includegraphics[scale=0.2,page=2]{../report/questionnaire.pdf}}
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Questionnaire Results}
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{figures/questionnaire_results_summary.png}
+		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Profiling}
+		\begin{itemize}
+			\item $m=10$
+		\end{itemize}
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\includegraphics[width=\textwidth]{figures/cpu_profile.png}
+					CPU Performance
+				\end{center}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\includegraphics[width=\textwidth]{figures/memory_profile.png}
+					Memory Performance
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\subsection{Conclusion}
+	\begin{frame}
+		blah
 	\end{frame}
 \end{document}

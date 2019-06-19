@@ -4,11 +4,14 @@
 \usetheme{Berlin}
 \usecolortheme{spruce}
 
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{shapes.multipart}
 \usetikzlibrary{patterns}
 
-
+\tikzstyle{file} = [draw, inner sep=10pt]
 \tikzstyle{node} = [draw, circle, minimum size=0.75cm]
 \tikzstyle{arrow} = [-{Stealth[scale=2]}]
 \tikzstyle{shaded} = [fill=black!30]
@@ -17,3 +20,9 @@
 \newcommand{\intset}[1]{[\![{#1}]\!]}
 
 \newcommand{\pair}[2]{\langle{#1},{#2}\rangle}
+
+\renewcommand{\thealgorithm}{}
+
+\makeatletter
+\newcommand{\incircbin}{\mathpalette\@incircbin}
+\newcommand\@incircbin[2]{\mathbin{\ooalign{\hidewidth$#1#2$\hidewidth\crcr$#1\bigcirc$}}}
