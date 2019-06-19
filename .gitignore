@@ -23,5 +23,6 @@ presentation/*.out
 presentation/*.bbl
 presentation/*.toc
 presentation/*.blg
-presentation/*.dvi
+presentation/*.nav
+presentation/*.snm
 unit_tests/.cache*
